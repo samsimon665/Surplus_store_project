@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About Us – Surplus Store</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        neon: "#13ecb6",
+                        blackPure: "#030405",
+                        glass: "rgba(255,255,255,0.08)",
+                    },
+                    fontFamily: {
+                        display: ["Manrope", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: Manrope, sans-serif;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .neon-glow {
+            box-shadow: 0 0 25px rgba(19, 236, 182, 0.35),
+                0 0 60px rgba(19, 236, 182, 0.15);
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        .float {
+            animation: float 6s ease-in-out infinite;
+        }
+    </style>
+</head>
+
+<body class="bg-blackPure text-white min-h-screen">
+
+    <!-- NAVBAR -->
+    <header class="sticky top-0 z-40 glass px-8 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-neon text-3xl">shopping_bag</span>
+            <h1 class="text-xl font-black tracking-wide">SURPLUS STORE</h1>
+        </div>
+
+        <nav class="hidden md:flex gap-8 text-sm font-bold text-white/70">
+            <a href="#" class="hover:text-neon">Home</a>
+            <a href="#" class="text-neon">About</a>
+            <a href="#" class="hover:text-neon">Profile</a>
+            <a href="#" class="hover:text-neon">Orders</a>
+        </nav>
+
+        <div class="flex items-center gap-4">
+            <button class="glass w-10 h-10 rounded-xl flex items-center justify-center">
+                <span class="material-symbols-outlined">shopping_cart</span>
+            </button>
+            <div class="flex items-center gap-2 glass px-3 py-2 rounded-xl">
+                <img src="https://i.pravatar.cc/40" class="w-7 h-7 rounded-full" />
+                <span class="text-sm font-semibold">Sam</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="relative h-[70vh] flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-black via-blackPure to-black"></div>
+
+        <div class="relative z-10 text-center px-6 max-w-4xl">
+            <h1 class="text-5xl md:text-7xl font-black mb-6">
+                About <span class="text-neon">Surplus Store</span>
+            </h1>
+            <p class="text-white/70 text-xl leading-relaxed">
+                Redefining fashion through sustainability, affordability, and innovation.
+            </p>
+        </div>
+    </section>
+
+    <!-- MISSION / VISION -->
+    <section class="max-w-7xl mx-auto px-8 py-24 grid md:grid-cols-2 gap-16">
+
+        <div class="glass rounded-[2rem] p-12 neon-glow">
+            <h2 class="text-3xl font-black mb-6 text-neon">Our Mission</h2>
+            <p class="text-white/70 text-lg leading-relaxed">
+                Our mission is to make **premium surplus fashion affordable for everyone**
+                while reducing textile waste. We connect unused export-quality garments
+                directly to customers at **₹150/kg**, eliminating middlemen and inflated prices.
+            </p>
+        </div>
+
+        <div class="glass rounded-[2rem] p-12">
+            <h2 class="text-3xl font-black mb-6 text-neon">Our Vision</h2>
+            <p class="text-white/70 text-lg leading-relaxed">
+                To become **India’s largest surplus fashion marketplace**, enabling smart shopping,
+                sustainable living, and transparent pricing across all fashion categories.
+            </p>
+        </div>
+
+    </section>
+
+    <!-- WHY SURPLUS -->
+    <section class="max-w-7xl mx-auto px-8 pb-24">
+        <h2 class="text-4xl font-black text-center mb-16">Why <span class="text-neon">Surplus Store</span>?</h2>
+
+        <div class="grid md:grid-cols-3 gap-12">
+
+            <div class="glass rounded-[2rem] p-10 text-center float">
+                <span class="material-symbols-outlined text-neon text-5xl mb-4 block">eco</span>
+                <h3 class="text-xl font-black mb-3">Sustainable Fashion</h3>
+                <p class="text-white/60">
+                    Every purchase saves garments from landfills and supports eco-friendly fashion.
+                </p>
+            </div>
+
+            <div class="glass rounded-[2rem] p-10 text-center float">
+                <span class="material-symbols-outlined text-neon text-5xl mb-4 block">payments</span>
+                <h3 class="text-xl font-black mb-3">Unbeatable Pricing</h3>
+                <p class="text-white/60">
+                    Pay only by weight — no brand tax, no artificial inflation.
+                </p>
+            </div>
+
+            <div class="glass rounded-[2rem] p-10 text-center float">
+                <span class="material-symbols-outlined text-neon text-5xl mb-4 block">verified</span>
+                <h3 class="text-xl font-black mb-3">Quality Assured</h3>
+                <p class="text-white/60">
+                    Every item is curated and inspected before it reaches you.
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="max-w-7xl mx-auto px-8 pb-24">
+        <div class="grid md:grid-cols-4 gap-10 text-center">
+
+            <div class="glass rounded-2xl p-8">
+                <h3 class="text-4xl font-black text-neon counter" data-target="12000">0</h3>
+                <p class="text-white/60 mt-2">Happy Customers</p>
+            </div>
+
+            <div class="glass rounded-2xl p-8">
+                <h3 class="text-4xl font-black text-neon counter" data-target="35000">0</h3>
+                <p class="text-white/60 mt-2">KG Sold</p>
+            </div>
+
+            <div class="glass rounded-2xl p-8">
+                <h3 class="text-4xl font-black text-neon counter" data-target="4800000">0</h3>
+                <p class="text-white/60 mt-2">₹ Saved</p>
+            </div>
+
+            <div class="glass rounded-2xl p-8">
+                <h3 class="text-4xl font-black text-neon counter" data-target="28">0</h3>
+                <p class="text-white/60 mt-2">Cities Served</p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="max-w-7xl mx-auto px-8 pb-32 text-center">
+        <div class="glass rounded-[3rem] p-16 neon-glow">
+            <h2 class="text-4xl font-black mb-6">Join the <span class="text-neon">Surplus Revolution</span></h2>
+            <p class="text-white/70 mb-10 text-lg">
+                Shop smart. Save money. Save the planet.
+            </p>
+
+            <a href="home.html"
+                class="inline-block bg-neon text-black px-12 py-4 rounded-2xl font-black text-lg hover:scale-105 transition">
+                Start Shopping
+            </a>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="glass border-t border-white/10 px-8 py-10 text-center text-white/50">
+        <p>© 2025 Surplus Store. All Rights Reserved.</p>
+        <p class="mt-2">Premium surplus fashion by weight.</p>
+    </footer>
+
+    <!-- COUNTER ANIMATION -->
+    <script>
+        const counters = document.querySelectorAll('.counter');
+        counters.forEach(counter => {
+            const target = +counter.dataset.target;
+            let current = 0;
+            const speed = target / 80;
+
+            function update() {
+                current += speed;
+                if (current < target) {
+                    counter.textContent = Math.floor(current).toLocaleString();
+                    requestAnimationFrame(update);
+                } else {
+                    counter.textContent = target.toLocaleString();
+                }
+            }
+            update();
+        });
+    </script>
+
+</body>
+
+</html>

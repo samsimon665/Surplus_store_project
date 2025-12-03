@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login to Surplus Store</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings:
+                'FILL' 0,
+                'wght' 400,
+                'GRAD' 0,
+                'opsz' 24;
+        }
+    </style>
+
+    <!-- Anime.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1173d4",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="font-display bg-background-light dark:bg-background-dark overflow-hidden">
+
+    <div class="relative flex min-h-screen w-full">
+
+        <!-- LEFT IMAGE PANEL WITH 80% OPACITY + TEXT -->
+        <div id="leftPanel" class="relative hidden lg:flex w-1/2 items-center justify-center overflow-hidden">
+            <div class="absolute inset-0 bg-center bg-cover"
+                style="background-image:url('https://lh3.googleusercontent.com/aida-public/AB6AXuAm9QA72fHahy-ysfZmL9yU-eKK3WF5BqIzf6V4M-PAYyoalUKQwn1f_-87r9XtdnR4pU0KBA8xT_Oz_At8DQqMXa61YzcsJKB28LGZKTdiS-2xL-n_5aXJE-H0zZ48yNjLFz2_SaD0lfDlvEm6JrgVHlZacTyXshbmmHv8OP1nekSaQQkTJz0NQ1Gs1nLtzzLhH_nwAZaozJnENx4dyzmYg0KTc5XwTc0WeNKYN1Z0tsAZS_K2LnVFcOOelMwPyg4zrTJ7-jcjilk'); opacity:0.8;">
+            </div>
+
+            <div class="absolute inset-0 bg-black/70"></div>
+
+            <div id="leftText" class="relative z-10 text-center px-12">
+                <h1 class="text-5xl font-extrabold text-white tracking-widest mb-6">
+                    SURPLUS STORE
+                </h1>
+                <p class="text-gray-200 text-xl leading-relaxed max-w-md mx-auto">
+                    Smart surplus trading powered by secure digital systems.
+                    Access verified stocks, trusted sellers and fast deals.
+                </p>
+            </div>
+        </div>
+
+        <!-- RIGHT LOGIN PANEL -->
+        <div id="rightPanel" class="flex flex-1 flex-col justify-center px-6 sm:px-12 md:px-20 bg-black text-white">
+
+            <div class="max-w-md w-full mx-auto flex flex-col gap-8">
+
+                <div>
+                    <h2 id="title" class="text-4xl font-black text-slate-900 dark:text-white mb-2">
+                        Welcome Back
+                    </h2>
+                    <p class="text-slate-500 dark:text-[#92adc9]">
+                        Sign in to access your Surplus Store account.
+                    </p>
+                </div>
+
+                <form action="#" method="POST" class="flex flex-col gap-4">
+
+                    <!-- EMAIL -->
+                    <label class="flex flex-col">
+                        <span class="pb-2 font-medium text-slate-900 dark:text-white">Email</span>
+                        <input class="form-input h-14 rounded-lg border border-slate-300 dark:border-[#324d67]
+                     bg-white dark:bg-[#192633] px-4 text-base
+                     text-slate-900 dark:text-white
+                     focus:ring-2 focus:ring-primary/50" type="email" name="email" placeholder="Enter your email"
+                            required>
+                    </label>
+
+                    <!-- PASSWORD -->
+                    <label class="flex flex-col">
+                        <span class="pb-2 font-medium text-slate-900 dark:text-white">Password</span>
+                        <div class="flex">
+                            <input class="form-input h-14 w-full rounded-l-lg border border-slate-300 dark:border-[#324d67]
+                       bg-white dark:bg-[#192633] px-4 text-base
+                       text-slate-900 dark:text-white
+                       focus:ring-2 focus:ring-primary/50 border-r-0" type="password" name="password"
+                                placeholder="Enter your password" required>
+
+                            <div class="flex items-center justify-center px-4 rounded-r-lg
+                       border border-slate-300 dark:border-[#324d67]
+                       bg-white dark:bg-[#192633] border-l-0
+                       text-slate-400 dark:text-[#92adc9]">
+                                <span class="material-symbols-outlined">visibility</span>
+                            </div>
+                        </div>
+                    </label>
+
+                    <div class="text-right">
+                        <a href="#" class="text-primary text-sm underline">Forgot password?</a>
+                    </div>
+
+                    <!-- LOGIN BUTTON -->
+                    <button type="submit" class="h-14 w-full rounded-lg bg-primary text-white text-lg font-semibold
+                   hover:bg-primary/90 transition">
+                        Login
+                    </button>
+
+                    <!-- OR DIVIDER -->
+                    <div class="flex items-center gap-3 my-3">
+                        <div class="flex-1 h-px bg-slate-300 dark:bg-[#324d67]"></div>
+                        <span class="text-slate-500 dark:text-[#92adc9] text-sm">OR</span>
+                        <div class="flex-1 h-px bg-slate-300 dark:bg-[#324d67]"></div>
+                    </div>
+
+                    <!-- GOOGLE LOGIN -->
+                    <button type="button" class="h-14 w-full rounded-lg border border-slate-300 dark:border-[#324d67]
+                   bg-white dark:bg-[#192633]
+                   text-slate-700 dark:text-white
+                   font-semibold flex items-center justify-center gap-3
+                   hover:bg-slate-100 dark:hover:bg-[#223548] transition">
+
+                        <img src="https://www.svgrepo.com/show/355037/google.svg" class="w-5 h-5">
+                        Continue with Google
+                    </button>
+
+                </form>
+
+                <p class="text-center text-slate-500 dark:text-[#92adc9]">
+                    Don’t have an account?
+                    <a href="{% url 'accounts:register' %}" class="text-primary font-semibold underline">Sign up</a>
+                </p>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ✅ ANIME.JS ANIMATIONS (NOW MATCHES REGISTRATION PAGE) -->
+    <script>
+        anime({
+            targets: '#leftPanel',
+            opacity: [0, 1],
+            translateX: [-80, 0],
+            duration: 1000,
+            easing: 'easeOutExpo'
+        });
+
+        anime({
+            targets: '#rightPanel',
+            opacity: [0, 1],
+            translateX: [80, 0],
+            delay: 200,
+            duration: 1000,
+            easing: 'easeOutExpo'
+        });
+
+        anime({
+            targets: '#title',
+            translateY: [-40, 0],
+            opacity: [0, 1],
+            delay: 500,
+            duration: 700,
+            easing: 'easeOutExpo'
+        });
+    </script>
+
+</body>
+
+</html>

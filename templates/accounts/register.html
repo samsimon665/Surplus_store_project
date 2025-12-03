@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <title>SurPLUS Store | Register</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Anime.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bg: "#0b0e14",
+                        panel: "#141821",
+                        borderc: "#2a2f3a",
+                        primary: "#1f3b73",
+                        text: "#e8eaed"
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .field {
+            width: 100%;
+            background: #0b0e14;
+            border: 1px solid #2a2f3a;
+            padding: 14px;
+            border-radius: 0.75rem;
+            color: #e8eaed;
+            outline: none;
+            font-size: 14px;
+            transition: 0.25s;
+        }
+
+        .field:focus {
+            border-color: #1f3b73;
+            box-shadow: 0 0 0 2px rgba(31, 59, 115, 0.3);
+        }
+    </style>
+</head>
+
+<body class="bg-bg text-text min-h-screen overflow-hidden">
+
+    <!-- FULL PAGE GRID -->
+    <div class="w-screen h-screen grid grid-cols-1 md:grid-cols-2">
+
+        <!-- LEFT IMAGE PANEL -->
+        <div class="relative">
+            <img src="https://images.pexels.com/photos/1336873/pexels-photo-1336873.jpeg?auto=compress&cs=tinysrgb&h=1400&w=1000"
+                class="absolute inset-0 w-full h-full object-cover opacity-" alt="NOTFOUND">
+            <div class="absolute inset-0 bg-black/70"></div>
+
+            <div id="leftText" class="relative z-10 h-full flex flex-col items-center justify-center text-center px-10">
+                <h1 class="text-5xl font-extrabold text-primary-emphasis mb-5 tracking-wider">
+                    SURPLUS STORE
+                </h1>
+                <p class="text-white-300 text-lg max-w-md">
+                    Smart surplus trading powered by secure digital systems.
+                </p>
+            </div>
+        </div>
+
+
+
+        <!-- RIGHT REGISTER PANEL -->
+
+
+        <div id="rightPanel" class="bg-black px-14 pb-16 overflow-y-auto" style="height: 100vh;">
+
+            <h2 id="title" class="text-4xl font-extrabold mb-2">
+                Create Account
+            </h2>
+
+            <p class="text-gray-400 mb-6">
+                Register to enter the Surplus ecosystem
+            </p>
+
+
+            <!-- ✅ ONLY FORM CONTENT REDUCED -->
+            <form method="POST" action="{% url 'accounts:register' %}" class="space-y-3 max-w-md mx-auto">
+
+                {% csrf_token %}
+
+                <div class="grid grid-cols-2 gap-3">
+
+                    <div>
+                        <input type="text" name="first_name" value="{{ form.first_name.value|default:'' }}"
+                            class="field {% if form.first_name.errors %}error-field{% endif %}"
+                            placeholder="First Name">
+
+                        {% if form.first_name.errors %}
+                        <div class="text-red-500 text-md-center mt-1">{{ form.first_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <input type="text" name="last_name" value="{{ form.last_name.value|default:'' }}"
+                            class="field {% if form.last_name.errors %}error-field{% endif %}" placeholder="Last Name">
+
+                        {% if form.last_name.errors %}
+                        <div class="text-red-500 text-md-center mt-1">{{ form.last_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+
+                <div>
+                    <input type="text" name="username" value="{{ form.username.value|default:'' }}"
+                        class="field {% if form.username.errors %}error-field{% endif %}" placeholder="Username">
+
+                    {% if form.username.errors %}
+                    <div class="text-red-500 text-md-center mt-1">{{ form.username.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+
+                <div>
+                    <input type="email" name="email" value="{{ form.email.value|default:'' }}"
+                        class="field {% if form.email.errors %}error-field{% endif %}" placeholder="Email Address">
+
+                    {% if form.email.errors %}
+                    <div class="text-red-500 text-md-center mt-1">{{ form.email.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+
+                <div>
+                    <input type="password" name="password1"
+                        class="field {% if form.password1.errors %}error-field{% endif %}" placeholder="Password">
+
+                    {% if form.password1.errors %}
+                    <div class="text-red-500 text-md-center mt-1">{{ form.password1.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+
+                <div>
+                    <input type="password" name="password2"
+                        class="field {% if form.password2.errors %}error-field{% endif %}"
+                        placeholder="Confirm Password">
+
+                    {% if form.password2.errors %}
+                    <div class="text-red-500 text-md-center mt-1">{{ form.password2.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+
+
+                <!-- Phone stays manual because it belongs to Profile -->
+                <input type="tel" name="phone" placeholder="Phone (Optional)" class="field py-2 px-3 text-sm">
+
+                <!-- ✅ BUTTON SHORTER -->
+                <button id="registerBtn" type="submit" class="w-full py-4 mt-2 rounded-xl bg-primary text-white
+                                   text-sm font-bold tracking-wide transition-all duration-300">
+                    REGISTER
+                </button>
+
+                <p class="text-center text-gray-400 text-lg mt-2">
+                    Already registered?
+                    <a href="{% url 'catalog:home' %}" class="text-primary hover:underline">Login</a>
+                </p>
+
+                <!-- Divider -->
+                <div class="flex items-center gap-2 my-2">
+                    <div class="flex-1 h-px bg-borderc"></div>
+                    <span class="text-gray-500 text-[10px]">OR</span>
+                    <div class="flex-1 h-px bg-borderc"></div>
+                </div>
+
+                {% load socialaccount %}
+
+                <a href="{% provider_login_url 'google' %}" class="w-full py-4 rounded-xl border border-borderc
+                                          text-xs font-semibold tracking-wide
+                                          flex items-center justify-center gap-2
+                                          hover:bg-[#1b2030] transition">
+                    <img src="https://www.svgrepo.com/show/355037/google.svg" class="w-4 h-4">
+                    Continue with Google
+                </a>
+
+
+            </form>
+
+        </div>
+
+
+    </div>
+
+
+    <style>
+        .field {
+            width: 100%;
+            background: #292323;
+            border: 1px solid #2a2f3a;
+            padding: 15px;
+            /* 🔽 was 14px */
+            border-radius: 0.75rem;
+            color: #ffffff;
+            outline: none;
+            font-size: 16px;
+            /* 🔽 was 17px */
+            line-height: 1.5;
+            /* 🔽 was 1.4 */
+            transition: 0.25s;
+        }
+
+
+
+        .field:focus {
+            border-color: #1f3b73;
+            box-shadow: 0 0 0 2px rgba(31, 59, 115, 0.3);
+        }
+
+        .error-field {
+            border-color: red !important;
+            box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.35) !important;
+        }
+    </style>
+
+
+    <!-- ANIMATIONS -->
+    <script>
+        anime({
+            targets: '#leftText',
+            opacity: [0, 1],
+            translateX: [-80, 0],
+            delay: 200,
+            duration: 900,
+            easing: 'easeOutExpo'
+        });
+
+        anime({
+            targets: '#rightPanel',
+            opacity: [0, 1],
+            translateX: [80, 0],
+            delay: 400,
+            duration: 900,
+            easing: 'easeOutExpo'
+        });
+
+        const btn = document.getElementById('registerBtn');
+        btn.addEventListener('mouseenter', () => {
+            anime({ targets: btn, scale: 1.05, duration: 150, easing: 'easeOutQuad' });
+        });
+        btn.addEventListener('mouseleave', () => {
+            anime({ targets: btn, scale: 1, duration: 150, easing: 'easeOutQuad' });
+        });
+    </script>
+
+</body>
+
+</html>

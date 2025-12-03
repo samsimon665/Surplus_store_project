@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Surplus Clothing Store Landing Page</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#13ecb6",
+                        "primary-deep": "#0fb393",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#06100e",
+                    },
+                    fontFamily: {
+                        display: ["Plus Jakarta Sans", "Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px",
+                    },
+                },
+            },
+        };
+    </script>
+
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+        }
+
+        /* --- Custom Animations & Effects --- */
+        @keyframes float-soft {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        @keyframes glow-pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(19, 236, 182, 0.35);
+            }
+
+            70% {
+                box-shadow: 0 0 0 18px rgba(19, 236, 182, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(19, 236, 182, 0);
+            }
+        }
+
+        /* Hero floating effect */
+        .hero-card {
+            animation: float-soft 8s ease-in-out infinite;
+        }
+
+        /* Glow on CTA */
+        .cta-pulse {
+            animation: glow-pulse 2.8s ease-out infinite;
+        }
+
+        /* Frosted glass card */
+        .glass-card {
+            background: radial-gradient(circle at top left, rgba(19, 236, 182, 0.08), transparent 55%),
+                radial-gradient(circle at bottom right, rgba(19, 236, 182, 0.06), transparent 55%);
+            backdrop-filter: blur(18px);
+        }
+
+        .hero-overlay {
+            background: radial-gradient(circle at top left, rgba(19, 236, 182, 0.22), transparent 55%),
+                linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.85) 100%);
+        }
+
+        /* Scroll reveal */
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(18px);
+            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+        }
+
+        .reveal-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display">
+    <div
+        class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden bg-gradient-to-b from-background-light via-white to-[#e5f6f1] dark:from-[#020806] dark:via-[#030f0c] dark:to-[#071a15]">
+        <div class="layout-container flex h-full grow flex-col">
+            <div class="px-4 lg:px-40 flex flex-1 justify-center py-5">
+                <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+
+
+                    <!-- TopNavBar -->
+
+                    <header
+                        class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7f3f0] dark:border-b-primary/20 px-4 sm:px-10 py-3 bg-white/70 dark:bg-[#020806]/70 backdrop-blur-xl rounded-full mt-2 shadow-sm">
+                        <div class="flex items-center gap-4 text-[#0d1b18] dark:text-white">
+                            <div class="size-6 flex items-center justify-center rounded-lg bg-primary/10">
+                                <svg class="text-primary" fill="none" viewBox="0 0 48 48"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 4H17.3334V17.3334H30.6666V30.6666H44V44H4V4Z" fill="currentColor">
+                                    </path>
+                                </svg>
+                            </div>
+                            <h2
+                                class="text-[#0d1b18] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">
+                                Surplus Clothing Store
+                            </h2>
+                        </div>
+                        <div class="hidden md:flex flex-1 justify-end gap-8">
+                            <div class="flex items-center gap-9 text-sm font-medium">
+                                <a class="text-[#0d1b18]/80 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition"
+                                    href="{% url 'pages:about' %}">About</a>
+                                <a class="text-[#0d1b18]/80 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition"
+                                    href="#HowItWorks">How it Works</a>
+                                <a class="text-[#0d1b18]/80 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition"
+                                    href="#Categories">Categories</a>
+                                <a class="text-[#0d1b18]/80 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition"
+                                    href="#FAQ">FAQ</a>
+                            </div>
+
+
+                            <!-- LOGIN LINK -->
+                            <a href="{% url 'accounts:login' %}">
+                                <button
+                                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-5 bg-primary text-[#0d1b18] text-sm font-bold leading-normal tracking-[0.015em] shadow-md hover:bg-primary-deep hover:text-[#03120f] transition cta-pulse">
+                                    <span class="truncate">Login</span>
+                                </button></a>
+                        </div>
+                    </header>
+
+                    <!-- HeroSection -->
+                    <div class="mt-5 @container">
+                        <div class="@[480px]:p-4">
+                            <div class="flex min-h-[480px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded-2xl items-center justify-center p-4 hero-card shadow-2xl border border-primary/30 glass-card"
+                                data-alt="A collection of assorted folded clothes creating a colorful background."
+                                style='background-image:
+                  linear-gradient(rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.7) 100%),
+                  url("https://lh3.googleusercontent.com/aida-public/AB6AXuCvCb_qaPLTW4zrqyUAwvfdqzzjDX-cDAwdCEzTcNulwWZHx5qHgTayVErX6-0x5Y0d8rIV5WmphcnXJqoC2YqLlTXtnfRnZc8saVm857F2jdtbrbfVUHOHUX0LkJLci2cfKEIELsFg70dhSrICkd-d-pwuLEUVgLrYAMfiFw6utP-WknokwQxWYBkiCxayvlQWpI0ZP8OgGw4poPL42tPqOl3SCTiORO7qF2b0OHlU8uWZ2hXDIvMKy-s0fdZA-JKA449vAEiaesM");'>
+                                <div class="flex flex-col gap-3 text-center max-w-[640px]">
+                                    <h1
+                                        class="text-white text-4xl font-black leading-tight tracking-[-0.033em] @[480px]:text-5xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em]">
+                                        Surplus Clothing Store
+                                    </h1>
+                                    <h2
+                                        class="text-white/90 text-sm font-normal leading-normal @[480px]:text-base @[480px]:font-normal @[480px]:leading-normal">
+                                        Buy surplus fashion by the kilo — quality at a fraction of the cost.
+                                        Sustainable,
+                                        smart, and curated for you.
+                                    </h2>
+                                    <p class="text-xs @[480px]:text-sm text-primary/80">
+                                        Verified surplus · Transparent weight pricing · Planet-friendly shopping
+                                    </p>
+                                </div>
+
+                                <!-- LOGIN LINK -->
+                                <a href="{% url 'accounts:login' %}">
+                                    <button
+                                        class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 @[480px]:h-12 @[480px]:px-6 bg-primary text-[#0d1b18] text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] hover:bg-primary-deep hover:scale-[1.02] active:scale-[0.99] transition transform shadow-lg">
+                                        <span class="truncate">Login to Start Shopping</span>
+                                    </button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FeatureSection (About Us) -->
+                    <div class="flex flex-col gap-10 px-4 py-10 pt-16 @container reveal-on-scroll">
+                        <div class="flex flex-col gap-4 text-center items-center">
+                            <h1
+                                class="text-[#0d1b18] dark:text-white tracking-light text-[32px] font-bold leading-tight @[480px]:text-4xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em] max-w-[720px]">
+                                Why Choose Surplus?
+                            </h1>
+                            <p
+                                class="text-[#0d1b18]/80 dark:text-gray-300 text-base font-normal leading-normal max-w-[720px]">
+                                We provide a unique way to shop for fashion that's great for your wallet and the planet.
+                            </p>
+                        </div>
+                        <div class="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 p-0">
+                            <div
+                                class="flex flex-1 gap-3 rounded-xl border border-[#cfe7e1] dark:border-primary/20 bg-white/90 dark:bg-background-dark/80 p-4 flex-col glass-card hover:-translate-y-1 hover:shadow-xl transition">
+                                <span aria-hidden="true" class="material-symbols-outlined text-primary">sell</span>
+                                <div class="flex flex-col gap-1">
+                                    <h2 class="text-[#0d1b18] dark:text-white text-base font-bold leading-tight">
+                                        Low Cost
+                                    </h2>
+                                    <p class="text-[#4c9a86] dark:text-gray-400 text-sm font-normal leading-normal">
+                                        Get more for less. Our weight-based pricing means incredible value on every
+                                        purchase.
+                                    </p>
+                                </div>
+                            </div>
+                            <div
+                                class="flex flex-1 gap-3 rounded-xl border border-[#cfe7e1] dark:border-primary/20 bg-white/90 dark:bg-background-dark/80 p-4 flex-col glass-card hover:-translate-y-1 hover:shadow-xl transition">
+                                <span aria-hidden="true" class="material-symbols-outlined text-primary">eco</span>
+                                <div class="flex flex-col gap-1">
+                                    <h2 class="text-[#0d1b18] dark:text-white text-base font-bold leading-tight">
+                                        Eco-Conscious
+                                    </h2>
+                                    <p class="text-[#4c9a86] dark:text-gray-400 text-sm font-normal leading-normal">
+                                        Give clothes a second life and reduce fashion waste, one kilogram at a time.
+                                    </p>
+                                </div>
+                            </div>
+                            <div
+                                class="flex flex-1 gap-3 rounded-xl border border-[#cfe7e1] dark:border-primary/20 bg-white/90 dark:bg-background-dark/80 p-4 flex-col glass-card hover:-translate-y-1 hover:shadow-xl transition">
+                                <span aria-hidden="true" class="material-symbols-outlined text-primary">verified</span>
+                                <div class="flex flex-col gap-1">
+                                    <h2 class="text-[#0d1b18] dark:text-white text-base font-bold leading-tight">
+                                        Quality Guaranteed
+                                    </h2>
+                                    <p class="text-[#4c9a86] dark:text-gray-400 text-sm font-normal leading-normal">
+                                        Every item is inspected for quality, ensuring you receive the best surplus
+                                        apparel.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- How It Works Section -->
+                    <div id="HowItWorks" class="px-4 py-10 reveal-on-scroll">
+                        <h2
+                            class="text-[#0d1b18] dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-5 pt-5 text-center">
+                            How It Works
+                        </h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                            <div
+                                class="flex flex-col items-center gap-3 bg-white/80 dark:bg-background-dark/80 rounded-2xl p-5 shadow-sm hover:-translate-y-1 hover:shadow-xl transition glass-card">
+                                <div
+                                    class="flex items-center justify-center size-16 bg-primary/15 rounded-full shadow-sm">
+                                    <span class="material-symbols-outlined text-primary scale-125">search</span>
+                                </div>
+                                <h3 class="text-[#0d1b18] dark:text-white text-lg font-bold">
+                                    1. Browse Categories
+                                </h3>
+                                <p class="text-sm text-[#4c9a86] dark:text-gray-400">
+                                    Explore our wide selection of clothing for men, women, and kids.
+                                </p>
+                            </div>
+                            <div
+                                class="flex flex-col items-center gap-3 bg-white/80 dark:bg-background-dark/80 rounded-2xl p-5 shadow-sm hover:-translate-y-1 hover:shadow-xl transition glass-card">
+                                <div
+                                    class="flex items-center justify-center size-16 bg-primary/15 rounded-full shadow-sm">
+                                    <span class="material-symbols-outlined text-primary scale-125">scale</span>
+                                </div>
+                                <h3 class="text-[#0d1b18] dark:text-white text-lg font-bold">
+                                    2. Add to Cart
+                                </h3>
+                                <p class="text-sm text-[#4c9a86] dark:text-gray-400">
+                                    Select items and we'll automatically calculate the weight for you.
+                                </p>
+                            </div>
+                            <div
+                                class="flex flex-col items-center gap-3 bg-white/80 dark:bg-background-dark/80 rounded-2xl p-5 shadow-sm hover:-translate-y-1 hover:shadow-xl transition glass-card">
+                                <div
+                                    class="flex items-center justify-center size-16 bg-primary/15 rounded-full shadow-sm">
+                                    <span
+                                        class="material-symbols-outlined text-primary scale-125">shopping_cart_checkout</span>
+                                </div>
+                                <h3 class="text-[#0d1b18] dark:text-white text-lg font-bold">
+                                    3. Checkout by Weight
+                                </h3>
+                                <p class="text-sm text-[#4c9a86] dark:text-gray-400">
+                                    Pay for the total weight of your cart. It's that simple!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category Previews Section -->
+                    <div id="Categories" class="px-4 py-10 reveal-on-scroll">
+                        <h2
+                            class="text-[#0d1b18] dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-5 pt-5 text-center">
+                            Shop Our Categories
+                        </h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div
+                                class="rounded-xl overflow-hidden bg-white dark:bg-background-dark border border-[#cfe7e1] dark:border-primary/20 hover:-translate-y-1 hover:shadow-xl transition glass-card">
+                                <img class="w-full h-48 object-cover" data-alt="Stylish man wearing a modern outfit"
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0JtA262T9r2gmfck6eSDkyiXZVUxxqTvcfsdxTVaEbA3ASEqyGZ-pLSTTOcADpvmeQLe3UHhHYBTY_C4b4lk5h8JwS-BkwebWSNl34-FwoaVwewHedOnQyUl88cE6tldstrev7-Wy4fprqGTRvuPGKT5wn7ntu6BKozXNtv5wXmuRjBXlm6j5fpBp8mdq_AAWqO42KI33gvLYzWZVHkiAbnVKiC_Hoj6g4girjOz_DHDoy4rnWZbnbWZ8vtXWHQQgtAeqxsbNWoY" />
+                                <div class="p-4">
+                                    <h3 class="font-bold text-lg text-[#0d1b18] dark:text-white">Men</h3>
+                                    <p class="text-sm text-[#4c9a86] dark:text-gray-400">
+                                        Find great deals on shirts, trousers, and more.
+                                    </p>
+                                </div>
+                            </div>
+                            <div
+                                class="rounded-xl overflow-hidden bg-white dark:bg-background-dark border border-[#cfe7e1] dark:border-primary/20 hover:-translate-y-1 hover:shadow-xl transition glass-card">
+                                <img class="w-full h-48 object-cover"
+                                    data-alt="Fashionable woman posing in a vibrant dress"
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZziHOtJrkqTOskqLOYXC9Z5MR9l4t4IlSpSdtByem0dE8W-HYkHZfbdUhfTZwRP168uRiAvNBiQN5VOJKobRQddJM07zHexYzbH3fjUVR_MNPKZFcS_X8Ohtf4Bak14806VjgHZ2tGLGg-1EB2rm2YCQafbzAy4FyTzO9rjHJxFminkoIxh0-IEOVhKVHijQ27VSvxwDcc8KG3EyqIV99m3NCN_3SiLc3bbEZQiyeZoHlfE_w1OH-7TurG2L_VTgIxVYhetbUUNM" />
+                                <div class="p-4">
+                                    <h3 class="font-bold text-lg text-[#0d1b18] dark:text-white">Women</h3>
+                                    <p class="text-sm text-[#4c9a86] dark:text-gray-400">
+                                        Dresses, tops, and accessories at unbeatable prices.
+                                    </p>
+                                </div>
+                            </div>
+                            <div
+                                class="rounded-xl overflow-hidden bg-white dark:bg-background-dark border border-[#cfe7e1] dark:border-primary/20 hover:-translate-y-1 hover:shadow-xl transition glass-card">
+                                <img class="w-full h-48 object-cover"
+                                    data-alt="Two happy children playing in colorful clothes"
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEcF0OfpPTSff-Go8n0yxx8vXY0N2Pv2vv10dQuVK1JUYY60_FAmIoeeBSivpGx7TxOk6VxruqtGSAJFNUKnRlO_SCSF-VDDy_u1dh8soByjmH7uECVOcE1Kdyrb9IVpdayyCASI4kltXCmiiz3vUUWY-Y5NWKMl_24n7aUXZyIQMxily0YmCmZ5OysBUyHPnTI8PlSPeAtYLIr-8ST76XLGmDjbk41ySeDGSsW54BEJcqBLRjhAmt0_iZb8sNmk7nrHjqtX-AjGE" />
+                                <div class="p-4">
+                                    <h3 class="font-bold text-lg text-[#0d1b18] dark:text-white">Kids</h3>
+                                    <p class="text-sm text-[#4c9a86] dark:text-gray-400">
+                                        Durable and cute clothing for your little ones.
+                                    </p>
+                                </div>
+                            </div>
+                            <div
+                                class="rounded-xl overflow-hidden bg-white dark:bg-background-dark border border-[#cfe7e1] dark:border-primary/20 hover:-translate-y-1 hover:shadow-xl transition glass-card">
+                                <img class="w-full h-48 object-cover"
+                                    data-alt="A collection of fashion accessories like bags, hats, and scarves"
+                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJjrZqofH50oIBJKwd6L0geecpE2ID-4v6wzPXejYI1D4gojZ_NY4ApTk4gxpE6PGvbciy4o4_X_Z3DVyQ07_VpAUEU5R7ZKBLOuu9OuOwY0JwCkCEEk0E51mXMAWYpN-RdWyPr52_TidVie-jR1vvPb6y0SxstU7qM_StmQgm1cEwV76sy0rnLXHRmXCbBfq1F5iDwx8ocad0gKYERoXfRrghYFWe9BXZYfGAmtcZLDPFhIQTCIGcE8v39khfLmPG7UlV-uEW9cY" />
+                                <div class="p-4">
+                                    <h3 class="font-bold text-lg text-[#0d1b18] dark:text-white">
+                                        Accessories
+                                    </h3>
+                                    <p class="text-sm text-[#4c9a86] dark:text-gray-400">
+                                        Complete your look with our range of accessories.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Section -->
+                    <div id="FAQ" class="px-4 py-10 reveal-on-scroll">
+                        <h2
+                            class="text-[#0d1b18] dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-5 pt-5 text-center">
+                            Frequently Asked Questions
+                        </h2>
+                        <div class="space-y-4 max-w-3xl mx-auto">
+                            <details
+                                class="group rounded-lg bg-white/90 dark:bg-background-dark/80 p-4 border border-[#cfe7e1] dark:border-primary/20 cursor-pointer hover:-translate-y-[2px] hover:shadow-md transition glass-card">
+                                <summary
+                                    class="flex items-center justify-between font-bold text-[#0d1b18] dark:text-white">
+                                    How does weight-based pricing work?
+                                    <span
+                                        class="material-symbols-outlined transform transition-transform group-open:rotate-180">expand_more</span>
+                                </summary>
+                                <p class="mt-2 text-sm text-[#4c9a86] dark:text-gray-400">
+                                    You pay a flat rate per kilogram for all clothing items in your cart. The total
+                                    price is calculated at checkout based on the combined weight of your selected
+                                    items. It's a simple, transparent way to get more for your money.
+                                </p>
+                            </details>
+                            <details
+                                class="group rounded-lg bg-white/90 dark:bg-background-dark/80 p-4 border border-[#cfe7e1] dark:border-primary/20 cursor-pointer hover:-translate-y-[2px] hover:shadow-md transition glass-card">
+                                <summary
+                                    class="flex items-center justify-between font-bold text-[#0d1b18] dark:text-white">
+                                    What is "surplus" clothing?
+                                    <span
+                                        class="material-symbols-outlined transform transition-transform group-open:rotate-180">expand_more</span>
+                                </summary>
+                                <p class="mt-2 text-sm text-[#4c9a86] dark:text-gray-400">
+                                    Surplus clothing is brand-new apparel that comes from overproduction, canceled
+                                    orders, or past-season stock from major retailers. It's high-quality clothing that
+                                    we rescue and offer to you at a significant discount.
+                                </p>
+                            </details>
+                            <details
+                                class="group rounded-lg bg-white/90 dark:bg-background-dark/80 p-4 border border-[#cfe7e1] dark:border-primary/20 cursor-pointer hover:-translate-y-[2px] hover:shadow-md transition glass-card">
+                                <summary
+                                    class="flex items-center justify-between font-bold text-[#0d1b18] dark:text-white">
+                                    What is your return policy?
+                                    <span
+                                        class="material-symbols-outlined transform transition-transform group-open:rotate-180">expand_more</span>
+                                </summary>
+                                <p class="mt-2 text-sm text-[#4c9a86] dark:text-gray-400">
+                                    We offer a 14-day return policy on all items. If you're not satisfied with your
+                                    purchase, you can return it for a full refund or store credit. Please see our
+                                    Returns &amp; Refunds page for full details.
+                                </p>
+                            </details>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <footer
+                        class="px-4 py-10 mt-10 border-t border-[#e7f3f0] dark:border-primary/20 bg-white/80 dark:bg-[#020806]/70 backdrop-blur-xl reveal-on-scroll">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+                            <div>
+                                <h3 class="font-bold text-[#0d1b18] dark:text-white mb-2">
+                                    Surplus Clothing Store
+                                </h3>
+                                <p class="text-sm text-[#4c9a86] dark:text-gray-400">
+                                    Sustainable fashion by the kilo.
+                                </p>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-[#0d1b18] dark:text-white mb-2">Quick Links</h3>
+                                <ul class="space-y-1">
+                                    <li>
+                                        <a class="text-sm text-[#4c9a86] dark:text-gray-400 hover:text-primary"
+                                            href="#">FAQ</a>
+                                    </li>
+                                    <li>
+                                        <a class="text-sm text-[#4c9a86] dark:text-gray-400 hover:text-primary"
+                                            href="#">Contact</a>
+                                    </li>
+                                    <li>
+                                        <a class="text-sm text-[#4c9a86] dark:text-gray-400 hover:text-primary"
+                                            href="#">Terms of
+                                            Service</a>
+                                    </li>
+                                    <li>
+                                        <a class="text-sm text-[#4c9a86] dark:text-gray-400 hover:text-primary"
+                                            href="#">Privacy Policy</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-[#0d1b18] dark:text-white mb-2">Follow Us</h3>
+                                <div class="flex justify-center md:justify-start gap-4">
+                                    <!-- Replace with actual social icons if needed -->
+                                    <a class="text-[#4c9a86] dark:text-gray-400 hover:text-primary transition"
+                                        href="#">FB</a>
+                                    <a class="text-[#4c9a86] dark:text-gray-400 hover:text-primary transition"
+                                        href="#">IG</a>
+                                    <a class="text-[#4c9a86] dark:text-gray-400 hover:text-primary transition"
+                                        href="#">TW</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="text-center text-xs text-[#4c9a86] dark:text-gray-500 mt-10 pt-5 border-t border-[#e7f3f0] dark:border-primary/20">
+                            © 2024 Surplus Clothing Store. All Rights Reserved.
+                        </div>
+                    </footer>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll reveal script -->
+    <script>
+        const revealEls = document.querySelectorAll(".reveal-on-scroll");
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("reveal-visible");
+                        observer.unobserve(entry.target);
+                    }
+                });
+            },
+            { threshold: 0.15 }
+        );
+
+        revealEls.forEach((el) => observer.observe(el));
+    </script>
+</body>
+
+</html>
