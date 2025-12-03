@@ -21,7 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # path('', include('apps.pages.urls')),   # intentionally disabled
-    # path('accounts/', include('apps.accounts.urls')),  # old test route
+    # path('accounts/', include('apps.accounts.urls')),  # old test
 
     path('catalog/', include('apps.catalog.urls')),
 
