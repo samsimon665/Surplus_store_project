@@ -17,15 +17,19 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from django.conf import settings
+from django.conf.urls.static import static
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-
-    # path('', include('apps.pages.urls')),   # intentionally disabled
-    # path('accounts/', include('apps.accounts.urls')),  # old test
-
-    path('catalog/', include('apps.catalog.urls')),
-
-    # ✅ ENABLE ONLY AUTH SYSTEM PROPERLY
-    path('', include('apps.accounts.urls')),
+    path('', include('apps.pages.urls')),
+    path('accounts/', include('apps.accounts.urls')),
     path('accounts/', include('allauth.urls')),
+    path('catalog/', include('apps.catalog.urls')),
 ]
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)

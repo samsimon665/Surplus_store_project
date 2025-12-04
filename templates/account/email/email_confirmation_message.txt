@@ -1,0 +1,15 @@
+Hello {{ user.first_name|default:"User" }},
+
+Welcome to Surplus Store! 🎉
+
+Please confirm your email address by clicking the secure link below:
+
+{{ activate_url }}
+
+This link is valid for 24 hours.
+
+If you did not create this account, you can safely ignore this email.
+
+Thanks & Regards,
+Surplus Store Team
+Support: support@surplusstore.com

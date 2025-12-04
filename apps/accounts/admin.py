@@ -1,21 +1,37 @@
 from django.contrib import admin
-from django.contrib.auth.models import User
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.utils.html import format_html
 from .models import Profile
 
 
-# ✅ Custom User Admin (is_active locked)
-class CustomUserAdmin(BaseUserAdmin):
-    readonly_fields = ('is_active',)
-
-
-admin.site.unregister(User)
-admin.site.register(User, CustomUserAdmin)
-
-
-# ✅ Profile Admin (is_blocked locked)
+@admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    readonly_fields = ('is_blocked',)
 
+    list_display = (
+        'user',
+        'phone',
+        'gender',
+        'email_verified',
+        'is_blocked',
+        'profile_pic_preview',   # ✅ Image instead of link
+    )
 
-admin.site.register(Profile, ProfileAdmin)
+    # ✅ Only business blocking is editable
+    list_editable = ('is_blocked',)
+
+    # ✅ Filtering & search remain
+    list_filter = ('email_verified', 'is_blocked', 'gender')
+    search_fields = ('user__username', 'user__email', 'phone')
+
+    # ✅ Make email_verified READ-ONLY
+    readonly_fields = ('email_verified',)
+
+    # ✅ Thumbnail Image in Admin List
+    def profile_pic_preview(self, obj):
+        if obj.profile_pic:
+            return format_html(
+                '<img src="{}" width="40" height="40" style="object-fit:cover; border-radius:6px;" />',
+                obj.profile_pic.url
+            )
+        return "—"
+
+    profile_pic_preview.short_description = "Profile Pic"
