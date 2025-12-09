@@ -8,4 +8,4 @@ from django.http import HttpResponse
 
 
 def home_view(request):
-    return HttpResponse('!!!!!!!!!!!!!!!!!!!!!!!!!!!! you have reached home page !!!!!!!!!!!!!!!!!!!!!')
+    return render(request, "catalog/home.html")

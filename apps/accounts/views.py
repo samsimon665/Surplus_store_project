@@ -1,14 +1,59 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.contrib.auth import logout as auth_logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout as auth_logout
 
 from .forms import RegisterForm
-from allauth.account.models import EmailAddress
+from django.contrib.auth.models import User
 
 
 def login_view(request):
+    if request.method == "POST":
+        identifier = request.POST.get("email")  # email or username
+        password = request.POST.get("password")
+
+        # 1️⃣ Check if identifier is email
+        if "@" in identifier:
+            try:
+                user_obj = User.objects.get(email__iexact=identifier)
+            except User.DoesNotExist:
+                messages.error(
+                    request, "No account found with this email.", extra_tags="email_error")
+                return render(request, "accounts/login.html")
+
+            # Check password
+            user = authenticate(
+                request, username=user_obj.username, password=password)
+            if user is None:
+                messages.error(request, "Incorrect password.",
+                               extra_tags="password_error")
+                return render(request, "accounts/login.html")
+
+            login(request, user)
+            return redirect("catalog:home")
+
+        else:
+            # 2️⃣ Identifier is username
+            try:
+                user_obj = User.objects.get(username__iexact=identifier)
+            except User.DoesNotExist:
+                messages.error(
+                    request, "No account found with this username.", extra_tags="username_error")
+                return render(request, "accounts/login.html")
+
+            # Check password
+            user = authenticate(
+                request, username=user_obj.username, password=password)
+            if user is None:
+                messages.error(request, "Incorrect password.",
+                               extra_tags="password_error")
+                return render(request, "accounts/login.html")
+
+            login(request, user)
+            return redirect("catalog:home")
+
     return render(request, "accounts/login.html")
+
+
 
 
 def register_view(request):
@@ -20,40 +65,17 @@ def register_view(request):
             user.set_password(form.cleaned_data["password1"])
             user.save()
 
-            # ✅ DO NOT SEND EMAIL HERE
             messages.success(
-                request, "Account created. Please verify your email.")
-            return redirect("accounts:verification_sent")
+                request, "Account created successfully. You can now login.")
+            return redirect("catalog:home")
+        else:
+            # Form has errors → they will show under fields
+            return render(request, "accounts/register.html", {"form": form})
 
     else:
         form = RegisterForm()
 
     return render(request, "accounts/register.html", {"form": form})
-
-
-@login_required
-def verification_sent(request):
-    return render(request, "accounts/verification_sent.html")
-
-
-@login_required
-def send_verification_email(request):
-    email_obj, created = EmailAddress.objects.get_or_create(
-        user=request.user,
-        email=request.user.email,
-        defaults={"primary": True, "verified": False},
-    )
-
-    if not email_obj.verified:
-        # ✅ THIS is the correct resend API
-        email_obj.send_confirmation(request)
-        messages.success(request, "Verification email sent successfully.")
-    else:
-        messages.info(request, "Your email is already verified.")
-
-    return redirect("accounts:verification_sent")
-
-
 
 
 def logout_view(request):

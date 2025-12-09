@@ -8,8 +8,4 @@ urlpatterns = [
     path("register/", views.register_view, name="register"),
     path("logout/", views.logout_view, name="logout"),
 
-    # ✅ Email verification flow
-    path("verification/", views.verification_sent, name="verification_sent"),
-    path("send-verification/", views.send_verification_email,
-         name="send_verification"),
 ]

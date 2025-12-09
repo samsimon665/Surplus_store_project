@@ -12,20 +12,19 @@ class ProfileAdmin(admin.ModelAdmin):
         'gender',
         'email_verified',
         'is_blocked',
-        'profile_pic_preview',   # ✅ Image instead of link
+        'profile_pic_preview',
+        
     )
 
-    # ✅ Only business blocking is editable
+    # Only allow editing "is_blocked"
     list_editable = ('is_blocked',)
 
-    # ✅ Filtering & search remain
     list_filter = ('email_verified', 'is_blocked', 'gender')
     search_fields = ('user__username', 'user__email', 'phone')
 
-    # ✅ Make email_verified READ-ONLY
+    # Email should be READ-ONLY
     readonly_fields = ('email_verified',)
 
-    # ✅ Thumbnail Image in Admin List
     def profile_pic_preview(self, obj):
         if obj.profile_pic:
             return format_html(

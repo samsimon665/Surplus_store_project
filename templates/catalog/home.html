@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Surplus Store | Home</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#13ecb6",
+                        primaryDeep: "#0fb393",
+                        bgDark: "#06100e",
+                        glass: "rgba(255,255,255,0.1)"
+                    },
+                    fontFamily: {
+                        display: ["Manrope", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: Manrope, sans-serif;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .glass-dark {
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 20px rgba(19, 236, 182, 0.3);
+            }
+
+            to {
+                box-shadow: 0 0 36px rgba(19, 236, 182, 0.6);
+            }
+        }
+
+        .animate-glow {
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        .parallax-bg {
+            will-change: transform;
+            transform: scale(1.2);
+        }
+
+        .weight-slider::-webkit-slider-thumb {
+            appearance: none;
+            height: 26px;
+            width: 26px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #13ecb6, #0fb393);
+            cursor: grab;
+            box-shadow: 0 4px 20px rgba(19, 236, 182, 0.5);
+        }
+    </style>
+</head>
+
+<body class="bg-bgDark text-white overflow-x-hidden">
+
+    <div class="min-h-screen flex flex-col">
+
+        <!-- PROMO BAR -->
+        <div class="bg-gradient-to-r from-primary to-primaryDeep text-black text-center py-2 text-sm font-bold">
+            🚚 Free shipping above 3kg • Deal ends in <span id="timer">00:59</span>
+        </div>
+
+        <!-- NAVBAR (LOGGED IN) -->
+        <header class="sticky top-0 z-50 glass-dark px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary text-3xl">shopping_bag</span>
+                <h2 class="text-xl font-black">Surplus Store</h2>
+            </div>
+
+            <nav class="hidden lg:flex gap-10 text-sm font-bold text-white/70">
+                <a href="#" class="hover:text-primary">Home</a>
+                <a href="#" class="hover:text-primary">Categories</a>
+                <a href="#" class="hover:text-primary">Deals</a>
+                <a href="#" class="hover:text-primary">Orders</a>
+            </nav>
+
+            <div class="flex items-center gap-3">
+                <button class="glass w-11 h-11 rounded-xl flex items-center justify-center">
+                    <span class="material-symbols-outlined">search</span>
+                </button>
+                <button class="glass w-11 h-11 rounded-xl relative flex items-center justify-center">
+                    <span class="material-symbols-outlined">favorite</span>
+                    <span
+                        class="absolute -top-1 -right-1 bg-red-500 text-xs w-5 h-5 rounded-full flex items-center justify-center">2</span>
+                </button>
+                <button class="glass w-11 h-11 rounded-xl relative flex items-center justify-center">
+                    <span class="material-symbols-outlined">shopping_cart</span>
+                    <span
+                        class="absolute -top-1 -right-1 bg-primary text-black text-xs w-5 h-5 rounded-full flex items-center justify-center">3</span>
+                </button>
+
+                <div class="flex items-center gap-2 glass px-3 py-2 rounded-xl">
+                    <img src="https://i.pravatar.cc/40" class="w-7 h-7 rounded-full" />
+                    <span class="text-sm font-semibold">Sam</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- PARALLAX HERO -->
+        <section class="relative h-[90vh] flex items-center justify-center overflow-hidden">
+            <div class="absolute inset-0 parallax-bg" style="background:
+        linear-gradient(135deg, rgba(19,236,182,0.15), rgba(0,0,0,0.8)),
+        url('https://images.pexels.com/photos/6311579/pexels-photo-6311579.jpeg');
+        background-size:cover;
+        background-position:center;">
+            </div>
+
+            <div class="absolute inset-0 bg-gradient-to-b from-black/30 to-black/70"></div>
+
+            <div class="relative z-10 text-center max-w-4xl px-6">
+
+                <h1 class="text-5xl md:text-7xl xl:text-8xl font-black mb-6 leading-none">
+                    Fashion by the<br><span class="text-primary">Kilo</span>
+                </h1>
+
+                <p class="text-xl text-white/80 mb-10">
+                    Welcome back! Continue shopping premium export surplus at just ₹150/kg.
+                </p>
+
+                <!-- WEIGHT CALCULATOR -->
+                <div class="glass rounded-3xl p-8 max-w-md mx-auto mb-10">
+                    <p class="text-lg font-bold mb-4">Quick Price Calculator</p>
+                    <input id="weightSlider" type="range" min="1" max="10" value="3" step="0.5"
+                        class="weight-slider w-full h-2 bg-white/30 rounded-xl">
+                    <div class="flex justify-between mt-4 text-sm font-bold">
+                        <span>1kg</span>
+                        <span id="priceDisplay" class="text-primary text-lg">₹450</span>
+                        <span>10kg</span>
+                    </div>
+                </div>
+
+                <button
+                    class="px-12 py-4 rounded-3xl bg-gradient-to-r from-primary to-primaryDeep text-black text-xl font-black animate-glow hover:scale-105 transition">
+                    Continue Shopping
+                </button>
+            </div>
+        </section>
+
+        <!-- MAIN CONTENT -->
+        <main class="flex flex-col gap-20 py-20 px-6 lg:px-24 max-w-7xl mx-auto w-full">
+
+            <!-- CATEGORIES -->
+            <section>
+                <h2 class="text-4xl font-black mb-12 text-center">Shop by Category</h2>
+
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="relative rounded-3xl overflow-hidden glass aspect-[3/4] group">
+                        <img src="https://images.pexels.com/photos/845434/pexels-photo-845434.jpeg"
+                            class="w-full h-full object-cover group-hover:scale-110 transition">
+                        <div class="absolute bottom-6 left-6 text-xl font-black">Men</div>
+                    </div>
+
+                    <div class="relative rounded-3xl overflow-hidden glass aspect-[3/4] group">
+                        <img src="https://images.pexels.com/photos/6311579/pexels-photo-6311579.jpeg"
+                            class="w-full h-full object-cover group-hover:scale-110 transition">
+                        <div class="absolute bottom-6 left-6 text-xl font-black">Women</div>
+                    </div>
+
+                    <div class="relative rounded-3xl overflow-hidden glass aspect-[3/4] group">
+                        <img src="https://images.pexels.com/photos/3662819/pexels-photo-3662819.jpeg"
+                            class="w-full h-full object-cover group-hover:scale-110 transition">
+                        <div class="absolute bottom-6 left-6 text-xl font-black">Kids</div>
+                    </div>
+
+                    <div class="relative rounded-3xl overflow-hidden glass aspect-[3/4] group">
+                        <img src="https://images.pexels.com/photos/845434/pexels-photo-845434.jpeg"
+                            class="w-full h-full object-cover group-hover:scale-110 transition">
+                        <div class="absolute bottom-6 left-6 text-xl font-black">Accessories</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FRESH DROPS -->
+            <section>
+                <h2 class="text-4xl font-black mb-12 text-center">Fresh Surplus Drops</h2>
+
+                <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
+
+                    <div class="group">
+                        <div class="relative overflow-hidden rounded-3xl glass">
+                            <img src="https://images.pexels.com/photos/6311579/pexels-photo-6311579.jpeg"
+                                class="h-80 w-full object-cover group-hover:scale-110 transition">
+                            <button
+                                class="absolute bottom-4 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition bg-white text-black font-bold px-6 py-3 rounded-2xl">
+                                Add to Cart
+                            </button>
+                        </div>
+                        <h3 class="font-black mt-3">Denim Jacket</h3>
+                        <p class="text-white/60 text-sm">Export Quality</p>
+                        <p class="text-primary font-black text-lg">₹150/kg</p>
+                    </div>
+
+                    <div class="group">
+                        <div class="relative overflow-hidden rounded-3xl glass">
+                            <img src="https://images.pexels.com/photos/845434/pexels-photo-845434.jpeg"
+                                class="h-80 w-full object-cover group-hover:scale-110 transition">
+                            <button
+                                class="absolute bottom-4 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition bg-white text-black font-bold px-6 py-3 rounded-2xl">
+                                Add to Cart
+                            </button>
+                        </div>
+                        <h3 class="font-black mt-3">Graphic Tee</h3>
+                        <p class="text-white/60 text-sm">Mixed Brands</p>
+                        <p class="text-primary font-black text-lg">₹150/kg</p>
+                    </div>
+
+                    <div class="group">
+                        <div class="relative overflow-hidden rounded-3xl glass">
+                            <img src="https://images.pexels.com/photos/3662819/pexels-photo-3662819.jpeg"
+                                class="h-80 w-full object-cover group-hover:scale-110 transition">
+                            <button
+                                class="absolute bottom-4 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition bg-white text-black font-bold px-6 py-3 rounded-2xl">
+                                Add to Cart
+                            </button>
+                        </div>
+                        <h3 class="font-black mt-3">Kids Set</h3>
+                        <p class="text-white/60 text-sm">Bulk Pack</p>
+                        <p class="text-primary font-black text-lg">₹150/kg</p>
+                    </div>
+
+                    <div class="group">
+                        <div class="relative overflow-hidden rounded-3xl glass">
+                            <img src="https://images.pexels.com/photos/845434/pexels-photo-845434.jpeg"
+                                class="h-80 w-full object-cover group-hover:scale-110 transition">
+                            <button
+                                class="absolute bottom-4 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition bg-white text-black font-bold px-6 py-3 rounded-2xl">
+                                Add to Cart
+                            </button>
+                        </div>
+                        <h3 class="font-black mt-3">Caps & Bags</h3>
+                        <p class="text-white/60 text-sm">Accessories Mix</p>
+                        <p class="text-primary font-black text-lg">₹150/kg</p>
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="glass-dark border-t border-white/10 mt-20 px-6 lg:px-24 py-16">
+            <div class="grid md:grid-cols-4 gap-12">
+
+                <div>
+                    <h3 class="text-2xl font-black mb-4">Surplus Store</h3>
+                    <p class="text-white/60">Premium export surplus fashion at ₹150/kg.</p>
+                </div>
+
+                <div>
+                    <h4 class="font-bold mb-3">Shop</h4>
+                    <p class="text-white/60">New Drops</p>
+                    <p class="text-white/60">Categories</p>
+                    <p class="text-white/60">Offers</p>
+                </div>
+
+                <div>
+                    <h4 class="font-bold mb-3">Support</h4>
+                    <p class="text-white/60">Orders</p>
+                    <p class="text-white/60">Returns</p>
+                    <p class="text-white/60">Help Center</p>
+                </div>
+
+                <div>
+                    <h4 class="font-bold mb-3">Newsletter</h4>
+                    <div class="flex mt-2">
+                        <input class="flex-1 bg-white/10 p-2 rounded-l-lg outline-none" placeholder="Email">
+                        <button class="bg-primary text-black px-4 rounded-r-lg font-bold">Join</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="border-t border-white/10 mt-10 pt-6 text-center text-white/50 text-sm">
+                © 2025 Surplus Store. All rights reserved.
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        // Weight Slider
+        const slider = document.getElementById("weightSlider");
+        const price = document.getElementById("priceDisplay");
+
+        slider.addEventListener("input", e => {
+            price.textContent = "₹" + (parseFloat(e.target.value) * 150);
+        });
+
+        // Promo Timer
+        let time = 59;
+        setInterval(() => {
+            time--;
+            const sec = String(time).padStart(2, "0");
+            document.getElementById("timer").textContent = "00:" + sec;
+            if (time <= 0) time = 59;
+        }, 1000);
+    </script>
+
+</body>
+
+</html>

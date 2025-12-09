@@ -12,8 +12,8 @@
 
     <div class="w-full max-w-md border border-white/20 rounded-2xl p-10 bg-black text-center">
 
-        <h1 class="text-2xl text-white mb-4">SURPLUS STORE</h1>
-        <p class="text-white/60 mb-6">Verify your email to activate your account</p>
+        <h1 class="text-2xl text-white mb-3">SURPLUS STORE</h1>
+        <p class="text-white/60 mb-5">Verify your email to activate your account</p>
 
         {% if messages %}
         {% for message in messages %}
@@ -23,15 +23,14 @@
         {% endfor %}
         {% endif %}
 
-        <!-- ⏳ Countdown -->
-        <p id="timer" class="text-sm text-white/50 mb-4 hidden"></p>
+        <!-- Timer text -->
+        <p id="timerText" class="text-sm text-white/50 mb-4 hidden"></p>
 
-        <!-- ✅ SEND / RESEND FORM -->
+        <!-- Send button -->
         <form method="post" action="{% url 'accounts:send_verification' %}">
             {% csrf_token %}
-            <button id="sendBtn" class="w-full py-3 mb-4 border border-white rounded-full text-white
-      hover:bg-white hover:text-black transition">
-
+            <button id="sendBtn"
+                class="w-full py-3 mb-4 border border-white rounded-full text-white hover:bg-white hover:text-black transition">
                 Send Verification Email
             </button>
         </form>
@@ -43,13 +42,12 @@
     </div>
 
     <script>
-        let cooldown = localStorage.getItem("emailCooldown");
-        const btn = document.getElementById("sendBtn");
-        const timerText = document.getElementById("timer");
+        const sendBtn = document.getElementById("sendBtn");
+        const timerText = document.getElementById("timerText");
 
+        // ---------- TIMER FUNCTION ----------
         function startCooldown(seconds) {
-            btn.disabled = true;
-            btn.innerText = "Resend in 5:00";
+            sendBtn.classList.add("hidden");
             timerText.classList.remove("hidden");
 
             let remaining = seconds;
@@ -58,31 +56,47 @@
                 let min = Math.floor(remaining / 60);
                 let sec = remaining % 60;
 
-                btn.innerText = `Resend in ${min}:${sec < 10 ? "0" : ""}${sec}`;
                 timerText.innerText = `You can resend after ${min}:${sec < 10 ? "0" : ""}${sec}`;
-
                 remaining--;
 
                 if (remaining < 0) {
                     clearInterval(interval);
-                    btn.disabled = false;
-                    btn.innerText = "Resend Verification Email";
                     timerText.classList.add("hidden");
-                    localStorage.removeItem("emailCooldown");
+                    sendBtn.classList.remove("hidden");
+                    localStorage.removeItem("cooldownEnd");
                 }
             }, 1000);
         }
 
-        if (cooldown) {
-            const diff = Math.floor((cooldown - Date.now()) / 1000);
-            if (diff > 0) startCooldown(diff);
-        }
+        // ---------- RESTORE TIMER ON REFRESH ----------
+        let cooldownEnd = localStorage.getItem("cooldownEnd");
 
-        btn?.addEventListener("click", () => {
-            const endTime = Date.now() + 5 * 60 * 1000;
-            localStorage.setItem("emailCooldown", endTime);
-        });
+        if (cooldownEnd) {
+            const left = Math.floor((cooldownEnd - Date.now()) / 1000);
+            if (left > 0) {
+                startCooldown(left);
+            } else {
+                localStorage.removeItem("cooldownEnd");
+            }
+        }
     </script>
+
+    {% comment %}
+    ---------------------------------------------
+    ONLY START TIMER IF EMAIL SENT SUCCESSFULLY
+    ---------------------------------------------
+    {% endcomment %}
+
+    {% if messages %}
+    {% for m in messages %}
+    {% if "Verification email sent successfully" in m.message %}
+    <script>
+        localStorage.setItem("cooldownEnd", Date.now() + (5 * 60 * 1000));
+        startCooldown(300);
+    </script>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
 
 </body>
 
