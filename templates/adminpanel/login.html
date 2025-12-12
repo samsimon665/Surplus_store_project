@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-100">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login</title>
+
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+
+    <script>
+        window.addEventListener("beforeunload", function () { });
+        window.addEventListener("unload", function () { });
+        window.addEventListener("pageshow", function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+    </script>
+</head>
+
+<body class="h-full flex items-center justify-center px-4">
+
+    <div class="w-full max-w-md bg-white shadow-lg rounded-xl p-8">
+
+        <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">
+            Admin Panel Login
+        </h1>
+
+        <!-- Messages -->
+        {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+            <p class="text-red-500 text-sm text-center">{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="POST" class="space-y-5">
+            {% csrf_token %}
+
+            <!-- USERNAME -->
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Username</label>
+                <input type="text" name="username"
+                    class="w-full h-12 px-4 border rounded-lg focus:ring focus:ring-blue-300"
+                    placeholder="Enter admin username" required>
+            </div>
+
+            <!-- PASSWORD -->
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Password</label>
+                <input type="password" name="password"
+                    class="w-full h-12 px-4 border rounded-lg focus:ring focus:ring-blue-300"
+                    placeholder="Enter password" required>
+            </div>
+
+            <button class="w-full h-12 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition">
+                Login
+            </button>
+        </form>
+
+        <p class="text-center text-gray-500 text-sm mt-6">
+            © {{ year }} Admin Panel
+        </p>
+
+    </div>
+
+</body>
+
+</html>

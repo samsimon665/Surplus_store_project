@@ -29,7 +29,7 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     
     path('catalog/', include('apps.catalog.urls')),
-    path("adminpanel/", include("apps.adminpanel.urls")),
+    path('adminpanel/', include("apps.adminpanel.urls")),
 
 ]
 

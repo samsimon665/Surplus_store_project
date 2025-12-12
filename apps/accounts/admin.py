@@ -3,6 +3,34 @@ from django.utils.html import format_html
 from .models import Profile
 
 
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
+
+
+class CustomUserAdmin(UserAdmin):
+    list_display = (
+        "username",
+        "email",
+        "first_name",
+        "last_name",
+        "is_active",
+        # "is_staff",
+        "is_superuser",
+        # "last_login",
+        # "date_joined",
+    )
+
+
+# Unregister default admin
+admin.site.unregister(User)
+
+# Register customized admin
+admin.site.register(User, CustomUserAdmin)
+
+
+
+
+
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
 
@@ -11,15 +39,11 @@ class ProfileAdmin(admin.ModelAdmin):
         'phone',
         'gender',
         'email_verified',
-        'is_blocked',
         'profile_pic_preview',
-        
+
     )
 
-    # Only allow editing "is_blocked"
-    list_editable = ('is_blocked',)
-
-    list_filter = ('email_verified', 'is_blocked', 'gender')
+    list_filter = ('email_verified', 'gender')
     search_fields = ('user__username', 'user__email', 'phone')
 
     # Email should be READ-ONLY

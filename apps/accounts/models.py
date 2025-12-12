@@ -29,8 +29,6 @@ class Profile(models.Model):
     # ✅ Keep this — default False, no verification logic needed now
     email_verified = models.BooleanField(default=False)
 
-    is_blocked = models.BooleanField(default=False)
-
     dob = models.DateField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
