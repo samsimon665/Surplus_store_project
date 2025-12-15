@@ -1,56 +1,6 @@
-from .utils import admin_required
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
-from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
-
-
-
-
-@admin_required
-def dashboard(request):
-    active_users = User.objects.filter(
-        is_active=True, is_superuser=False).count()
-    return render(request, "adminpanel/dashboard.html", {"active_users": active_users})
-
-
-@admin_required
-def customers(request):
-    users = User.objects.filter(is_superuser=False).select_related(
-        "profile").order_by("-id")
-    return render(request, "adminpanel/customers.html", {'users': users})
-
-
-@admin_required
-def categories(request):
-    return render(request, "adminpanel/categories.html")
-
-
-@admin_required
-def products(request):
-    return render(request, "adminpanel/products.html")
-
-
-@admin_required
-def orders(request):
-    return render(request, "adminpanel/orders.html")
-
-
-@admin_required
-def block_user(request, user_id):
-    user = User.objects.get(id=user_id, is_superuser=False)
-    user.is_active = False
-    user.save()
-    return redirect('adminpanel:customers')
-
-
-@admin_required
-def unblock_user(request, user_id):
-    user = User.objects.get(id=user_id, is_superuser=False)
-    user.is_active = True
-    user.save()
-    return redirect('adminpanel:customers')
-
 
 def admin_login(request):
 
