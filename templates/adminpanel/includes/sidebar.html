@@ -30,6 +30,21 @@
                 </a>
             </li>
 
+            <!-- Customers -->
+            <li>
+                <a href="{% url 'adminpanel:customers' %}"
+                    class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium
+                                      text-slate-600 hover:bg-slate-50 hover:text-slate-900
+                                      dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white transition-colors">
+                    <span class="material-symbols-outlined text-[20px]">group</span>
+                    Customers
+                </a>
+            </li>
+
+
+
+                
+
             <!-- Products (Toggle) -->
             <li>
                 <button type="button" id="products-toggle" class="sidebar-btn flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium
@@ -46,12 +61,13 @@
                 <div id="products-submenu" class="ml-9 mt-1 hidden flex-col gap-1
                                        border-l-2 border-slate-100 dark:border-slate-800 pl-3">
 
-                    <a href="#" class="block py-1 text-sm text-slate-500 hover:text-primary dark:text-slate-400">
+                    <a href="{% url 'adminpanel:category_list' %}"
+                        class="block py-1 text-sm text-slate-500 hover:text-primary dark:text-slate-400">
                         Categories
                     </a>
 
                     <a href="#" class="block py-1 text-sm font-medium text-primary dark:text-blue-300">
-                        All Products
+                        Sub-Categories
                     </a>
 
                     <a href="#" class="block py-1 text-sm text-slate-500 hover:text-primary dark:text-slate-400">
@@ -70,15 +86,6 @@
                 </a>
             </li>
 
-            <!-- Customers -->
-            <li>
-                <a href="{% url 'adminpanel:customers' %}" class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium
-                          text-slate-600 hover:bg-slate-50 hover:text-slate-900
-                          dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white transition-colors">
-                    <span class="material-symbols-outlined text-[20px]">group</span>
-                    Customers
-                </a>
-            </li>
 
             <!-- Analytics -->
             <li>
