@@ -1,5 +1,5 @@
 from django import forms
-from apps.catalog.models import ProductCategory
+from apps.catalog.models import SubCategory
 from apps.adminpanel.utils.validations import (
     validate_name,
     validate_description,
@@ -7,10 +7,11 @@ from apps.adminpanel.utils.validations import (
 )
 
 
-class ProductCategoryForm(forms.ModelForm):
+class SubCategoryForm(forms.ModelForm):
     class Meta:
-        model = ProductCategory
+        model = SubCategory
         fields = [
+            "category",
             "name",
             "description",
             "image",
@@ -18,12 +19,15 @@ class ProductCategoryForm(forms.ModelForm):
         ]
 
         widgets = {
+            "category": forms.Select(attrs={
+                "class": "w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm"
+            }),
             "name": forms.TextInput(attrs={
-                "placeholder": "e.g. Men, Women, Kids",
+                "placeholder": "e.g. T-Shirts, Hoodies",
                 "class": "w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm"
             }),
             "description": forms.Textarea(attrs={
-                "placeholder": "Short description for this category",
+                "placeholder": "Short description for this subcategory",
                 "rows": 4,
                 "class": "w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm"
             }),
@@ -37,22 +41,10 @@ class ProductCategoryForm(forms.ModelForm):
         }
 
     def clean_name(self):
-        name = validate_name(
+        return validate_name(
             self.cleaned_data.get("name", ""),
-            field_label="Category name"
+            field_label="Subcategory name"
         )
-
-        # Case-insensitive uniqueness (category-specific logic stays HERE)
-        qs = ProductCategory.objects.filter(name__iexact=name)
-        if self.instance.pk:
-            qs = qs.exclude(pk=self.instance.pk)
-
-        if qs.exists():
-            raise forms.ValidationError(
-                "A category with this name already exists."
-            )
-
-        return name
 
     def clean_description(self):
         return validate_description(

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 
-from apps.adminpanel.utils import admin_required
+from apps.adminpanel.decorators import admin_required
 from apps.adminpanel.forms.category_forms import ProductCategoryForm
 
 from apps.catalog.models import ProductCategory
@@ -56,7 +56,7 @@ def category_update(request, pk):
             form.save()
             messages.success(request, "Category updated successfully.")
             # or wherever your list page is
-            return redirect("adminpanel:categories")
+            return redirect("adminpanel:category_list")
 
     else:
         form = ProductCategoryForm(instance=category)

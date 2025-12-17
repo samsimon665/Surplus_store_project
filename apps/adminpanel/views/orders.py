@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from apps.adminpanel.utils import admin_required
+from apps.adminpanel.decorators import admin_required
 
 
 @admin_required

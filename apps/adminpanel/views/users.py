@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from apps.adminpanel.utils import admin_required
+from apps.adminpanel.decorators import admin_required
 
 
 @admin_required
