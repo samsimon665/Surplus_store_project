@@ -1,4 +1,3 @@
-from django.contrib.auth import login
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout as auth_logout
@@ -6,15 +5,11 @@ from django.contrib.auth import authenticate, login, logout as auth_logout
 from .forms import RegisterForm
 from django.contrib.auth.models import User
 
-from django.contrib.auth.decorators import login_required
-
-
-# @login_required(login_url="accounts:login")
 
 
 def login_view(request):
 
-    # 🔥 If user already logged in → do NOT show login page
+    #  If user already logged in → do NOT show login page
     if request.user.is_authenticated:
         return redirect("catalog:home")
 
@@ -48,14 +43,13 @@ def login_view(request):
         user = authenticate(
             request, username=user_obj.username, password=password)
         if user is None:
-            messages.error(request, "Incorrect password.",
-                           extra_tags="password_error")
+            messages.error(request, "Incorrect password.", extra_tags="password_error")
             return render(request, "accounts/login.html")
 
         # Login
         login(request, user)
 
-        # Optional session data
+        # session
         request.session['username'] = user.username
         request.session['email'] = user.email
         request.session['logged_in'] = True
@@ -67,7 +61,6 @@ def login_view(request):
 
 def register_view(request):
 
-    # 🔥 If user already logged in → do not show register page
     if request.user.is_authenticated:
         return redirect("catalog:home")
 
@@ -82,8 +75,11 @@ def register_view(request):
             if not user.is_active:
                 return redirect("accounts:account_disabled")
 
-            # Auto login after register
-            login(request, user)
+            login(
+                request,
+                user,
+                backend="django.contrib.auth.backends.ModelBackend"
+            )
 
             messages.success(request, "Account created successfully.")
             return redirect("catalog:home")

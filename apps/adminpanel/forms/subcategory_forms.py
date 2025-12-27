@@ -55,3 +55,30 @@ class SubCategoryForm(forms.ModelForm):
         return validate_image(
             self.cleaned_data.get("image")
         )
+    
+    def clean(self):
+        cleaned_data = super().clean()
+
+        name = cleaned_data.get("name")
+        category = cleaned_data.get("category")
+
+        # If either field is missing, skip uniqueness check
+        if not name or not category:
+            return cleaned_data
+
+        # Check uniqueness PER CATEGORY (case-insensitive)
+        qs = SubCategory.objects.filter(
+            name__iexact=name,
+            category=category,
+        )
+
+        # Exclude current instance when editing
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+
+        if qs.exists():
+            raise forms.ValidationError(
+                "Sub Category with this name already exists in the selected category."
+            )
+
+        return cleaned_data
