@@ -6,7 +6,7 @@ def validate_name(
     value,
     *,
     field_label="Name",
-    min_length=2,
+    min_length=3,
     max_length=100,
 ):
     value = value.strip()

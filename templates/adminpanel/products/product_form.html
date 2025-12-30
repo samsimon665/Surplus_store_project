@@ -1,0 +1,663 @@
+<!-- Cropper Modal -->
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Create Product Admin</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <style>
+        /* Custom scrollbar for cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .dark ::-webkit-scrollbar-thumb {
+            background: #334155;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Toggle Switch Styling (your original) */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #1337ec;
+        }
+
+        .toggle-checkbox:checked+.toggle-label {
+            background-color: #1337ec;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white overflow-x-hidden
+        selection:bg-primary/20">
+    <div class="flex h-screen w-full">
+        <!-- Sidebar -->
+        {% include "adminpanel/includes/sidebar.html" %}
+
+        <!-- Main Content -->
+        <main class="flex-1 ml-64 flex flex-col h-full overflow-hidden relative">
+            <!-- Top Navigation -->
+            <header
+                class="sticky top-0 z-20 flex w-full items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-surface-light/80 dark:bg-surface-dark/80 backdrop-blur-md px-6 py-4">
+                <div class="flex items-center gap-4">
+                    <!-- Mobile Menu Button -->
+                    <button class="md:hidden p-1 text-slate-500 hover:text-slate-900 dark:hover:text-white">
+                        <span class="material-symbols-outlined">menu</span>
+                    </button>
+                    <!-- Breadcrumbs (Mobile: Hidden/Truncated, Desktop: Full) -->
+                    <nav class="hidden sm:flex items-center text-sm font-medium text-slate-500 dark:text-slate-400">
+                        <a class="hover:text-primary transition-colors" href="#">Admin</a>
+                        <span class="mx-2 text-slate-300 dark:text-slate-600">/</span>
+                        <a class="hover:text-primary transition-colors" href="#">Products</a>
+                        <span class="mx-2 text-slate-300 dark:text-slate-600">/</span>
+                        <span class="text-slate-900 dark:text-white font-semibold">Create</span>
+                    </nav>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="p-2 text-slate-400 hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined">notifications</span>
+                    </button>
+                    <button class="p-2 text-slate-400 hover:text-primary transition-colors">
+                        <span class="material-symbols-outlined">help</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Scrollable Content Area -->
+            <div class="flex-1 overflow-y-auto p-4 md:p-8 scroll-smooth">
+                <div class="mx-auto max-w-6xl flex flex-col gap-8 pb-20">
+                    <!-- Page Header -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h2 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Create
+                                Product
+                            </h2>
+                            <p class="text-slate-500 dark:text-slate-400 mt-1">Add a new item to your surplus
+                                inventory.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <!-- Top Actions -->
+                        <div class="flex justify-end gap-3 mb-6">
+
+                            <!-- Cancel -->
+                            <a href="{% url 'adminpanel:product_create' %}"
+                                class="hidden sm:flex h-10 items-center justify-center rounded-lg
+                                                              border border-slate-300 dark:border-slate-600
+                                                              bg-transparent px-4 text-sm font-bold
+                                                              text-slate-700 dark:text-slate-300
+                                                              hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+                                Cancel
+                            </a>
+
+                            <!-- Save -->
+                            <button type="submit"
+                                class="flex h-10 items-center justify-center gap-2 rounded-lg
+                                                               bg-primary px-6 text-sm font-bold text-white
+                                                               shadow-lg shadow-primary/30 hover:bg-blue-700 transition-all">
+                                <span class="material-symbols-outlined text-[20px]">save</span>
+                                Save Product
+                            </button>
+
+                        </div>
+
+
+                        <!-- Layout Grid -->
+
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                            <!-- Left Column: Product Details -->
+                            <div class="lg:col-span-2 flex flex-col gap-6">
+                                <!-- Card: General Info -->
+                                <div
+                                    class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 md:p-8">
+                                    <h3
+                                        class="text-lg font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
+                                        Product Details</h3>
+
+                                    <div class="space-y-6">
+
+                                        <!-- Name -->
+                                        <div>
+                                            <label
+                                                class="block text-sm font-medium leading-6 text-slate-900 dark:text-slate-200"
+                                                for="product-name">Product
+                                                Name</label>
+                                            <div class="mt-2">
+                                                {{ form.name }}
+                                            </div>
+
+                                            {% if form.name.errors %}
+                                            <p class="mt-1 text-sm text-red-600">
+                                                {{ form.name.errors.0 }}
+                                            </p>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- Categories -->
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                                            <!-- Category -->
+                                            <div>
+                                                <label
+                                                    class="block text-sm font-medium leading-6 text-slate-900 dark:text-slate-200"
+                                                    for="id_category">Category</label>
+
+                                                <div class="relative mt-2">
+                                                    {{ form.category }}
+
+                                                    <div
+                                                        class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                                                        <span class="material-symbols-outlined text-slate-400 text-sm">
+                                                            expand_more
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                {% if form.category.errors %}
+                                                <p class="mt-1 text-sm text-red-600">
+                                                    {{ form.category.errors.0 }}
+                                                </p>
+                                                {% endif %}
+                                            </div>
+
+                                            <!-- Sub Category -->
+                                            <div>
+                                                <label
+                                                    class="block text-sm font-medium leading-6 text-slate-900 dark:text-slate-200"
+                                                    for="id_subcategory">Sub
+                                                    Category</label>
+
+                                                <div class="relative mt-2">
+                                                    {{ form.subcategory }}
+
+                                                    <div
+                                                        class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                                                        <span class="material-symbols-outlined text-slate-400 text-sm">
+                                                            expand_more
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                {% if form.subcategory.errors %}
+                                                <p class="mt-1 text-sm text-red-600">
+                                                    {{ form.subcategory.errors.0 }}
+                                                </p>
+                                                {% endif %}
+                                            </div>
+
+                                        </div>
+
+                                        <!-- Price -->
+                                        <div>
+                                            <label
+                                                class="block text-sm font-medium leading-6 text-slate-900 dark:text-slate-200"
+                                                for="id_price_per_kg">Price
+                                                per KG</label>
+
+                                            <div class="relative mt-2 rounded-md shadow-sm">
+                                                <!-- ₹ symbol -->
+                                                <div
+                                                    class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                                    <span class="text-slate-500 sm:text-sm">₹</span>
+                                                </div>
+
+                                                {{ form.price_per_kg }}
+
+                                                <!-- INR suffix -->
+                                                <div
+                                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                                                    <span class="text-slate-500 sm:text-sm">INR</span>
+                                                </div>
+                                            </div>
+
+                                            {% if form.price_per_kg.errors %}
+                                            <p class="mt-1 text-sm text-red-600">
+                                                {{ form.price_per_kg.errors.0 }}
+                                            </p>
+                                            {% endif %}
+
+                                            <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">
+                                                Enter price per kilogram in Indian Rupees
+                                            </p>
+                                        </div>
+
+                                        <!-- Description -->
+                                        <div>
+                                            <label
+                                                class="block text-sm font-medium leading-6 text-slate-900 dark:text-slate-200"
+                                                for="id_description">Description</label>
+
+                                            <div class="mt-2">
+                                                {{ form.description }}
+                                            </div>
+
+                                            {% if form.description.errors %}
+                                            <p class="mt-1 text-sm text-red-600">
+                                                {{ form.description.errors.0 }}
+                                            </p>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- Active Toggle (unchanged UI) -->
+                                        <div
+                                            class="flex items-center justify-between rounded-lg border border-slate-200 dark:border-slate-800 p-4 bg-slate-50 dark:bg-slate-800/30">
+
+                                            <div class="flex flex-col">
+                                                <span class="text-sm font-medium text-slate-900 dark:text-white">
+                                                    Active Status
+                                                </span>
+                                                <span class="text-xs text-slate-500 dark:text-slate-400">
+                                                    Product will be visible to all customers immediately.
+                                                </span>
+                                            </div>
+
+                                            <label class="flex items-center cursor-pointer relative" for="toggleA">
+                                                {{ form.is_active }}
+
+                                                <div
+                                                    class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/40 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary">
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!-- Right Column: Media -->
+                            <!-- PRODUCT IMAGES -->
+                            <div
+                                class="rounded-xl border border-slate-200 dark:border-slate-800 p-6 bg-white dark:bg-slate-900">
+
+                                <h3 class="text-sm font-semibold text-slate-900 dark:text-white">
+                                    Product Images
+                                </h3>
+
+                                <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                                    Upload multiple images for this product
+                                </p>
+
+                                {{ image_formset.management_form }}
+
+                                <label class="peer-focus-within:border-primary
+                                               peer-focus-within:ring-2 peer-focus-within:ring-primary/30
+                                               mt-4 block w-full
+                                               border-2 border-dashed border-slate-300 dark:border-slate-700
+                                               rounded-lg
+                                               bg-slate-50 dark:bg-slate-800/30
+                                               transition
+                                               hover:border-primary hover:bg-primary/5">
+
+                                    <div id="uploadTrigger"
+                                        class="flex flex-col items-center justify-center w-full h-40 cursor-pointer">
+                                        <span class="material-symbols-outlined text-slate-400 mb-2">cloud_upload</span>
+                                        <p class="mb-1 text-sm text-slate-600 dark:text-slate-300">
+                                            Click to upload or drag and drop
+                                        </p>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400">
+                                            PNG, JPG, WEBP
+                                        </p>
+                                    </div>
+
+                                    <!-- REAL file input (JS-controlled) -->
+                                    <input type="file" id="productImageInput" accept="image/*" class="hidden" />
+                                </label>
+
+                                <!-- PREVIEW OUTSIDE LABEL -->
+                                <div id="imagePreviewContainer" class="mt-4 grid grid-cols-3 gap-3 hidden"></div>
+
+
+
+                                {% if image_formset.non_form_errors %}
+                                <p class="mt-2 text-sm text-red-600">
+                                    {{ image_formset.non_form_errors.0 }}
+                                </p>
+                                {% endif %}
+
+                                {% for image_form in image_formset %}
+                                {% if image_form.image.errors %}
+                                <p class="mt-1 text-sm text-red-600">
+                                    {{ image_form.image.errors.0 }}
+                                </p>
+                                {% endif %}
+                                {% endfor %}
+
+                            </div>
+
+                        </div>
+                    </form>
+
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Cropper Modal -->
+    <div id="cropperModal" class="fixed inset-0 z-50 hidden bg-black/60 flex items-center justify-center">
+
+        <div class="bg-white dark:bg-slate-900 rounded-xl
+                    w-full max-w-4xl h-[90vh]
+                    p-4 flex flex-col">
+
+            <h3 class="text-base font-semibold mb-2 shrink-0">
+                Crop Image
+            </h3>
+
+            <div class="flex-1 flex items-center justify-center">
+                <img id="cropperImage" class="max-h-full max-w-full object-contain" />
+            </div>
+
+            <div class="flex justify-end gap-3 mt-3 shrink-0">
+                <button id="cropCancel" type="button" class="px-4 py-2 rounded-lg border">
+                    Cancel
+                </button>
+                <button id="cropConfirm" type="button" class="px-4 py-2 rounded-lg bg-primary text-white">
+                    Crop & Apply
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theme Configuration -->
+    <script id="tailwind-config">
+        tailwind.config = Object.assign(tailwind.config || {}, {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#1337ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101322",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1a1d2d",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.5rem",
+                        lg: "1rem",
+                        xl: "1.5rem",
+                        full: "9999px"
+                    },
+                },
+            },
+        });
+    </script>
+
+    <!-- Cropper JS (ONLY ONCE) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const uploadTrigger = document.getElementById("uploadTrigger");
+            const productImageInput = document.getElementById("productImageInput");
+
+            if (uploadTrigger && productImageInput) {
+                uploadTrigger.addEventListener("click", (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    productImageInput.click();      // ✅ always use this one input
+                });
+            }
+
+            let cropper = null;
+            let activeInput = productImageInput;
+
+            const cropModal = document.getElementById("cropperModal");
+            const cropImage = document.getElementById("cropperImage");
+            const cropConfirmBtn = document.getElementById("cropConfirm");
+            const cropCancelBtn = document.getElementById("cropCancel");
+            const previewContainer = document.getElementById("imagePreviewContainer");
+
+            if (!cropModal || !cropImage || !previewContainer || !productImageInput) {
+                console.error("❌ Required DOM elements missing. Cropper will not work.");
+                return;
+            }
+
+            // OPEN CROPPER WHEN FILE SELECTED
+            productImageInput.addEventListener("change", function () {
+                if (!this.files || !this.files[0]) return;
+
+                const file = this.files[0];
+
+                if (!file.type.startsWith("image/")) {
+                    alert("Please select a valid image file.");
+                    this.value = "";
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    cropImage.src = e.target.result;
+                    cropModal.classList.remove("hidden");
+
+                    if (cropper) cropper.destroy();
+
+                    cropper = new Cropper(cropImage, {
+                        aspectRatio: 4 / 5,
+                        viewMode: 0,
+                        dragMode: "move",
+                        autoCropArea: 0.9,
+                        background: false,
+                        guides: true,
+                        center: true,
+                        highlight: false,
+                        cropBoxMovable: true,
+                        cropBoxResizable: true,
+                        toggleDragModeOnDblclick: false,
+                    });
+                };
+
+                reader.readAsDataURL(file);
+            });
+
+            // CONFIRM CROP
+            cropConfirmBtn.addEventListener("click", function () {
+                if (!cropper || !activeInput) return;
+
+                cropper.getCroppedCanvas({
+                    width: 1200,
+                    height: 1500,
+                }).toBlob(blob => {
+                    if (!blob) return;
+
+                    const croppedFile = new File([blob], "cropped.jpg", { type: "image/jpeg" });
+
+                    const dt = new DataTransfer();
+                    dt.items.add(croppedFile);
+                    activeInput.files = dt.files;
+
+                    showPreview(croppedFile);
+
+                    cropper.destroy();
+                    cropper = null;
+                    cropModal.classList.add("hidden");
+                }, "image/jpeg", 0.9);
+            });
+
+            // CANCEL CROP
+            cropCancelBtn.addEventListener("click", function () {
+                if (cropper) cropper.destroy();
+                cropper = null;
+                if (activeInput) activeInput.value = "";
+                cropModal.classList.add("hidden");
+            });
+
+            // PREVIEW + DELETE
+            function showPreview(file) {
+                previewContainer.classList.remove("hidden");
+
+                const wrapper = document.createElement("div");
+                wrapper.className = "relative";
+
+                const img = document.createElement("img");
+                img.src = URL.createObjectURL(file);
+                img.className =
+                    "h-28 w-full object-cover rounded-lg border border-slate-200 dark:border-slate-700";
+
+                const del = document.createElement("button");
+                del.type = "button";
+                del.innerHTML = "✕";
+                del.className =
+                    "absolute top-1 right-1 bg-black/70 hover:bg-red-600 " +
+                    "text-white text-xs rounded-full px-2 py-1 transition";
+
+                del.addEventListener("click", function (event) {
+                    event.stopPropagation();
+                    productImageInput.value = "";
+                    URL.revokeObjectURL(img.src);
+                    wrapper.remove();
+
+                    if (!previewContainer.children.length) {
+                        previewContainer.classList.add("hidden");
+                    }
+                });
+
+                wrapper.appendChild(img);
+                wrapper.appendChild(del);
+                previewContainer.appendChild(wrapper);
+            }
+
+        });
+    </script>
+
+
+
+    <!-- # subcategory (unchanged) -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const categorySelect = document.getElementById("id_category");
+            const subcategorySelect = document.getElementById("id_subcategory");
+
+            if (!categorySelect || !subcategorySelect) {
+                console.error("❌ Category/Subcategory select not found");
+                return;
+            }
+
+            const initialSubcategory = subcategorySelect.value;
+
+            subcategorySelect.disabled = !categorySelect.value;
+
+            function loadSubcategories(categoryId, selectedSubcategory = null) {
+                subcategorySelect.innerHTML =
+                    '<option value="">Loading...</option>';
+                subcategorySelect.disabled = true;
+
+                fetch(`/adminpanel/ajax/load-subcategories/?category_id=${categoryId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        subcategorySelect.innerHTML =
+                            '<option value="">Select Sub Category</option>';
+
+                        if (!data.length) {
+                            subcategorySelect.innerHTML =
+                                '<option value="">No subcategories found</option>';
+                            return;
+                        }
+
+                        data.forEach(subcat => {
+                            const option = document.createElement("option");
+                            option.value = subcat.id;
+                            option.textContent = subcat.name;
+
+                            if (selectedSubcategory && subcat.id == selectedSubcategory) {
+                                option.selected = true;
+                            }
+
+                            subcategorySelect.appendChild(option);
+                        });
+
+                        subcategorySelect.disabled = false;
+                    })
+                    .catch(err => {
+                        console.error("❌ Failed to load subcategories", err);
+                        subcategorySelect.innerHTML =
+                            '<option value="">Error loading subcategories</option>';
+                    });
+            }
+
+            categorySelect.addEventListener("change", function () {
+                const categoryId = this.value;
+
+                if (!categoryId) {
+                    subcategorySelect.innerHTML =
+                        '<option value="">Select Sub Category</option>';
+                    subcategorySelect.disabled = true;
+                    return;
+                }
+
+                loadSubcategories(categoryId);
+            });
+
+            if (categorySelect.value && initialSubcategory) {
+                loadSubcategories(categorySelect.value, initialSubcategory);
+            }
+
+        });
+    </script>
+
+    <style>
+        /* CROPPER VISUAL POLISH (unchanged) */
+
+        .cropper-modal {
+            background-color: rgba(0, 0, 0, 0.25) !important;
+        }
+
+        .cropper-view-box {
+            outline: 2px solid rgba(99, 102, 241, 0.9);
+            outline-offset: -2px;
+        }
+
+        .cropper-point {
+            width: 12px;
+            height: 12px;
+            background-color: #6366f1;
+            opacity: 1;
+        }
+
+        .cropper-line {
+            background-color: rgba(99, 102, 241, 0.8);
+        }
+    </style>
+
+</body>
+
+</html>

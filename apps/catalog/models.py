@@ -164,6 +164,8 @@ class ProductImage(TimeStampedModel):
 
     image = models.ImageField(upload_to="products/")
 
+    is_primary = models.BooleanField(default=False)
+
     class Meta:
         ordering = ["created_at"]
 

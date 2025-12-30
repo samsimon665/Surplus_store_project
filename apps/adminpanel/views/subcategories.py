@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 
@@ -89,3 +90,20 @@ def subcategory_edit(request, pk):
         "adminpanel/subcategories/subcategory_form.html",
         context
     )
+
+
+# AJAX for product Subcategory
+
+
+def ajax_load_subcategories(request):
+    category_id = request.GET.get("category_id")
+
+    if not category_id:
+        return JsonResponse([], safe=False)
+
+    subcategories = SubCategory.objects.filter(
+        category_id=category_id,
+        is_active=True
+    ).values("id", "name")
+
+    return JsonResponse(list(subcategories), safe=False)
