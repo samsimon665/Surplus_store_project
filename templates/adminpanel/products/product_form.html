@@ -66,26 +66,26 @@
         <main class="flex-1 ml-64 flex flex-col h-full overflow-hidden relative">
             <!-- Top Navigation -->
             <header
-                class="sticky top-0 z-20 flex w-full items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-surface-light/80 dark:bg-surface-dark/80 backdrop-blur-md px-6 py-4">
-                <div class="flex items-center gap-4">
-                    <!-- Mobile Menu Button -->
-                    <button class="md:hidden p-1 text-slate-500 hover:text-slate-900 dark:hover:text-white">
+                class="flex h-16 items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 sm:px-10">
+                <div class="flex items-center gap-4 md:hidden">
+                    <button class="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white">
                         <span class="material-symbols-outlined">menu</span>
                     </button>
-                    <!-- Breadcrumbs (Mobile: Hidden/Truncated, Desktop: Full) -->
-                    <nav class="hidden sm:flex items-center text-sm font-medium text-slate-500 dark:text-slate-400">
-                        <a class="hover:text-primary transition-colors" href="#">Admin</a>
-                        <span class="mx-2 text-slate-300 dark:text-slate-600">/</span>
-                        <a class="hover:text-primary transition-colors" href="#">Products</a>
-                        <span class="mx-2 text-slate-300 dark:text-slate-600">/</span>
-                        <span class="text-slate-900 dark:text-white font-semibold">Create</span>
-                    </nav>
+                    <span class="text-lg font-bold">AdminPortal</span>
+                </div>
+                <div class="hidden md:flex md:flex-1">
+
                 </div>
                 <div class="flex items-center gap-4">
-                    <button class="p-2 text-slate-400 hover:text-primary transition-colors">
+                    <button
+                        class="relative rounded-full p-1 text-slate-400 hover:text-slate-500 dark:text-slate-300 dark:hover:text-white">
+                        <span class="sr-only">View notifications</span>
                         <span class="material-symbols-outlined">notifications</span>
+                        <span
+                            class="absolute right-1 top-1 size-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-slate-900"></span>
                     </button>
-                    <button class="p-2 text-slate-400 hover:text-primary transition-colors">
+                    <button
+                        class="rounded-full p-1 text-slate-400 hover:text-slate-500 dark:text-slate-300 dark:hover:text-white">
                         <span class="material-symbols-outlined">help</span>
                     </button>
                 </div>
@@ -114,108 +114,88 @@
                         <div class="flex justify-end gap-3 mb-6">
 
                             <!-- Cancel -->
-                            <a href="{% url 'adminpanel:product_create' %}"
-                                class="hidden sm:flex h-10 items-center justify-center rounded-lg
-                                                              border border-slate-300 dark:border-slate-600
-                                                              bg-transparent px-4 text-sm font-bold
-                                                              text-slate-700 dark:text-slate-300
-                                                              hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+                            <a href="{% url 'adminpanel:product_create' %}" class="hidden sm:flex h-10 items-center justify-center rounded-lg
+                                                           border border-slate-300 dark:border-slate-600
+                                                           bg-transparent px-4 text-sm font-bold
+                                                           text-slate-700 dark:text-slate-300
+                                                           hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
                                 Cancel
                             </a>
 
                             <!-- Save -->
                             <button type="submit"
                                 class="flex h-10 items-center justify-center gap-2 rounded-lg
-                                                               bg-primary px-6 text-sm font-bold text-white
-                                                               shadow-lg shadow-primary/30 hover:bg-blue-700 transition-all">
+                                                           bg-primary px-6 text-sm font-bold text-white
+                                                           shadow-lg shadow-primary/30 hover:bg-blue-700 transition-all">
                                 <span class="material-symbols-outlined text-[20px]">save</span>
                                 Save Product
                             </button>
-
                         </div>
 
-
                         <!-- Layout Grid -->
-
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-                            <!-- Left Column: Product Details -->
+                            <!-- Left Column -->
                             <div class="lg:col-span-2 flex flex-col gap-6">
-                                <!-- Card: General Info -->
                                 <div
-                                    class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 md:p-8">
+                                    class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm
+                                                               border border-slate-200 dark:border-slate-800 p-6 md:p-8">
+
                                     <h3
-                                        class="text-lg font-bold text-slate-900 dark:text-white mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
-                                        Product Details</h3>
+                                        class="text-lg font-bold text-slate-900 dark:text-white
+                                                                   mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
+                                        Product Details
+                                    </h3>
 
                                     <div class="space-y-6">
 
                                         <!-- Name -->
                                         <div>
-                                            <label
-                                                class="block text-sm font-medium leading-6 text-slate-900 dark:text-slate-200"
-                                                for="product-name">Product
-                                                Name</label>
-                                            <div class="mt-2">
-                                                {{ form.name }}
-                                            </div>
-
+                                            <label class="block text-sm font-medium text-slate-900 dark:text-slate-200">
+                                                Product Name
+                                            </label>
+                                            <div class="mt-2">{{ form.name }}</div>
                                             {% if form.name.errors %}
-                                            <p class="mt-1 text-sm text-red-600">
-                                                {{ form.name.errors.0 }}
-                                            </p>
+                                            <p class="mt-1 text-sm text-red-600">{{ form.name.errors.0 }}</p>
                                             {% endif %}
                                         </div>
 
-                                        <!-- Categories -->
+                                        <!-- Category / Subcategory -->
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                                            <!-- Category -->
                                             <div>
                                                 <label
-                                                    class="block text-sm font-medium leading-6 text-slate-900 dark:text-slate-200"
-                                                    for="id_category">Category</label>
-
+                                                    class="block text-sm font-medium text-slate-900 dark:text-slate-200">
+                                                    Category
+                                                </label>
                                                 <div class="relative mt-2">
                                                     {{ form.category }}
-
                                                     <div
                                                         class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                                                        <span class="material-symbols-outlined text-slate-400 text-sm">
-                                                            expand_more
-                                                        </span>
+                                                        <span
+                                                            class="material-symbols-outlined text-slate-400 text-sm">expand_more</span>
                                                     </div>
                                                 </div>
-
                                                 {% if form.category.errors %}
-                                                <p class="mt-1 text-sm text-red-600">
-                                                    {{ form.category.errors.0 }}
-                                                </p>
+                                                <p class="mt-1 text-sm text-red-600">{{ form.category.errors.0 }}</p>
                                                 {% endif %}
                                             </div>
 
-                                            <!-- Sub Category -->
                                             <div>
                                                 <label
-                                                    class="block text-sm font-medium leading-6 text-slate-900 dark:text-slate-200"
-                                                    for="id_subcategory">Sub
-                                                    Category</label>
-
+                                                    class="block text-sm font-medium text-slate-900 dark:text-slate-200">
+                                                    Sub Category
+                                                </label>
                                                 <div class="relative mt-2">
                                                     {{ form.subcategory }}
-
                                                     <div
                                                         class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                                                        <span class="material-symbols-outlined text-slate-400 text-sm">
-                                                            expand_more
-                                                        </span>
+                                                        <span
+                                                            class="material-symbols-outlined text-slate-400 text-sm">expand_more</span>
                                                     </div>
                                                 </div>
-
                                                 {% if form.subcategory.errors %}
-                                                <p class="mt-1 text-sm text-red-600">
-                                                    {{ form.subcategory.errors.0 }}
-                                                </p>
+                                                <p class="mt-1 text-sm text-red-600">{{ form.subcategory.errors.0 }}</p>
                                                 {% endif %}
                                             </div>
 
@@ -223,143 +203,138 @@
 
                                         <!-- Price -->
                                         <div>
-                                            <label
-                                                class="block text-sm font-medium leading-6 text-slate-900 dark:text-slate-200"
-                                                for="id_price_per_kg">Price
-                                                per KG</label>
-
+                                            <label class="block text-sm font-medium text-slate-900 dark:text-slate-200">
+                                                Price per KG
+                                            </label>
                                             <div class="relative mt-2 rounded-md shadow-sm">
-                                                <!-- ₹ symbol -->
                                                 <div
                                                     class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                                     <span class="text-slate-500 sm:text-sm">₹</span>
                                                 </div>
-
                                                 {{ form.price_per_kg }}
-
-                                                <!-- INR suffix -->
                                                 <div
                                                     class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                                                     <span class="text-slate-500 sm:text-sm">INR</span>
                                                 </div>
                                             </div>
-
                                             {% if form.price_per_kg.errors %}
-                                            <p class="mt-1 text-sm text-red-600">
-                                                {{ form.price_per_kg.errors.0 }}
-                                            </p>
+                                            <p class="mt-1 text-sm text-red-600">{{ form.price_per_kg.errors.0 }}</p>
                                             {% endif %}
-
-                                            <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">
-                                                Enter price per kilogram in Indian Rupees
-                                            </p>
                                         </div>
 
                                         <!-- Description -->
                                         <div>
-                                            <label
-                                                class="block text-sm font-medium leading-6 text-slate-900 dark:text-slate-200"
-                                                for="id_description">Description</label>
-
-                                            <div class="mt-2">
-                                                {{ form.description }}
-                                            </div>
-
+                                            <label class="block text-sm font-medium text-slate-900 dark:text-slate-200">
+                                                Description
+                                            </label>
+                                            <div class="mt-2">{{ form.description }}</div>
                                             {% if form.description.errors %}
-                                            <p class="mt-1 text-sm text-red-600">
-                                                {{ form.description.errors.0 }}
-                                            </p>
+                                            <p class="mt-1 text-sm text-red-600">{{ form.description.errors.0 }}</p>
                                             {% endif %}
                                         </div>
 
-                                        <!-- Active Toggle (unchanged UI) -->
-                                        <div
-                                            class="flex items-center justify-between rounded-lg border border-slate-200 dark:border-slate-800 p-4 bg-slate-50 dark:bg-slate-800/30">
+                                        <!-- Active -->
+                                        <div class="flex items-center justify-between rounded-lg border
+                                                                       border-slate-200 dark:border-slate-800 p-4">
 
-                                            <div class="flex flex-col">
-                                                <span class="text-sm font-medium text-slate-900 dark:text-white">
-                                                    Active Status
-                                                </span>
-                                                <span class="text-xs text-slate-500 dark:text-slate-400">
-                                                    Product will be visible to all customers immediately.
-                                                </span>
-                                            </div>
+                                            <span class="text-sm font-medium text-slate-900 dark:text-white">
+                                                Active Status
+                                            </span>
 
                                             <label class="flex items-center cursor-pointer relative" for="toggleA">
                                                 {{ form.is_active }}
-
-                                                <div
-                                                    class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/40 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary">
+                                                <div class="w-11 h-6 bg-slate-200 rounded-full peer
+                                                                               peer-checked:bg-primary
+                                                                               after:content-[''] after:absolute after:top-[2px]
+                                                                               after:left-[2px] after:bg-white after:rounded-full
+                                                                               after:h-5 after:w-5 after:transition-all
+                                                                               peer-checked:after:translate-x-full">
                                                 </div>
                                             </label>
                                         </div>
-                                    </div>
 
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Right Column: Media -->
-                            <!-- PRODUCT IMAGES -->
-                            <div
-                                class="rounded-xl border border-slate-200 dark:border-slate-800 p-6 bg-white dark:bg-slate-900">
+                            <!-- Right Column: MAIN IMAGE -->
+                            <div class="rounded-xl border border-slate-200 dark:border-slate-800
+                                                           p-6 bg-white dark:bg-slate-900">
 
                                 <h3 class="text-sm font-semibold text-slate-900 dark:text-white">
-                                    Product Images
+                                    Main Product Image
                                 </h3>
 
                                 <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                                    Upload multiple images for this product
+                                    Used in product listings & search
                                 </p>
 
-                                {{ image_formset.management_form }}
+                                <label for="id_main_image" class="mt-4 block w-full border-2 border-dashed
+                                  border-slate-300 dark:border-slate-700 rounded-lg
+                                  bg-slate-50 dark:bg-slate-800/30
+                                  hover:border-primary hover:bg-primary/5
+                                  transition cursor-pointer">
 
-                                <label class="peer-focus-within:border-primary
-                                               peer-focus-within:ring-2 peer-focus-within:ring-primary/30
-                                               mt-4 block w-full
-                                               border-2 border-dashed border-slate-300 dark:border-slate-700
-                                               rounded-lg
-                                               bg-slate-50 dark:bg-slate-800/30
-                                               transition
-                                               hover:border-primary hover:bg-primary/5">
+                                    <div class="flex flex-col items-center justify-center h-40">
+                                        <span class="material-symbols-outlined text-slate-400 mb-2">
+                                            cloud_upload
+                                        </span>
 
-                                    <div id="uploadTrigger"
-                                        class="flex flex-col items-center justify-center w-full h-40 cursor-pointer">
-                                        <span class="material-symbols-outlined text-slate-400 mb-2">cloud_upload</span>
-                                        <p class="mb-1 text-sm text-slate-600 dark:text-slate-300">
+                                        <p class="text-sm text-slate-600 dark:text-slate-300">
                                             Click to upload or drag and drop
                                         </p>
+
                                         <p class="text-xs text-slate-500 dark:text-slate-400">
-                                            PNG, JPG, WEBP
+                                            SVG, PNG, JPG or GIF (MAX. 800×400px)
                                         </p>
                                     </div>
 
-                                    <!-- REAL file input (JS-controlled) -->
-                                    <input type="file" id="productImageInput" accept="image/*" class="hidden" />
+                                    <!-- keep the same Django field, just hide the native input -->
+                                    {{ form.main_image }}
                                 </label>
 
-                                <!-- PREVIEW OUTSIDE LABEL -->
-                                <div id="imagePreviewContainer" class="mt-4 grid grid-cols-3 gap-3 hidden"></div>
 
 
 
-                                {% if image_formset.non_form_errors %}
+                                {% if form.main_image.errors %}
                                 <p class="mt-2 text-sm text-red-600">
-                                    {{ image_formset.non_form_errors.0 }}
+                                    {{ form.main_image.errors.0 }}
                                 </p>
                                 {% endif %}
 
-                                {% for image_form in image_formset %}
-                                {% if image_form.image.errors %}
-                                <p class="mt-1 text-sm text-red-600">
-                                    {{ image_form.image.errors.0 }}
-                                </p>
-                                {% endif %}
-                                {% endfor %}
+                                <!-- Preview -->
+                                <div id="mainImagePreview" class="mt-4 space-y-2 hidden">
+                                    <div class="flex items-center gap-3 rounded-lg border
+                                                                                border-slate-200 dark:border-slate-700
+                                                                                bg-slate-50 dark:bg-slate-800/60
+                                                                                px-3 py-2">
+                                        <div class="h-12 w-12 flex-shrink-0 overflow-hidden rounded-md bg-slate-200">
+                                            <img id="mainImagePreviewImg" class="h-full w-full object-cover"
+                                                alt="Main product preview" />
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-xs font-medium text-slate-800 truncate">
+                                                main-image.jpg
+                                            </p>
+                                            <p class="text-[11px] text-slate-500">
+                                                800 × 400 · JPG
+                                            </p>
+                                        </div>
+                                        <button type="button" id="mainImageRemove"
+                                            class="ml-2 text-xs text-slate-500 hover:text-red-500">
+                                            <span class="material-symbols-outlined text-base">delete</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+
+
 
                             </div>
 
                         </div>
                     </form>
+
 
 
                 </div>
@@ -426,16 +401,12 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
 
-            const uploadTrigger = document.getElementById("uploadTrigger");
-            const productImageInput = document.getElementById("productImageInput");
+            /* =========================================================
+               MAIN PRODUCT IMAGE (FIXED TO USE Django field)
+               ========================================================= */
 
-            if (uploadTrigger && productImageInput) {
-                uploadTrigger.addEventListener("click", (event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    productImageInput.click();      // ✅ always use this one input
-                });
-            }
+            const uploadTrigger = document.getElementById("uploadTrigger");
+            const productImageInput = document.getElementById("id_main_image");
 
             let cropper = null;
             let activeInput = productImageInput;
@@ -444,14 +415,23 @@
             const cropImage = document.getElementById("cropperImage");
             const cropConfirmBtn = document.getElementById("cropConfirm");
             const cropCancelBtn = document.getElementById("cropCancel");
-            const previewContainer = document.getElementById("imagePreviewContainer");
+            const previewContainer = document.getElementById("mainImagePreview");
 
-            if (!cropModal || !cropImage || !previewContainer || !productImageInput) {
+            if (!productImageInput || !cropModal || !cropImage || !previewContainer) {
                 console.error("❌ Required DOM elements missing. Cropper will not work.");
                 return;
             }
 
-            // OPEN CROPPER WHEN FILE SELECTED
+            /* CLICK UPLOAD BOX → OPEN FILE PICKER */
+            if (uploadTrigger) {
+                uploadTrigger.addEventListener("click", function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    productImageInput.click();
+                });
+            }
+
+            /* OPEN CROPPER WHEN FILE SELECTED */
             productImageInput.addEventListener("change", function () {
                 if (!this.files || !this.files[0]) return;
 
@@ -488,7 +468,7 @@
                 reader.readAsDataURL(file);
             });
 
-            // CONFIRM CROP
+            /* CONFIRM CROP */
             cropConfirmBtn.addEventListener("click", function () {
                 if (!cropper || !activeInput) return;
 
@@ -498,7 +478,11 @@
                 }).toBlob(blob => {
                     if (!blob) return;
 
-                    const croppedFile = new File([blob], "cropped.jpg", { type: "image/jpeg" });
+                    const croppedFile = new File(
+                        [blob],
+                        "cropped.jpg",
+                        { type: "image/jpeg" }
+                    );
 
                     const dt = new DataTransfer();
                     dt.items.add(croppedFile);
@@ -512,55 +496,49 @@
                 }, "image/jpeg", 0.9);
             });
 
-            // CANCEL CROP
+            /* CANCEL CROP */
             cropCancelBtn.addEventListener("click", function () {
                 if (cropper) cropper.destroy();
                 cropper = null;
+
                 if (activeInput) activeInput.value = "";
                 cropModal.classList.add("hidden");
             });
 
-            // PREVIEW + DELETE
+            /* PREVIEW + DELETE */
             function showPreview(file) {
+                const previewContainer = document.getElementById("mainImagePreview");
+                const img = document.getElementById("mainImagePreviewImg");
+                const removeBtn = document.getElementById("mainImageRemove");
+
+                // show container
                 previewContainer.classList.remove("hidden");
 
-                const wrapper = document.createElement("div");
-                wrapper.className = "relative";
-
-                const img = document.createElement("img");
+                // image preview
                 img.src = URL.createObjectURL(file);
-                img.className =
-                    "h-28 w-full object-cover rounded-lg border border-slate-200 dark:border-slate-700";
 
-                const del = document.createElement("button");
-                del.type = "button";
-                del.innerHTML = "✕";
-                del.className =
-                    "absolute top-1 right-1 bg-black/70 hover:bg-red-600 " +
-                    "text-white text-xs rounded-full px-2 py-1 transition";
+                // filename text (optional)
+                const nameEl = previewContainer.querySelector("p.text-xs.font-medium");
+                if (nameEl) nameEl.textContent = file.name;
 
-                del.addEventListener("click", function (event) {
-                    event.stopPropagation();
-                    productImageInput.value = "";
-                    URL.revokeObjectURL(img.src);
-                    wrapper.remove();
-
-                    if (!previewContainer.children.length) {
+                // remove button
+                if (removeBtn) {
+                    removeBtn.onclick = function (event) {
+                        event.stopPropagation();
+                        productImageInput.value = "";
+                        URL.revokeObjectURL(img.src);
                         previewContainer.classList.add("hidden");
-                    }
-                });
-
-                wrapper.appendChild(img);
-                wrapper.appendChild(del);
-                previewContainer.appendChild(wrapper);
+                    };
+                }
             }
+
 
         });
     </script>
 
-
-
-    <!-- # subcategory (unchanged) -->
+    <!-- =========================================================
+             SUBCATEGORY SCRIPT (UNCHANGED)
+             ========================================================= -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
 
@@ -573,12 +551,10 @@
             }
 
             const initialSubcategory = subcategorySelect.value;
-
             subcategorySelect.disabled = !categorySelect.value;
 
             function loadSubcategories(categoryId, selectedSubcategory = null) {
-                subcategorySelect.innerHTML =
-                    '<option value="">Loading...</option>';
+                subcategorySelect.innerHTML = '<option value="">Loading...</option>';
                 subcategorySelect.disabled = true;
 
                 fetch(`/adminpanel/ajax/load-subcategories/?category_id=${categoryId}`)
@@ -633,6 +609,7 @@
 
         });
     </script>
+
 
     <style>
         /* CROPPER VISUAL POLISH (unchanged) */

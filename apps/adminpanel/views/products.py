@@ -1,43 +1,27 @@
-
-from apps.adminpanel.decorators import admin_required
 from django.shortcuts import render, redirect
-
 from django.db import transaction
 
-from apps.adminpanel.forms.product_forms import (
-    ProductForm,
-    ProductImageFormSet,
-)
+from apps.adminpanel.decorators import admin_required
+from apps.adminpanel.forms.product_forms import ProductForm
 
 
 @admin_required
 def product_create(request):
     if request.method == "POST":
-        product_form = ProductForm(request.POST)
-        image_formset = ProductImageFormSet(
-            request.POST,
-            request.FILES,
-        )
+        form = ProductForm(request.POST, request.FILES)
 
-        if product_form.is_valid() and image_formset.is_valid():
+        if form.is_valid():
             with transaction.atomic():
-                # 1️⃣ Save Product first
-                product = product_form.save(commit=False)
-                product.save()
+                product = form.save()
 
-                # 2️⃣ Attach product to image formset
-                image_formset.instance = product
-                image_formset.save()
-
+            # TEMP: stay on product page until variant exists
             return redirect("adminpanel:product_create")
 
     else:
-        product_form = ProductForm()
-        image_formset = ProductImageFormSet()
+        form = ProductForm()
 
-    context = {
-        "form": product_form,
-        "image_formset": image_formset,
-    }
-
-    return render(request, "adminpanel/products/product_form.html", context)
+    return render(
+        request,
+        "adminpanel/products/product_form.html",
+        {"form": form}
+    )

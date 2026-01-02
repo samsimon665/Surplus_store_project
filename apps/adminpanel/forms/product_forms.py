@@ -1,50 +1,83 @@
 from django import forms
-from django.forms import inlineformset_factory
-
 
 from apps.catalog.models import (
-    Product, ProductCategory, SubCategory, ProductImage,)
+    Product,
+    ProductCategory,
+    SubCategory,
+)
 
 from apps.adminpanel.utils.validations import (
-    validate_name, validate_description,)
+    validate_name,
+    validate_description,
+)
 
 
 class ProductForm(forms.ModelForm):
+    """
+    Product creation form
+
+    - category: UI-only (used to filter subcategory)
+    - subcategory: saved to DB
+    - main_image: catalog / listing image
+    """
+
+    # 🔹 UI-only field
     category = forms.ModelChoiceField(
         queryset=ProductCategory.objects.filter(is_active=True),
         required=True,
         empty_label="Select Category",
         widget=forms.Select(attrs={
-            "class": "block w-full rounded-lg border-0 py-2.5 pl-3 pr-10 text-slate-900 dark:text-white shadow-sm ring-1 ring-inset ring-slate-300 dark:ring-slate-700 focus:ring-2 focus:ring-inset focus:ring-primary dark:bg-slate-800/50 sm:text-sm sm:leading-6 appearance-none"
+            "class": (
+                "block w-full rounded-lg border-0 py-2.5 pl-3 pr-10 "
+                "text-slate-900 dark:text-white "
+                "shadow-sm ring-1 ring-inset ring-slate-300 dark:ring-slate-700 "
+                "focus:ring-2 focus:ring-inset focus:ring-primary "
+                "dark:bg-slate-800/50 sm:text-sm sm:leading-6 appearance-none"
+            )
         })
     )
 
     class Meta:
         model = Product
         fields = [
-            "category",
+            "category",        # UI-only
             "subcategory",
             "name",
             "description",
             "price_per_kg",
+            "main_image",      # ✅ catalog image
             "is_active",
         ]
         widgets = {
             "name": forms.TextInput(attrs={
-                "class": "block w-full rounded-lg border-0 py-2.5 text-slate-900 dark:text-white shadow-sm ring-1 ring-inset ring-slate-300 dark:ring-slate-700 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary dark:bg-slate-800/50 sm:text-sm sm:leading-6",
+                "class": (
+                    "block w-full rounded-lg border-0 py-2.5 "
+                    "text-slate-900 dark:text-white "
+                    "shadow-sm ring-1 ring-inset ring-slate-300 dark:ring-slate-700 "
+                    "placeholder:text-slate-400 "
+                    "focus:ring-2 focus:ring-inset focus:ring-primary "
+                    "dark:bg-slate-800/50 sm:text-sm sm:leading-6"
+                ),
                 "placeholder": "e.g. Vintage Denim Jacket",
             }),
             "subcategory": forms.Select(attrs={
-                "class": "block w-full rounded-lg border-0 py-2.5 pl-3 pr-10 text-slate-900 dark:text-white shadow-sm ring-1 ring-inset ring-slate-300 dark:ring-slate-700 focus:ring-2 focus:ring-inset focus:ring-primary dark:bg-slate-800/50 sm:text-sm sm:leading-6 appearance-none"
+                "class": (
+                    "block w-full rounded-lg border-0 py-2.5 pl-3 pr-10 "
+                    "text-slate-900 dark:text-white "
+                    "shadow-sm ring-1 ring-inset ring-slate-300 dark:ring-slate-700 "
+                    "focus:ring-2 focus:ring-inset focus:ring-primary "
+                    "dark:bg-slate-800/50 sm:text-sm sm:leading-6 appearance-none"
+                )
             }),
             "price_per_kg": forms.NumberInput(attrs={
-                "class": "block w-full rounded-lg border-0 py-2.5 pl-8 pr-14 text-slate-900 dark:text-white shadow-sm ring-1 ring-inset ring-slate-300 dark:ring-slate-700 focus:ring-2 focus:ring-inset focus:ring-primary dark:bg-slate-800/50 sm:text-sm sm:leading-6",
+                "class": (
+                    "block w-full rounded-lg border-0 py-2.5 pl-8 pr-14 "
+                    "text-slate-900 dark:text-white "
+                    "shadow-sm ring-1 ring-inset ring-slate-300 dark:ring-slate-700 "
+                    "focus:ring-2 focus:ring-inset focus:ring-primary "
+                    "dark:bg-slate-800/50 sm:text-sm sm:leading-6"
+                ),
                 "step": "0.01",
-            }),
-            "description": forms.Textarea(attrs={
-                "class": "block w-full rounded-lg border-0 py-2.5 text-slate-900 dark:text-white shadow-sm ring-1 ring-inset ring-slate-300 dark:ring-slate-700 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary dark:bg-slate-800/50 sm:text-sm sm:leading-6",
-                "rows": 4,
-                "placeholder": "Detailed information about the batch, condition, and origin...",
             }),
             "description": forms.Textarea(attrs={
                 "class": (
@@ -55,39 +88,45 @@ class ProductForm(forms.ModelForm):
                     "focus:ring-2 focus:ring-inset focus:ring-primary "
                     "dark:bg-slate-800/50 sm:text-sm sm:leading-6"
                 ),
-                "placeholder": "Detailed information about the batch, condition, and origin...",
                 "rows": 3,
+                "placeholder": "Detailed information about the batch, condition, and origin...",
+            }),
+            "main_image": forms.ClearableFileInput(attrs={
+                "class": "hidden",
             }),
             "is_active": forms.CheckboxInput(attrs={
                 "class": "sr-only peer",
                 "id": "toggleA",
-            })
-
-
+            }),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Initially, show NO subcategories
+        # 🔹 No subcategories initially
         self.fields["subcategory"].queryset = SubCategory.objects.none()
 
-        # If editing existing product
+        # 🔹 Editing existing product
         if self.instance.pk:
-            self.fields["category"].initial = self.instance.subcategory.category
+            category = self.instance.subcategory.category
+            self.fields["category"].initial = category
             self.fields["subcategory"].queryset = SubCategory.objects.filter(
-                category=self.instance.subcategory.category
+                category=category
             )
 
-        # If category selected (POST request)
+        # 🔹 Category selected in POST
         elif "category" in self.data:
             try:
                 category_id = int(self.data.get("category"))
                 self.fields["subcategory"].queryset = SubCategory.objects.filter(
                     category_id=category_id
                 )
-            except (ValueError, TypeError):
+            except (TypeError, ValueError):
                 pass
+
+    # -------------------
+    # VALIDATIONS
+    # -------------------
 
     def clean_name(self):
         return validate_name(
@@ -123,28 +162,3 @@ class ProductForm(forms.ModelForm):
             )
 
         return cleaned_data
-
-
-class ProductImageForm(forms.ModelForm):
-    class Meta:
-        model = ProductImage
-        fields = ["image"]
-        widgets = {
-            "image": forms.ClearableFileInput(attrs={
-                "class": "hidden",
-            })
-        }
-
-
-    def clean_image(self):
-        image = self.cleaned_data.get("image")
-        return image
-
-
-ProductImageFormSet = inlineformset_factory(
-    parent_model=Product,
-    model=ProductImage,
-    form=ProductImageForm,
-    extra=3,          # show 3 image fields initially
-    can_delete=True,  # allow removing images on edit
-)

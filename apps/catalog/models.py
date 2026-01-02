@@ -88,6 +88,14 @@ class Product(TimeStampedModel):
         help_text="Price per kilogram"
     )
 
+    # ✅ MAIN PRODUCT IMAGE (CATALOG IMAGE)
+    main_image = models.ImageField(
+        upload_to="products/main/",
+        blank=True,
+        null=True,
+        help_text="Main product image used in listings & search"
+    )
+
     is_active = models.BooleanField(default=True)
 
     class Meta:

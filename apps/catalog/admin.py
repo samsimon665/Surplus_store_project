@@ -1,3 +1,4 @@
+from .models import Product
 from django.contrib import admin
 from django.utils.html import format_html
 
@@ -96,6 +97,7 @@ class ProductAdmin(admin.ModelAdmin):
         "price_per_kg",
         "is_active",
         "created_at",
+        "image_preview",   # new column
     )
 
     list_filter = (
@@ -104,17 +106,22 @@ class ProductAdmin(admin.ModelAdmin):
         "created_at",
     )
 
-    search_fields = (
-        "name",
-    )
+    search_fields = ("name",)
+    ordering = ("name",)
 
-    ordering = (
-        "name",
-    )
+    readonly_fields = ("image_preview",)  # optional, for detail view
 
-    prepopulated_fields = {
-        "slug": ("name",),
-    }
+    def image_preview(self, obj):
+        if getattr(obj, "main_image", None):          # use your actual field name
+            return format_html(
+                '<img src="{}" style="width:50px; height:50px; '
+                'object-fit:cover; border-radius:4px;" />',
+                obj.main_image.url,                   # same field here
+            )
+        return "—"
+
+    image_preview.short_description = "Image"
+
 
 
 @admin.register(ProductVariant)

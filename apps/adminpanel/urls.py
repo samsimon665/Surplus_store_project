@@ -43,6 +43,8 @@ urlpatterns = [
     path("products/create/", product_create, name="product_create"),
     path("ajax/load-subcategories/", ajax_load_subcategories, name="adminpanel_ajax_load_subcategories"),
 
+    # path("variants/create/<int:product_id>/",variant_create,name="variant_create"),
+
 
 
 
