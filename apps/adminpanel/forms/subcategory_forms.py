@@ -13,6 +13,7 @@ class SubCategoryForm(forms.ModelForm):
         fields = [
             "category",
             "name",
+            "price_per_kg",
             "description",
             "image",
             "is_active",
@@ -22,19 +23,29 @@ class SubCategoryForm(forms.ModelForm):
             "category": forms.Select(attrs={
                 "class": "w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm"
             }),
+
             "name": forms.TextInput(attrs={
                 "placeholder": "e.g. T-Shirts, Hoodies",
                 "class": "w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm"
             }),
+
+            "price_per_kg": forms.NumberInput(attrs={
+                "class": "w-full rounded-lg border border-slate-300 py-2.5 text-sm pl-7 pr-12",
+                "step": "0.01",
+                "placeholder": "Price per KG (e.g. 1100)",
+            }),
+
             "description": forms.Textarea(attrs={
                 "placeholder": "Short description for this subcategory",
                 "rows": 4,
                 "class": "w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm"
             }),
+
             "image": forms.FileInput(attrs={
                 "class": "absolute inset-0 cursor-pointer opacity-0",
                 "accept": "image/*"
             }),
+
             "is_active": forms.CheckboxInput(attrs={
                 "class": "sr-only peer"
             }),
@@ -46,6 +57,16 @@ class SubCategoryForm(forms.ModelForm):
             field_label="Subcategory name"
         )
 
+    def clean_price_per_kg(self):
+        price = self.cleaned_data.get("price_per_kg")
+
+        if price is None or price <= 0:
+            raise forms.ValidationError(
+                "Price per KG must be greater than zero."
+            )
+
+        return price
+
     def clean_description(self):
         return validate_description(
             self.cleaned_data.get("description", "")
@@ -55,7 +76,7 @@ class SubCategoryForm(forms.ModelForm):
         return validate_image(
             self.cleaned_data.get("image")
         )
-    
+
     def clean(self):
         cleaned_data = super().clean()
 

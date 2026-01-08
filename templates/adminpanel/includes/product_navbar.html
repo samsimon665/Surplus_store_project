@@ -1,0 +1,73 @@
+<header class="bg-[#f4f6f8] px-4 py-3">
+    <div class="mx-auto flex max-w-6xl items-center justify-between gap-6
+             rounded-2xl bg-white shadow-md px-5 sm:px-8 py-3.5">
+        <!-- Left: Logo + brand -->
+        <div class="flex items-center gap-3">
+            <div class="flex h-10 w-10 items-center justify-center rounded-2xl
+                 bg-blue-100 text-blue-600 shadow-sm">
+                <span class="material-symbols-outlined text-[22px]">inventory_2</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-sm font-semibold tracking-wide text-slate-900">
+                    The Shop
+                </span>
+                <span class="text-[11px] text-slate-500">
+                    Admin Panel
+                </span>
+            </div>
+        </div>
+
+        <!-- Center nav -->
+        <nav class="hidden md:flex items-center gap-3 text-sm text-slate-700">
+            <a href="{% url 'adminpanel:dashboard' %}" class="px-4 py-1.5 rounded-full font-semibold
+                 hover:bg-blue-50 hover:text-slate-900
+                 transition-colors duration-150">
+                Dashboard
+            </a>
+
+            <a href="{% url 'adminpanel:category_list' %}" class="px-4 py-1.5 rounded-full font-semibold
+                 hover:bg-blue-50 hover:text-slate-900
+                 transition-colors duration-150">
+                Categories
+            </a>
+
+            <a href="{% url 'adminpanel:subcategory_list' %}" class="px-4 py-1.5 rounded-full font-semibold
+                 hover:bg-blue-50 hover:text-slate-900
+                 transition-colors duration-150">
+                Sub Categories
+            </a>
+
+            <a href="{% url 'adminpanel:product_list' %}" class="px-4 py-1.5 rounded-full font-semibold
+                 hover:bg-blue-50 hover:text-slate-900
+                 transition-colors duration-150">
+                Products
+            </a>
+        </nav>
+
+        <!-- Right: menu + profile -->
+        <div class="flex items-center gap-4">
+            <!-- Round menu icon -->
+            <button class="hidden sm:flex h-9 w-9 items-center justify-center rounded-full
+                 bg-blue-100 text-blue-600">
+                <span class="material-symbols-outlined text-[20px]">menu</span>
+            </button>
+
+            <!-- Profile pill -->
+            <div class="flex items-center gap-3 rounded-full bg-white px-4 py-1.5
+                 shadow-sm border border-slate-200">
+                <span class="text-sm font-semibold text-slate-800 whitespace-nowrap">
+                    {{ request.user.first_name|default:"Profile" }}
+                </span>
+                {% if request.user.profile.profile_pic %}
+                <div class="h-8 w-8 rounded-full bg-cover bg-center border-2 border-blue-200"
+                    style="background-image: url('{{ request.user.profile.profile_pic.url }}');"></div>
+                {% else %}
+                <div class="h-8 w-8 rounded-full bg-blue-500 border-2 border-blue-200
+                     flex items-center justify-center text-white text-xs font-semibold">
+                    {{ request.user.first_name|default:request.user.username|first|upper }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</header>

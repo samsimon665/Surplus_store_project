@@ -29,7 +29,7 @@ def category_create(request):
 def category_list(request):
     categories = ProductCategory.objects.order_by("-created_at")
 
-    paginator = Paginator(categories, 4)  # 4 per page
+    paginator = Paginator(categories, 10)  # 4 per page
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 

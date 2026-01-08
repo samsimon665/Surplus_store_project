@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html class="light" lang="en">
 
 <head>
@@ -34,7 +33,6 @@
             font-family: 'Inter', sans-serif;
         }
 
-        /* Custom scrollbar for better aesthetics */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -58,41 +56,14 @@
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display antialiased">
     <div class="flex min-h-screen w-full overflow-hidden">
 
-
         <!-- Side Navigation -->
-
-
         {% include "adminpanel/includes/sidebar.html" %}
-
 
         <!-- Main Content Wrapper -->
         <div class="flex flex-1 ml-64 flex-col overflow-hidden">
             <!-- Top Navbar -->
-            <header
-                class="flex h-16 items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 sm:px-10">
-                <div class="flex items-center gap-4 md:hidden">
-                    <button class="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white">
-                        <span class="material-symbols-outlined">menu</span>
-                    </button>
-                    <span class="text-lg font-bold">AdminPortal</span>
-                </div>
-                <div class="hidden md:flex md:flex-1">
+            {% include "adminpanel/includes/product_navbar.html" %}
 
-                </div>
-                <div class="flex items-center gap-4">
-                    <button
-                        class="relative rounded-full p-1 text-slate-400 hover:text-slate-500 dark:text-slate-300 dark:hover:text-white">
-                        <span class="sr-only">View notifications</span>
-                        <span class="material-symbols-outlined">notifications</span>
-                        <span
-                            class="absolute right-1 top-1 size-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-slate-900"></span>
-                    </button>
-                    <button
-                        class="rounded-full p-1 text-slate-400 hover:text-slate-500 dark:text-slate-300 dark:hover:text-white">
-                        <span class="material-symbols-outlined">help</span>
-                    </button>
-                </div>
-            </header>
             <!-- Scrollable Content -->
             <main class="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark p-6 sm:px-10 sm:py-8">
                 <div class="mx-auto max-w-6xl space-y-6">
@@ -114,8 +85,9 @@
                                     </li>
                                 </ol>
                             </nav>
-                            <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">Sub
-                                Categories</h1>
+                            <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">
+                                Sub Categories
+                            </h1>
                         </div>
                         <div class="flex items-center gap-3">
                             <button
@@ -133,9 +105,11 @@
                             </a>
                         </div>
                     </div>
+
                     <!-- Main Data Card -->
                     <div
                         class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+
                         <!-- Filters / Table Actions -->
                         <div class="border-b border-slate-200 dark:border-slate-800 px-4 py-4 sm:px-6">
                             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -158,6 +132,7 @@
                                 </div>
                             </div>
                         </div>
+
                         <!-- Table -->
                         <div class="overflow-x-auto">
                             <table class="min-w-full text-left text-sm whitespace-nowrap">
@@ -166,6 +141,8 @@
                                         <th class="px-6 py-3 font-medium" scope="col">Image</th>
                                         <th class="px-6 py-3 font-medium" scope="col">Sub Category Name</th>
                                         <th class="px-6 py-3 font-medium" scope="col">Category</th>
+                                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-[15%]"
+                                            scope="col">Price per KG</th>
                                         <th class="px-6 py-3 font-medium" scope="col">Products</th>
                                         <th class="px-6 py-3 font-medium" scope="col">Status</th>
                                         <th class="px-6 py-3 font-medium text-right" scope="col">Action</th>
@@ -173,9 +150,7 @@
                                 </thead>
                                 <tbody
                                     class="divide-y divide-slate-200 dark:divide-slate-800 bg-white dark:bg-slate-900">
-                                    <!-- Row 1 -->
                                     {% for subcategory in subcategories %}
-
                                     <tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                                         <td class="px-6 py-4">
                                             <div
@@ -186,27 +161,28 @@
                                                 {% else %}
                                                 <span class="material-symbols-outlined text-slate-300">image</span>
                                                 {% endif %}
-
                                             </div>
                                         </td>
                                         <td class="px-6 py-4">
                                             <div class="font-bold text-slate-900 dark:text-white">
                                                 {{ subcategory.name }}
                                             </div>
-
                                             <div class="text-xs text-slate-500 dark:text-slate-400">
                                                 ID: #SC - {{ subcategory.id }}
                                             </div>
-
                                         </td>
                                         <td class="px-6 py-4 text-slate-600 dark:text-slate-300">
                                             {{ subcategory.category.name }}
                                         </td>
-
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                                ₹ {{ subcategory.price_per_kg }}
+                                                <span class="text-gray-400 font-normal">/ kg</span>
+                                            </div>
+                                        </td>
                                         <td class="px-6 py-4 text-slate-400">
                                             <!-- product count coming later -->500
                                         </td>
-
                                         <td class="px-6 py-4">
                                             {% if subcategory.is_active %}
                                             <span
@@ -221,7 +197,6 @@
                                                 Inactive
                                             </span>
                                             {% endif %}
-
                                         </td>
                                         <td class="px-6 py-4 text-right">
                                             <a href="{% url 'adminpanel:subcategory_edit' subcategory.id %}">
@@ -230,58 +205,68 @@
                                                     <span class="material-symbols-outlined text-[20px]">edit</span>
                                                 </button>
                                             </a>
-
                                         </td>
                                     </tr>
                                     {% empty %}
                                     <tr>
-                                        <td colspan="6" class="px-6 py-10 text-center text-slate-500">
+                                        <td colspan="7" class="px-6 py-10 text-center text-slate-500">
                                             No subcategories found
                                         </td>
                                     </tr>
                                     {% endfor %}
-
-
                                 </tbody>
                             </table>
                         </div>
-                        <!-- Pagination -->
-                        <div
-                            class="flex items-center justify-between border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 px-4 py-3 sm:px-6">
-                            <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                                <div>
-                                    <p class="text-sm text-slate-700 dark:text-slate-400">
-                                        Showing <span class="font-medium">1</span> to <span class="font-medium">5</span>
-                                        of <span class="font-medium">24</span> results
-                                    </p>
-                                </div>
-                                <div>
-                                    <nav aria-label="Pagination"
-                                        class="isolate inline-flex -space-x-px rounded-md shadow-sm">
-                                        <a class="relative inline-flex items-center rounded-l-md px-2 py-2 text-slate-400 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0 dark:ring-slate-700 dark:hover:bg-slate-800"
-                                            href="#">
-                                            <span class="sr-only">Previous</span>
-                                            <span class="material-symbols-outlined text-[20px]">chevron_left</span>
-                                        </a>
-                                        <a aria-current="page"
-                                            class="relative z-10 inline-flex items-center bg-primary px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                                            href="#">1</a>
-                                        <a class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-slate-900 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0 dark:text-white dark:ring-slate-700 dark:hover:bg-slate-800"
-                                            href="#">2</a>
-                                        <a class="relative hidden items-center px-4 py-2 text-sm font-semibold text-slate-900 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0 md:inline-flex dark:text-white dark:ring-slate-700 dark:hover:bg-slate-800"
-                                            href="#">3</a>
-                                        <span
-                                            class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-slate-700 ring-1 ring-inset ring-slate-300 focus:outline-offset-0 dark:text-slate-400 dark:ring-slate-700">...</span>
-                                        <a class="relative inline-flex items-center rounded-r-md px-2 py-2 text-slate-400 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0 dark:ring-slate-700 dark:hover:bg-slate-800"
-                                            href="#">
-                                            <span class="sr-only">Next</span>
-                                            <span class="material-symbols-outlined text-[20px]">chevron_right</span>
-                                        </a>
-                                    </nav>
-                                </div>
-                            </div>
+                    </div>
+
+
+                    <!-- Footer / Pagination: OUTSIDE the card -->
+                    <div class="mt-4 flex flex-col md:flex-row items-center justify-between gap-4
+                        px-6 py-4
+                        border border-[#e7e9f3] dark:border-[#2a2d3d]
+                        bg-white dark:bg-[#1a1d2d]
+                        rounded-full">
+
+                        <p class="text-sm text-[#4c599a]">
+                            Showing
+                            <span class="font-medium text-[#0d101b] dark:text-white">
+                                {{ page_obj.start_index }}–{{ page_obj.end_index }}
+                            </span>
+                            of
+                            <span class="font-medium text-[#0d101b] dark:text-white">
+                                {{ paginator.count }}
+                            </span>
+                            subcategories
+                        </p>
+
+                        <div class="flex items-center gap-2">
+                            {% if page_obj.has_previous %}
+                            <a href="?page={{ page_obj.previous_page_number }}"
+                                class="px-3 py-1.5 text-sm font-medium text-[#4c599a] bg-white dark:bg-[#1a1d2d] border border-[#e7e9f3] dark:border-[#2a2d3d] rounded-lg hover:bg-slate-50 dark:hover:bg-[#23263a] transition-colors">
+                                Previous
+                            </a>
+                            {% else %}
+                            <button
+                                class="px-3 py-1.5 text-sm font-medium text-[#4c599a] bg-white dark:bg-[#1a1d2d] border border-[#e7e9f3] dark:border-[#2a2d3d] rounded-lg opacity-50 cursor-not-allowed">
+                                Previous
+                            </button>
+                            {% endif %}
+
+                            {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}"
+                                class="px-3 py-1.5 text-sm font-medium text-[#4c599a] bg-white dark:bg-[#1a1d2d] border border-[#e7e9f3] dark:border-[#2a2d3d] rounded-lg hover:bg-slate-50 dark:hover:bg-[#23263a] transition-colors">
+                                Next
+                            </a>
+                            {% else %}
+                            <button
+                                class="px-3 py-1.5 text-sm font-medium text-[#4c599a] bg-white dark:bg-[#1a1d2d] border border-[#e7e9f3] dark:border-[#2a2d3d] rounded-lg opacity-50 cursor-not-allowed">
+                                Next
+                            </button>
+                            {% endif %}
                         </div>
                     </div>
+
+
                 </div>
             </main>
         </div>

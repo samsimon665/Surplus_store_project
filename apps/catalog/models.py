@@ -52,6 +52,8 @@ class SubCategory(TimeStampedModel):
     description = models.TextField(blank=True)
     image = models.ImageField(upload_to="categories/")
     is_active = models.BooleanField(default=True)
+    price_per_kg = models.DecimalField(
+        max_digits=10, decimal_places=2, help_text="Price per KG for this subcategory (surplus pricing)")
 
     class Meta:
         unique_together = (
@@ -81,12 +83,6 @@ class Product(TimeStampedModel):
     name = models.CharField(max_length=150)
     slug = models.SlugField(max_length=160, blank=True)
     description = models.TextField(blank=True)
-
-    price_per_kg = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        help_text="Price per kilogram"
-    )
 
     # ✅ MAIN PRODUCT IMAGE (CATALOG IMAGE)
     main_image = models.ImageField(
@@ -133,53 +129,56 @@ class ProductVariant(TimeStampedModel):
         related_name="variants"
     )
 
-    color = models.CharField(max_length=50, blank=True)
-    size = models.CharField(max_length=20, blank=True)
+    color = models.CharField(max_length=50)
+    size = models.CharField(max_length=50)
 
-    weight = models.DecimalField(
+    weight_kg = models.DecimalField(
         max_digits=6,
         decimal_places=3,
-        help_text="Weight in KG"
+        help_text="Weight of one physical piece in KG"
     )
 
     stock = models.PositiveIntegerField(default=1)
 
     is_active = models.BooleanField(default=True)
 
-    class Meta:
-        ordering = ["-created_at"]
-
-    def __str__(self):
-        return f"{self.product.name} ({self.weight} kg)"
-
-
-class ProductImage(TimeStampedModel):
-    product = models.ForeignKey(
-        Product,
-        on_delete=models.CASCADE,
-        related_name="images",
-        null=True,
-        blank=True
+    # keep SKU optional for now
+    sku = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True
     )
-
-    variant = models.ForeignKey(
-        ProductVariant,
-        on_delete=models.CASCADE,
-        related_name="images",
-        null=True,
-        blank=True
-    )
-
-    image = models.ImageField(upload_to="products/")
-
-    is_primary = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["created_at"]
+        verbose_name = "Product Variant"
+        verbose_name_plural = "Product Variants"
 
     def __str__(self):
-        if self.variant:
-            return f"Variant Image - {self.variant.id}"
-        if self.product:
-            return f"Product Image - {self.product.name}"
-        return "Unlinked Product Image"
+        return f"{self.product.name} | {self.color} | {self.size}"
+
+
+class ProductImage(TimeStampedModel):
+    variant = models.ForeignKey(
+        ProductVariant,
+        on_delete=models.CASCADE,
+        related_name="images"
+    )
+
+    image = models.ImageField(
+        upload_to="products/variants/",
+        help_text="Real image of the physical variant"
+    )
+
+    is_primary = models.BooleanField(
+        default=False,
+        help_text="Primary image for this variant/color"
+    )
+
+    class Meta:
+        ordering = ["created_at"]
+        verbose_name = "Product Image"
+        verbose_name_plural = "Product Images"
+
+    def __str__(self):
+        return f"Variant Image | Variant ID: {self.variant.id}"

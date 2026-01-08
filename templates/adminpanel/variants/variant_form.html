@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Add Variant</title>
+
+    <!-- Tailwind / CSS (same as product_form.html) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class=" flex-1 ml-64 bg-slate-100">
+
+    <div class="flex min-h-screen">
+
+        <!-- SIDEBAR -->
+        {% include "adminpanel/includes/sidebar.html" %}
+
+        <!-- MAIN CONTENT -->
+        <div class="flex-1">
+
+            <!-- TOP NAVBAR (use same navbar as products) -->
+            {% include "adminpanel/includes/product_navbar.html" %}
+
+            <!-- PAGE CONTENT -->
+            <div class="p-6">
+
+                <div class="max-w-xl bg-white rounded-lg shadow p-6">
+
+                    <h2 class="text-xl font-semibold mb-1">
+                        Add Variant
+                    </h2>
+
+                    <p class="text-sm text-gray-500 mb-6">
+                        Product: <span class="font-medium">{{ product.name }}</span>
+                    </p>
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="space-y-4">
+                            {{ form.as_p }}
+                        </div>
+
+                        <div class="mt-6 flex gap-3">
+                            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                                Save Variant
+                            </button>
+
+                            <a href="{% url 'adminpanel:product_list' %}"
+                                class="px-4 py-2 border rounded hover:bg-gray-50">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

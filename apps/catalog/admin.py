@@ -55,6 +55,7 @@ class SubCategoryAdmin(admin.ModelAdmin):
         "name",
         "category",
         "slug",
+        "price_per_kg",
         "is_active",
         "created_at",
         "image_preview",
@@ -93,8 +94,8 @@ class SubCategoryAdmin(admin.ModelAdmin):
 class ProductAdmin(admin.ModelAdmin):
     list_display = (
         "name",
+        "id",
         "subcategory",
-        "price_per_kg",
         "is_active",
         "created_at",
         "image_preview",   # new column
@@ -123,12 +124,13 @@ class ProductAdmin(admin.ModelAdmin):
     image_preview.short_description = "Image"
 
 
-
 @admin.register(ProductVariant)
 class ProductVariantAdmin(admin.ModelAdmin):
     list_display = (
         "product",
-        "weight",
+        "color",
+        "size",
+        "weight_kg",
         "stock",
         "is_active",
         "created_at",
@@ -142,6 +144,8 @@ class ProductVariantAdmin(admin.ModelAdmin):
 
     search_fields = (
         "product__name",
+        "color",
+        "size",
     )
 
     ordering = (
@@ -152,7 +156,6 @@ class ProductVariantAdmin(admin.ModelAdmin):
 @admin.register(ProductImage)
 class ProductImageAdmin(admin.ModelAdmin):
     list_display = (
-        "product",
         "variant",
         "is_primary",
         "created_at",
@@ -178,8 +181,6 @@ class ProductImageAdmin(admin.ModelAdmin):
                 '<img src="{}" style="width:50px; height:50px; object-fit:cover; border-radius:4px;" />',
                 obj.image.url
             )
-        
-        
         return "—"
 
     image_preview.short_description = "Image"

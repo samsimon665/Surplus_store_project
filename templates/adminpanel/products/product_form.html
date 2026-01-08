@@ -64,47 +64,20 @@
 
         <!-- Main Content -->
         <main class="flex-1 ml-64 flex flex-col h-full overflow-hidden relative">
-            <!-- Top Navigation -->
-            <header
-                class="flex h-16 items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 sm:px-10">
-                <div class="flex items-center gap-4 md:hidden">
-                    <button class="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white">
-                        <span class="material-symbols-outlined">menu</span>
-                    </button>
-                    <span class="text-lg font-bold">AdminPortal</span>
-                </div>
-                <div class="hidden md:flex md:flex-1">
-
-                </div>
-                <div class="flex items-center gap-4">
-                    <button
-                        class="relative rounded-full p-1 text-slate-400 hover:text-slate-500 dark:text-slate-300 dark:hover:text-white">
-                        <span class="sr-only">View notifications</span>
-                        <span class="material-symbols-outlined">notifications</span>
-                        <span
-                            class="absolute right-1 top-1 size-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-slate-900"></span>
-                    </button>
-                    <button
-                        class="rounded-full p-1 text-slate-400 hover:text-slate-500 dark:text-slate-300 dark:hover:text-white">
-                        <span class="material-symbols-outlined">help</span>
-                    </button>
-                </div>
-            </header>
 
             <!-- Scrollable Content Area -->
-            <div class="flex-1 overflow-y-auto p-4 md:p-8 scroll-smooth">
-                <div class="mx-auto max-w-6xl flex flex-col gap-8 pb-20">
+            <div class="flex-1 overflow-y-auto px-4 py-6 md:px-10 md:py-8 scroll-smooth">
+                <div class="mx-auto max-w-6xl space-y-6 pb-20">
                     <!-- Page Header -->
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                         <div>
-                            <h2 class="text-3xl font-black tracking-tight text-slate-900 dark:text-white">Create
-                                Product
+                            <h2 class="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+                                Create Product
                             </h2>
-                            <p class="text-slate-500 dark:text-slate-400 mt-1">Add a new item to your surplus
-                                inventory.
+                            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                                Add a new item to your surplus inventory.
                             </p>
                         </div>
-
                     </div>
 
                     <form method="post" enctype="multipart/form-data">
@@ -114,40 +87,37 @@
                         <div class="flex justify-end gap-3 mb-6">
 
                             <!-- Cancel -->
-                            <a href="{% url 'adminpanel:product_create' %}" class="hidden sm:flex h-10 items-center justify-center rounded-lg
-                                                           border border-slate-300 dark:border-slate-600
-                                                           bg-transparent px-4 text-sm font-bold
-                                                           text-slate-700 dark:text-slate-300
-                                                           hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+                            <a href="{% url 'adminpanel:product_list' %}" class="hidden sm:flex h-10 items-center justify-center rounded-lg
+                                     border border-slate-300 dark:border-slate-600
+                                     bg-transparent px-4 text-sm font-bold
+                                     text-slate-700 dark:text-slate-300
+                                     hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
                                 Cancel
                             </a>
 
                             <!-- Save -->
-                            <button type="submit"
-                                class="flex h-10 items-center justify-center gap-2 rounded-lg
-                                                           bg-primary px-6 text-sm font-bold text-white
-                                                           shadow-lg shadow-primary/30 hover:bg-blue-700 transition-all">
+                            <button type="submit" class="flex h-10 items-center justify-center gap-2 rounded-lg
+                                       bg-primary px-6 text-sm font-bold text-white
+                                       shadow-lg shadow-primary/30 hover:bg-blue-700 transition-all">
                                 <span class="material-symbols-outlined text-[20px]">save</span>
                                 Save Product
                             </button>
                         </div>
 
                         <!-- Layout Grid -->
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
 
                             <!-- Left Column -->
                             <div class="lg:col-span-2 flex flex-col gap-6">
-                                <div
-                                    class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm
-                                                               border border-slate-200 dark:border-slate-800 p-6 md:p-8">
+                                <div class="bg-surface-light dark:bg-surface-dark rounded-xl shadow-sm
+                                        border border-slate-200 dark:border-slate-800 p-5 md:p-7">
 
-                                    <h3
-                                        class="text-lg font-bold text-slate-900 dark:text-white
-                                                                   mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
+                                    <h3 class="text-lg font-bold text-slate-900 dark:text-white
+                                               mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
                                         Product Details
                                     </h3>
 
-                                    <div class="space-y-6">
+                                    <div class="space-y-4 md:space-y-5">
 
                                         <!-- Name -->
                                         <div>
@@ -201,26 +171,6 @@
 
                                         </div>
 
-                                        <!-- Price -->
-                                        <div>
-                                            <label class="block text-sm font-medium text-slate-900 dark:text-slate-200">
-                                                Price per KG
-                                            </label>
-                                            <div class="relative mt-2 rounded-md shadow-sm">
-                                                <div
-                                                    class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                                    <span class="text-slate-500 sm:text-sm">₹</span>
-                                                </div>
-                                                {{ form.price_per_kg }}
-                                                <div
-                                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                                                    <span class="text-slate-500 sm:text-sm">INR</span>
-                                                </div>
-                                            </div>
-                                            {% if form.price_per_kg.errors %}
-                                            <p class="mt-1 text-sm text-red-600">{{ form.price_per_kg.errors.0 }}</p>
-                                            {% endif %}
-                                        </div>
 
                                         <!-- Description -->
                                         <div>
@@ -235,7 +185,7 @@
 
                                         <!-- Active -->
                                         <div class="flex items-center justify-between rounded-lg border
-                                                                       border-slate-200 dark:border-slate-800 p-4">
+                                                border-slate-200 dark:border-slate-800 p-4">
 
                                             <span class="text-sm font-medium text-slate-900 dark:text-white">
                                                 Active Status
@@ -244,11 +194,11 @@
                                             <label class="flex items-center cursor-pointer relative" for="toggleA">
                                                 {{ form.is_active }}
                                                 <div class="w-11 h-6 bg-slate-200 rounded-full peer
-                                                                               peer-checked:bg-primary
-                                                                               after:content-[''] after:absolute after:top-[2px]
-                                                                               after:left-[2px] after:bg-white after:rounded-full
-                                                                               after:h-5 after:w-5 after:transition-all
-                                                                               peer-checked:after:translate-x-full">
+                                                        peer-checked:bg-primary
+                                                        after:content-[''] after:absolute after:top-[2px]
+                                                        after:left-[2px] after:bg-white after:rounded-full
+                                                        after:h-5 after:w-5 after:transition-all
+                                                        peer-checked:after:translate-x-full">
                                                 </div>
                                             </label>
                                         </div>
@@ -257,97 +207,131 @@
                                 </div>
                             </div>
 
-                            <!-- Right Column: MAIN IMAGE -->
-                            <div class="rounded-xl border border-slate-200 dark:border-slate-800
-                                                           p-6 bg-white dark:bg-slate-900">
+                            <!-- Right Column: image card + tip stacked -->
+                            <div class="flex flex-col gap-4">
 
-                                <h3 class="text-sm font-semibold text-slate-900 dark:text-white">
-                                    Main Product Image
-                                </h3>
+                                <!-- Image card -->
+                                <div class="rounded-xl border border-slate-200 dark:border-slate-800
+                                        p-5 md:p-7 bg-white dark:bg-slate-900 flex flex-col">
 
-                                <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                                    Used in product listings & search
-                                </p>
+                                    <h3 class="text-sm font-semibold text-slate-900 dark:text-white">
+                                        Product Images
+                                    </h3>
 
-                                <label for="id_main_image" class="mt-4 block w-full border-2 border-dashed
-                                  border-slate-300 dark:border-slate-700 rounded-lg
-                                  bg-slate-50 dark:bg-slate-800/30
-                                  hover:border-primary hover:bg-primary/5
-                                  transition cursor-pointer">
+                                    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                                        Upload detailed shots of the surplus clothing.
+                                    </p>
 
-                                    <div class="flex flex-col items-center justify-center h-40">
-                                        <span class="material-symbols-outlined text-slate-400 mb-2">
-                                            cloud_upload
-                                        </span>
+                                    <label id="uploadTrigger" for="id_main_image" class="mt-4 block w-full border-2 border-dashed
+                                                     border-slate-300 dark:border-slate-700 rounded-lg
+                                                     bg-slate-50 dark:bg-slate-800/30
+                                                     hover:border-primary hover:bg-primary/5
+                                                     transition cursor-pointer">
 
-                                        <p class="text-sm text-slate-600 dark:text-slate-300">
-                                            Click to upload or drag and drop
-                                        </p>
+                                        <div class="flex flex-col items-center justify-center h-40">
+                                            <span class="material-symbols-outlined text-slate-400 mb-2">
+                                                cloud_upload
+                                            </span>
 
-                                        <p class="text-xs text-slate-500 dark:text-slate-400">
-                                            SVG, PNG, JPG or GIF (MAX. 800×400px)
-                                        </p>
-                                    </div>
-
-                                    <!-- keep the same Django field, just hide the native input -->
-                                    {{ form.main_image }}
-                                </label>
-
-
-
-
-                                {% if form.main_image.errors %}
-                                <p class="mt-2 text-sm text-red-600">
-                                    {{ form.main_image.errors.0 }}
-                                </p>
-                                {% endif %}
-
-                                <!-- Preview -->
-                                <div id="mainImagePreview" class="mt-4 space-y-2 hidden">
-                                    <div class="flex items-center gap-3 rounded-lg border
-                                                                                border-slate-200 dark:border-slate-700
-                                                                                bg-slate-50 dark:bg-slate-800/60
-                                                                                px-3 py-2">
-                                        <div class="h-12 w-12 flex-shrink-0 overflow-hidden rounded-md bg-slate-200">
-                                            <img id="mainImagePreviewImg" class="h-full w-full object-cover"
-                                                alt="Main product preview" />
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-xs font-medium text-slate-800 truncate">
-                                                main-image.jpg
+                                            <p class="text-sm text-slate-600 dark:text-slate-300">
+                                                Click to upload or drag and drop
                                             </p>
-                                            <p class="text-[11px] text-slate-500">
-                                                800 × 400 · JPG
+
+                                            <p class="text-xs text-slate-500 dark:text-slate-400">
+                                                SVG, PNG, JPG or GIF (MAX. 800×400px)
                                             </p>
                                         </div>
-                                        <button type="button" id="mainImageRemove"
-                                            class="ml-2 text-xs text-slate-500 hover:text-red-500">
-                                            <span class="material-symbols-outlined text-base">delete</span>
-                                        </button>
+
+                                        <!-- Django field -->
+                                        <input type="file" name="main_image" id="id_main_image" accept="image/*"
+                                            class="hidden" />
+
+                                    </label>
+
+                                    {% if form.main_image.errors %}
+                                    <p class="mt-2 text-sm text-red-600">
+                                        {{ form.main_image.errors.0 }}
+                                    </p>
+                                    {% endif %}
+
+                                    <hr class="mt-4 mb-3 border-slate-200 dark:border-slate-800">
+
+                                    {% if product.main_image %}
+                                    <script>
+                                        window.existingMainImage = {
+                                            url: "{{ product.main_image.url }}",
+                                            name: "{{ product.main_image.name|cut:'products/main/' }}",
+                                        };
+                                    </script>
+                                    {% endif %}
+
+                                    <!-- Preview -->
+                                    <div id="mainImagePreview" class="mt-0 space-y-2 hidden">
+                                        <div id="mainImagePreviewRow" class="flex items-center gap-3 rounded-lg border
+                                                border-slate-200 dark:border-slate-700
+                                                bg-slate-50 dark:bg-slate-800/60
+                                                px-3 py-2 cursor-pointer">
+                                            <div
+                                                class="h-12 w-12 flex-shrink-0 overflow-hidden rounded-md bg-slate-200">
+                                                <img id="mainImagePreviewImg" class="h-full w-full object-cover"
+                                                    alt="Main product preview" />
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-xs font-medium text-slate-800 truncate">
+                                                    main-image.jpg
+                                                </p>
+                                                <p class="text-[11px] text-slate-500">
+                                                    800 × 400 · JPG
+                                                </p>
+                                            </div>
+                                            <button type="button" id="mainImageRemove"
+                                                class="ml-2 text-xs text-slate-500 hover:text-red-500">
+                                                <span class="material-symbols-outlined text-base">delete</span>
+                                            </button>
+                                        </div>
                                     </div>
+
                                 </div>
 
-
-
+                                <!-- Pro Tip card -->
+                                <div class="rounded-2xl bg-primary/5 px-5 py-4 flex items-start gap-3">
+                                    <div
+                                        class="mt-1 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-primary text-white">
+                                        <span class="material-symbols-outlined text-[18px]">lightbulb</span>
+                                    </div>
+                                    <div class="text-xs">
+                                        <p class="font-semibold text-slate-900 dark:text-white">
+                                            Pro Tip
+                                        </p>
+                                        <p class="mt-1 text-slate-600 dark:text-slate-300 leading-snug">
+                                            High-quality images increase sales by up to 40%. Ensure good lighting.
+                                        </p>
+                                    </div>
+                                </div>
 
                             </div>
 
                         </div>
                     </form>
 
-
-
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- Image preview modal (new) -->
+    <div id="imagePreviewModal" class="fixed inset-0 z-40 hidden bg-black/70 flex items-center justify-center">
+        <div class="max-w-3xl max-h-[90vh] mx-4 bg-white dark:bg-slate-900 rounded-xl overflow-hidden">
+            <img id="imagePreviewModalImg" class="w-full h-full object-contain" alt="Full image preview" />
+        </div>
     </div>
 
     <!-- Cropper Modal -->
     <div id="cropperModal" class="fixed inset-0 z-50 hidden bg-black/60 flex items-center justify-center">
 
         <div class="bg-white dark:bg-slate-900 rounded-xl
-                    w-full max-w-4xl h-[90vh]
-                    p-4 flex flex-col">
+                w-full max-w-4xl h-[90vh]
+                p-4 flex flex-col">
 
             <h3 class="text-base font-semibold mb-2 shrink-0">
                 Crop Image
@@ -417,19 +401,12 @@
             const cropCancelBtn = document.getElementById("cropCancel");
             const previewContainer = document.getElementById("mainImagePreview");
 
-            if (!productImageInput || !cropModal || !cropImage || !previewContainer) {
-                console.error("❌ Required DOM elements missing. Cropper will not work.");
-                return;
-            }
+            /* NEW: modal elements */
+            const imagePreviewModal = document.getElementById("imagePreviewModal");
+            const imagePreviewModalImg = document.getElementById("imagePreviewModalImg");
+            const mainImagePreviewRow = document.getElementById("mainImagePreviewRow");
 
-            /* CLICK UPLOAD BOX → OPEN FILE PICKER */
-            if (uploadTrigger) {
-                uploadTrigger.addEventListener("click", function (event) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    productImageInput.click();
-                });
-            }
+
 
             /* OPEN CROPPER WHEN FILE SELECTED */
             productImageInput.addEventListener("change", function () {
@@ -505,40 +482,77 @@
                 cropModal.classList.add("hidden");
             });
 
-            /* PREVIEW + DELETE */
-            function showPreview(file) {
+            /* PREVIEW + DELETE + STORE URL FOR MODAL */
+
+            function activatePreview(src, name = "") {
                 const previewContainer = document.getElementById("mainImagePreview");
                 const img = document.getElementById("mainImagePreviewImg");
                 const removeBtn = document.getElementById("mainImageRemove");
+                const nameEl = previewContainer.querySelector("p.text-xs.font-medium");
 
-                // show container
+                // show preview
                 previewContainer.classList.remove("hidden");
 
-                // image preview
-                img.src = URL.createObjectURL(file);
+                // set image
+                img.src = src;
 
-                // filename text (optional)
-                const nameEl = previewContainer.querySelector("p.text-xs.font-medium");
-                if (nameEl) nameEl.textContent = file.name;
+                // filename
+                if (name && nameEl) {
+                    nameEl.textContent = name;
+                }
 
-                // remove button
+                // enable large preview
+                if (imagePreviewModalImg) {
+                    imagePreviewModalImg.dataset.src = src;
+                }
+
+                // delete button (UI only)
                 if (removeBtn) {
-                    removeBtn.onclick = function (event) {
-                        event.stopPropagation();
-                        productImageInput.value = "";
-                        URL.revokeObjectURL(img.src);
+                    removeBtn.onclick = function (e) {
+                        e.stopPropagation();
                         previewContainer.classList.add("hidden");
+                        img.src = "";
+                        productImageInput.value = "";
                     };
                 }
             }
 
+            function showPreview(file) {
+                const objectUrl = URL.createObjectURL(file);
+                activatePreview(objectUrl, file.name);
+            }
+
+            /* NEW: open/close big preview */
+            if (mainImagePreviewRow && imagePreviewModal && imagePreviewModalImg) {
+                mainImagePreviewRow.addEventListener("click", function () {
+                    const src = imagePreviewModalImg.dataset.src;
+                    if (!src) return;
+                    imagePreviewModalImg.src = src;
+                    imagePreviewModal.classList.remove("hidden");
+                });
+
+                imagePreviewModal.addEventListener("click", function (e) {
+                    if (e.target === imagePreviewModal) {
+                        imagePreviewModal.classList.add("hidden");
+                        imagePreviewModalImg.src = "";
+                    }
+                });
+            }
+
+            // EDIT MODE: show existing main image if provided by Django
+            if (window.existingMainImage) {
+                activatePreview(
+                    window.existingMainImage.url,
+                    window.existingMainImage.name
+                );
+            }
 
         });
     </script>
 
     <!-- =========================================================
-             SUBCATEGORY SCRIPT (UNCHANGED)
-             ========================================================= -->
+         SUBCATEGORY SCRIPT (UNCHANGED)
+         ========================================================== -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
 
@@ -609,7 +623,6 @@
 
         });
     </script>
-
 
     <style>
         /* CROPPER VISUAL POLISH (unchanged) */
