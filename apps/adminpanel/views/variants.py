@@ -4,7 +4,9 @@ from django.contrib import messages
 
 from apps.adminpanel.decorators import admin_required
 from apps.adminpanel.forms.variant_forms import ProductVariantForm
-from apps.catalog.models import Product
+from apps.catalog.models import Product, ProductVariant
+
+from django.db.models import F, DecimalField, ExpressionWrapper
 
 
 @admin_required
@@ -38,4 +40,33 @@ def variant_create(request, product_id):
             "form": form,
             "product": product,
         }
+    )
+
+
+@admin_required
+def variant_list(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+
+    variants = (
+        ProductVariant.objects
+        .filter(product=product)
+        .select_related("product__subcategory")
+        .annotate(
+            final_price=ExpressionWrapper(
+                F("weight_kg") * F("product__subcategory__price_per_kg"),
+                output_field=DecimalField(max_digits=10, decimal_places=2),
+            )
+        )
+        .order_by("color", "size")
+    )
+
+    context = {
+        "product": product,
+        "variants": variants,
+    }
+
+    return render(
+        request,
+        "adminpanel/variants/variant_list.html",
+        context,
     )

@@ -1,3 +1,4 @@
+from django.db.models import Count
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 
@@ -7,8 +8,6 @@ from apps.adminpanel.forms.subcategory_forms import SubCategoryForm
 
 from django.http import JsonResponse
 from django.core.paginator import Paginator
-
-
 
 
 @admin_required
@@ -43,16 +42,16 @@ def subcategory_list(request):
     subcategories_qs = (
         SubCategory.objects
         .select_related("category")
+        .annotate(product_count=Count("products"))
         .order_by("name")
     )
 
-    paginator = Paginator(subcategories_qs, 10)  # 10 per page
+    paginator = Paginator(subcategories_qs, 10)
     page_number = request.GET.get("page")
-    # safe: handles invalid page values [web:5][web:16]
     page_obj = paginator.get_page(page_number)
 
     context = {
-        "subcategories": page_obj,   # important: loop over current page
+        "subcategories": page_obj,
         "page_obj": page_obj,
         "paginator": paginator,
     }
@@ -63,6 +62,31 @@ def subcategory_list(request):
         context,
     )
 
+
+@admin_required
+def subcategory_list(request):
+    subcategories_qs = (
+        SubCategory.objects
+        .select_related("category")
+        .annotate(product_count=Count("products"))
+        .order_by("name")
+    )
+
+    paginator = Paginator(subcategories_qs, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        "subcategories": page_obj,
+        "page_obj": page_obj,
+        "paginator": paginator,
+    }
+
+    return render(
+        request,
+        "adminpanel/subcategories/subcategory_list.html",
+        context,
+    )
 
 
 @admin_required

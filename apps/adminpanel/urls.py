@@ -13,7 +13,7 @@ from apps.adminpanel.views.subcategories import subcategory_list, subcategory_cr
 
 from apps.adminpanel.views.products import product_list, product_create, product_edit
 
-from apps.adminpanel.views.variants import variant_create
+from apps.adminpanel.views.variants import variant_list, variant_create
 
 
 app_name = "adminpanel"
@@ -45,11 +45,10 @@ urlpatterns = [
     path("products/", product_list, name="product_list"),
     path("products/create/", product_create, name="product_create"),
     path("products/<int:pk>/edit/", product_edit, name="product_edit"),
-
     path("ajax/load-subcategories/", ajax_load_subcategories, name="adminpanel_ajax_load_subcategories"),
 
-    
-    path("products/<int:product_id>/variants/create/", variant_create, name="variant_create",),
+    path("products/<int:product_id>/variants/", variant_list, name="variant_list"),
+    path("products/<int:product_id>/variants/create/", variant_create, name="variant_create"),
     
 
 

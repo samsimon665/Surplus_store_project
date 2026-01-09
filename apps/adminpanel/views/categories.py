@@ -41,6 +41,7 @@ def category_list(request):
             "page_obj": page_obj,
             "paginator": paginator,
         }
+
     )
 
 

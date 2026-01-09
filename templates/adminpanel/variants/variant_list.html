@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Inventory Variant List Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1337ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101322",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        /* Custom scrollbar for cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .dark ::-webkit-scrollbar-thumb {
+            background: #334155;
+        }
+    </style>
+</head>
+
+<body
+    class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white h-screen overflow-hidden flex flex-col md:flex-row">
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+
+        <!-- Top Navbar -->
+        {% include "adminpanel/includes/product_navbar.html" %}
+
+
+        <!-- Scrollable Page Content -->
+        <div class="flex-1 overflow-y-auto p-6 md:p-8 lg:px-12 scroll-smooth">
+            <div class="max-w-6xl mx-auto flex flex-col gap-6 pb-12">
+
+                <!-- Page Heading -->
+                <div
+                    class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
+                    <div class="flex flex-col gap-2">
+                        <h1 class="text-slate-900 dark:text-white text-3xl md:text-4xl font-black tracking-tight">
+                            Variants — Vintage Levi's 501</h1>
+                        <div class="flex items-center gap-3 text-slate-500 dark:text-slate-400 text-sm md:text-base">
+                            <span
+                                class="bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300">Men's
+                                Denim</span>
+                            <span class="size-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
+                            <span>Base Price: <span
+                                    class="font-semibold text-slate-700 dark:text-slate-200">$15.00/kg</span></span>
+                        </div>
+                    </div>
+                    <a href="{% url 'adminpanel:variant_create' product.id %}"
+                        class="flex items-center gap-2 bg-primary hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-sm transition-all active:scale-95 whitespace-nowrap w-full md:w-auto justify-center">
+                        <span class="material-symbols-outlined text-[20px]">add</span>
+                        <span>Add Variant</span>
+                    </a>
+
+                </div>
+                <!-- Filter & Search Bar -->
+                <div
+                    class="grid grid-cols-1 md:grid-cols-12 gap-4 bg-white dark:bg-[#1e2235] p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm sticky top-0 z-10">
+                    <!-- Search -->
+                    <div class="md:col-span-5 relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="material-symbols-outlined text-slate-400 text-[20px]">search</span>
+                        </div>
+                        <input
+                            class="block w-full pl-10 pr-3 py-2.5 border-none rounded-lg bg-slate-100 dark:bg-slate-800/50 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-500 focus:ring-2 focus:ring-primary/50 sm:text-sm font-medium transition-all"
+                            placeholder="Search SKU, color, or size..." type="text" />
+                    </div>
+                    <!-- Filters -->
+                    <div class="md:col-span-7 flex flex-wrap md:flex-nowrap gap-3 md:justify-end">
+                        <div class="relative w-full md:w-auto">
+                            <select
+                                class="appearance-none block w-full pl-3 pr-10 py-2.5 border-none rounded-lg bg-slate-100 dark:bg-slate-800/50 text-slate-700 dark:text-slate-200 text-sm font-medium focus:ring-2 focus:ring-primary/50 cursor-pointer">
+                                <option>Sort by: Newest</option>
+                                <option>Sort by: Stock (Low to High)</option>
+                                <option>Sort by: Weight (High to Low)</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <span class="material-symbols-outlined text-slate-500 text-[20px]">expand_more</span>
+                            </div>
+                        </div>
+                        <div class="relative w-full md:w-auto">
+                            <select
+                                class="appearance-none block w-full pl-3 pr-10 py-2.5 border-none rounded-lg bg-slate-100 dark:bg-slate-800/50 text-slate-700 dark:text-slate-200 text-sm font-medium focus:ring-2 focus:ring-primary/50 cursor-pointer">
+                                <option>Status: All</option>
+                                <option>Active</option>
+                                <option>Inactive</option>
+                                <option>Draft</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <span class="material-symbols-outlined text-slate-500 text-[20px]">expand_more</span>
+                            </div>
+                        </div>
+                        <button
+                            class="hidden md:flex items-center justify-center px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-transparent text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+                            title="Grid View">
+                            <span class="material-symbols-outlined text-[20px]">grid_view</span>
+                        </button>
+                        <button
+                            class="hidden md:flex items-center justify-center px-3 py-2.5 border border-transparent rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                            title="List View">
+                            <span class="material-symbols-outlined text-[20px]">view_list</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- Content Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Card 1: Active -->
+                    <div
+                        class="group bg-white dark:bg-[#1e2235] rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-lg hover:border-primary/30 transition-all duration-300 flex flex-col">
+                        <div class="aspect-[4/3] bg-slate-100 dark:bg-slate-800 relative overflow-hidden">
+                            <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                                data-alt="Folded vintage blue jeans showing washed indigo color texture"
+                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCSDfw3TVrbnNdz2zletdYZWQwVTLDsIUtgavoLfsxVNXa97yn9RyTEZWCPB0ex6yp_LtpPaFaVCT2UwV6wjX7doS8dqulMK-eIDB7v5c7-ThsPZR4O29ecGvwzofeKe71nU5Xyhp637RP8NnnzsgyHHiopco_H8YQngubFQIHAFxCGAtT5USITjL9j_n0THfWFfgJkUU0Yw8yhJpiiaAcdfMh945YVDansYWuhzr5G6szIimtpjQLC46ZHTMiWNS9ZHCUN3gVqX8w");'>
+                            </div>
+                            <div class="absolute top-3 right-3">
+                                <span
+                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400 border border-green-200 dark:border-green-800">
+                                    <span class="size-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                                    Active
+                                </span>
+                            </div>
+                        </div>
+                        <div class="p-5 flex flex-col flex-1 gap-4">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h3
+                                        class="text-primary font-bold text-lg leading-tight group-hover:underline decoration-2 underline-offset-2">
+                                        Washed Indigo</h3>
+                                    <p class="text-slate-500 dark:text-slate-400 text-xs font-mono mt-1">SKU-9928</p>
+                                </div>
+                                <span
+                                    class="inline-flex items-center justify-center min-w-[2.5rem] h-8 px-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-200 text-sm font-bold border border-slate-200 dark:border-slate-700">
+                                    32
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 py-3 border-y border-slate-100 dark:border-slate-700/50">
+                                <div class="flex flex-col">
+                                    <span
+                                        class="text-[10px] uppercase tracking-wider font-semibold text-slate-400">Weight</span>
+                                    <span class="text-slate-700 dark:text-slate-200 font-medium">0.85 kg</span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span
+                                        class="text-[10px] uppercase tracking-wider font-semibold text-slate-400">Stock</span>
+                                    <span class="text-slate-700 dark:text-slate-200 font-medium">12 Units</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between mt-auto">
+                                <div class="flex flex-col">
+                                    <span class="text-xs text-slate-400 line-through decoration-slate-300"></span>
+                                    <!-- Placeholder for potential discount logic -->
+                                    <span class="text-xs text-slate-400">0.85kg × $15.00</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="block text-xl font-black text-slate-900 dark:text-white">$12.75</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="px-4 py-3 bg-slate-50 dark:bg-[#1a1d2d] border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input checked="" class="sr-only peer" type="checkbox" value="" />
+                                <div
+                                    class="w-9 h-5 bg-slate-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/40 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-slate-600 peer-checked:bg-primary">
+                                </div>
+                            </label>
+                            <div class="flex gap-1">
+                                <button
+                                    class="p-2 text-slate-400 hover:text-primary hover:bg-white dark:hover:bg-slate-800 rounded-lg transition-colors"
+                                    title="Manage Images">
+                                    <span class="material-symbols-outlined text-[20px]">image</span>
+                                </button>
+                                <button
+                                    class="p-2 text-slate-400 hover:text-primary hover:bg-white dark:hover:bg-slate-800 rounded-lg transition-colors"
+                                    title="Edit Variant">
+                                    <span class="material-symbols-outlined text-[20px]">edit</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 2: Active -->
+                    <div
+                        class="group bg-white dark:bg-[#1e2235] rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-lg hover:border-primary/30 transition-all duration-300 flex flex-col">
+                        <div class="aspect-[4/3] bg-slate-100 dark:bg-slate-800 relative overflow-hidden">
+                            <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                                data-alt="Dark grey denim texture representing faded black jeans"
+                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDBxRM3Op248BI3C7ahAhFjafifKq805MYxkzmJYJxY44g0eQ58UnusWHd74oT_G37wwLCiYLEWI5OHEZvsEzZaUkWTyqUvX7DzEAZBZpW1drQlkms-DECwjwIo2zWK5H9FnEWVOm6GVPI9POTdx11CORMJbVOvGKeziaC41h008OxyMddygaLwI3AMM6nAzezkKqkTHLuXoKLgXN7-9udKJSUYJk9L-wWy8J0dtbINOTOq65EB8wrZWay6KrINNyIuv-4vfxV85RY");'>
+                            </div>
+                            <div class="absolute top-3 right-3">
+                                <span
+                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400 border border-green-200 dark:border-green-800">
+                                    <span class="size-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                                    Active
+                                </span>
+                            </div>
+                        </div>
+                        <div class="p-5 flex flex-col flex-1 gap-4">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h3
+                                        class="text-primary font-bold text-lg leading-tight group-hover:underline decoration-2 underline-offset-2">
+                                        Faded Black</h3>
+                                    <p class="text-slate-500 dark:text-slate-400 text-xs font-mono mt-1">SKU-9929</p>
+                                </div>
+                                <span
+                                    class="inline-flex items-center justify-center min-w-[2.5rem] h-8 px-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-200 text-sm font-bold border border-slate-200 dark:border-slate-700">
+                                    34
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 py-3 border-y border-slate-100 dark:border-slate-700/50">
+                                <div class="flex flex-col">
+                                    <span
+                                        class="text-[10px] uppercase tracking-wider font-semibold text-slate-400">Weight</span>
+                                    <span class="text-slate-700 dark:text-slate-200 font-medium">0.90 kg</span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span
+                                        class="text-[10px] uppercase tracking-wider font-semibold text-slate-400">Stock</span>
+                                    <span class="text-slate-700 dark:text-slate-200 font-medium">4 Units</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between mt-auto">
+                                <div class="flex flex-col">
+                                    <span class="text-xs text-slate-400">0.90kg × $15.00</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="block text-xl font-black text-slate-900 dark:text-white">$13.50</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="px-4 py-3 bg-slate-50 dark:bg-[#1a1d2d] border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input checked="" class="sr-only peer" type="checkbox" value="" />
+                                <div
+                                    class="w-9 h-5 bg-slate-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/40 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-slate-600 peer-checked:bg-primary">
+                                </div>
+                            </label>
+                            <div class="flex gap-1">
+                                <button
+                                    class="p-2 text-slate-400 hover:text-primary hover:bg-white dark:hover:bg-slate-800 rounded-lg transition-colors"
+                                    title="Manage Images">
+                                    <span class="material-symbols-outlined text-[20px]">image</span>
+                                </button>
+                                <button
+                                    class="p-2 text-slate-400 hover:text-primary hover:bg-white dark:hover:bg-slate-800 rounded-lg transition-colors"
+                                    title="Edit Variant">
+                                    <span class="material-symbols-outlined text-[20px]">edit</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 3: Inactive / Out of Stock -->
+                    <div
+                        class="group bg-white dark:bg-[#1e2235] rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-lg hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-300 flex flex-col opacity-80 hover:opacity-100">
+                        <div
+                            class="aspect-[4/3] bg-slate-100 dark:bg-slate-800 relative overflow-hidden grayscale group-hover:grayscale-0 transition-all">
+                            <div class="absolute inset-0 bg-cover bg-center"
+                                data-alt="Light blue stonewash denim fabric texture"
+                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCd2c08Eq1jyyqyJf70bOJQTW_o8867lau4gT2GVckFsLxkDclgqtF8S3hGDsBouNQnDYAdy3aamXuXz-M6Ocl7DTSNeOW8Wfq1O-ycpAO1k2S3_GgJ8G_vTSPZWKz6LbYB2z7TzGrABg8brFH2ffKuhBA6NuHFPK9ihjSaI_FglF_jqjdDBCPxDQygcVa3fntsRbdNSeLvT5mz7Hnq-IjGfqVu5JDvRdTB_N-YRWQWV95yekqI_qcxcBMLvBnI2sSzlo9JwCgEaS8");'>
+                            </div>
+                            <div class="absolute inset-0 bg-white/20 dark:bg-black/20"></div>
+                            <div class="absolute top-3 right-3">
+                                <span
+                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600">
+                                    Inactive
+                                </span>
+                            </div>
+                            <div class="absolute bottom-3 left-3">
+                                <span
+                                    class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-bold bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300 border border-red-200 dark:border-red-800">
+                                    <span class="material-symbols-outlined text-[12px]">warning</span>
+                                    Out of Stock
+                                </span>
+                            </div>
+                        </div>
+                        <div class="p-5 flex flex-col flex-1 gap-4">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h3 class="text-slate-700 dark:text-slate-300 font-bold text-lg leading-tight">
+                                        Stonewash Blue</h3>
+                                    <p class="text-slate-500 dark:text-slate-400 text-xs font-mono mt-1">SKU-9930</p>
+                                </div>
+                                <span
+                                    class="inline-flex items-center justify-center min-w-[2.5rem] h-8 px-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-sm font-medium border border-slate-200 dark:border-slate-700">
+                                    30
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 py-3 border-y border-slate-100 dark:border-slate-700/50">
+                                <div class="flex flex-col">
+                                    <span
+                                        class="text-[10px] uppercase tracking-wider font-semibold text-slate-400">Weight</span>
+                                    <span class="text-slate-700 dark:text-slate-200 font-medium">0.80 kg</span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span
+                                        class="text-[10px] uppercase tracking-wider font-semibold text-slate-400">Stock</span>
+                                    <span class="text-red-500 font-bold">0 Units</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between mt-auto">
+                                <div class="flex flex-col">
+                                    <span class="text-xs text-slate-400">0.80kg × $15.00</span>
+                                </div>
+                                <div class="text-right">
+                                    <span
+                                        class="block text-xl font-black text-slate-500 dark:text-slate-400">$12.00</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="px-4 py-3 bg-slate-50 dark:bg-[#1a1d2d] border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input class="sr-only peer" type="checkbox" value="" />
+                                <div
+                                    class="w-9 h-5 bg-slate-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/40 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-slate-600 peer-checked:bg-primary">
+                                </div>
+                            </label>
+                            <div class="flex gap-1">
+                                <button
+                                    class="p-2 text-slate-400 hover:text-primary hover:bg-white dark:hover:bg-slate-800 rounded-lg transition-colors"
+                                    title="Manage Images">
+                                    <span class="material-symbols-outlined text-[20px]">image</span>
+                                </button>
+                                <button
+                                    class="p-2 text-slate-400 hover:text-primary hover:bg-white dark:hover:bg-slate-800 rounded-lg transition-colors"
+                                    title="Edit Variant">
+                                    <span class="material-symbols-outlined text-[20px]">edit</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Card 4: Draft -->
+                    <div
+                        class="group bg-white dark:bg-[#1e2235] rounded-xl border border-dashed border-slate-300 dark:border-slate-700 overflow-hidden hover:shadow-lg hover:border-primary/30 hover:border-solid transition-all duration-300 flex flex-col">
+                        <div
+                            class="aspect-[4/3] bg-slate-50 dark:bg-slate-800/50 relative overflow-hidden flex items-center justify-center">
+                            <div class="flex flex-col items-center gap-2 text-slate-400">
+                                <span class="material-symbols-outlined text-4xl">image_not_supported</span>
+                                <span class="text-xs font-medium">No Image</span>
+                            </div>
+                            <div class="absolute top-3 right-3">
+                                <span
+                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+                                    Draft
+                                </span>
+                            </div>
+                        </div>
+                        <div class="p-5 flex flex-col flex-1 gap-4">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h3
+                                        class="text-slate-900 dark:text-white font-bold text-lg leading-tight group-hover:text-primary transition-colors">
+                                        Acid Wash</h3>
+                                    <p class="text-slate-500 dark:text-slate-400 text-xs font-mono mt-1">SKU-9931</p>
+                                </div>
+                                <span
+                                    class="inline-flex items-center justify-center min-w-[2.5rem] h-8 px-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-200 text-sm font-bold border border-slate-200 dark:border-slate-700">
+                                    32
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 py-3 border-y border-slate-100 dark:border-slate-700/50">
+                                <div class="flex flex-col">
+                                    <span
+                                        class="text-[10px] uppercase tracking-wider font-semibold text-slate-400">Weight</span>
+                                    <span class="text-slate-700 dark:text-slate-200 font-medium">0.85 kg</span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span
+                                        class="text-[10px] uppercase tracking-wider font-semibold text-slate-400">Stock</span>
+                                    <span class="text-slate-700 dark:text-slate-200 font-medium">8 Units</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between mt-auto">
+                                <div class="flex flex-col">
+                                    <span class="text-xs text-slate-400">0.85kg × $15.00</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="block text-xl font-black text-slate-900 dark:text-white">$12.75</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="px-4 py-3 bg-slate-50 dark:bg-[#1a1d2d] border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input class="sr-only peer" type="checkbox" value="" />
+                                <div
+                                    class="w-9 h-5 bg-slate-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/40 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-slate-600 peer-checked:bg-primary">
+                                </div>
+                            </label>
+                            <div class="flex gap-1">
+                                <button
+                                    class="p-2 text-slate-400 hover:text-primary hover:bg-white dark:hover:bg-slate-800 rounded-lg transition-colors"
+                                    title="Manage Images">
+                                    <span class="material-symbols-outlined text-[20px]">add_photo_alternate</span>
+                                </button>
+                                <button
+                                    class="p-2 text-primary hover:bg-primary hover:text-white bg-primary/10 rounded-lg transition-colors"
+                                    title="Edit Variant">
+                                    <span class="material-symbols-outlined text-[20px]">edit</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Add New Card (Empty State placeholder for grid) -->
+                    <button
+                        class="group relative flex flex-col items-center justify-center gap-4 bg-transparent rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-primary hover:bg-primary/5 dark:hover:bg-primary/10 transition-all duration-300 min-h-[400px]">
+                        <div
+                            class="p-4 rounded-full bg-slate-100 dark:bg-slate-800 group-hover:bg-primary group-hover:text-white text-slate-400 transition-colors">
+                            <span class="material-symbols-outlined text-4xl">add</span>
+                        </div>
+                        <div class="text-center px-4">
+                            <h3 class="text-slate-900 dark:text-white font-bold text-lg group-hover:text-primary">Add
+                                Another Variant</h3>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Create a new SKU configuration
+                            </p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

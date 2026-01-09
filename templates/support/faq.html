@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Frequently Asked Questions</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet" />
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings:
+                'FILL' 0,
+                'wght' 400,
+                'GRAD' 0,
+                'opsz' 24;
+            font-size: 20px;
+        }
+    </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1173d4",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200">
+    <div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+        <div class="layout-container flex h-full grow flex-col">
+            <!-- TopNavBar Component -->
+            <header
+                class="flex items-center justify-center border-b border-solid border-gray-200 dark:border-gray-700 px-4 md:px-10 py-3 bg-background-light dark:bg-background-dark">
+                <div class="flex items-center justify-between w-full max-w-7xl">
+                    <div class="flex items-center gap-4 text-gray-900 dark:text-white">
+                        <span class="material-symbols-outlined text-3xl text-primary">diamond</span>
+                        <h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">Surplus</h2>
+                    </div>
+                    <nav class="hidden md:flex items-center gap-9">
+                        <a class="text-sm font-medium leading-normal text-gray-800 dark:text-gray-300 hover:text-primary dark:hover:text-primary"
+                            href="#">New Arrivals</a>
+                        <a class="text-sm font-medium leading-normal text-gray-800 dark:text-gray-300 hover:text-primary dark:hover:text-primary"
+                            href="#">Shop</a>
+                        <a class="text-sm font-medium leading-normal text-gray-800 dark:text-gray-300 hover:text-primary dark:hover:text-primary"
+                            href="#">About</a>
+                        <a class="text-sm font-medium leading-normal text-gray-800 dark:text-gray-300 hover:text-primary dark:hover:text-primary"
+                            href="#">FAQs</a>
+                    </nav>
+                    <div class="flex items-center gap-2">
+                        <button
+                            class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 w-10 bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-300 hover:bg-primary/20 dark:hover:bg-primary/30">
+                            <span class="material-symbols-outlined">search</span>
+                        </button>
+                        <button
+                            class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 w-10 bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-300 hover:bg-primary/20 dark:hover:bg-primary/30">
+                            <span class="material-symbols-outlined">person</span>
+                        </button>
+                        <button
+                            class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 w-10 bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-300 hover:bg-primary/20 dark:hover:bg-primary/30">
+                            <span class="material-symbols-outlined">shopping_bag</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            <!-- Main Content -->
+            <main class="flex flex-1 justify-center py-10 sm:py-16 px-4">
+                <div class="flex flex-col w-full max-w-4xl gap-8">
+                    <!-- PageHeading Component -->
+                    <div class="flex flex-col items-center text-center gap-3 p-4">
+                        <h1
+                            class="text-gray-900 dark:text-white text-4xl sm:text-5xl font-black leading-tight tracking-[-0.033em]">
+                            Frequently Asked Questions</h1>
+                        <p
+                            class="text-gray-600 dark:text-gray-400 text-base sm:text-lg font-normal leading-normal max-w-2xl">
+                            Find answers to your questions about ordering, shipping, returns, and more. If you can't
+                            find what you're looking for, feel free to contact us.</p>
+                    </div>
+                    <!-- SearchBar Component -->
+                    <div class="px-4 py-3">
+                        <label class="flex flex-col w-full">
+                            <div class="flex w-full flex-1 items-stretch rounded-lg h-14 shadow-sm">
+                                <div
+                                    class="text-gray-500 dark:text-gray-400 flex bg-white dark:bg-gray-800 items-center justify-center pl-4 rounded-l-lg border border-r-0 border-gray-300 dark:border-gray-700">
+                                    <span class="material-symbols-outlined">search</span>
+                                </div>
+                                <input
+                                    class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-l-0 border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 h-full placeholder:text-gray-500 dark:placeholder:text-gray-400 px-4 text-base font-normal leading-normal"
+                                    placeholder="Search for a question..." value="" />
+                            </div>
+                        </label>
+                    </div>
+                    <!-- FAQ Accordions Section -->
+                    <div class="flex flex-col gap-8">
+                        <!-- Ordering & Payment Section -->
+                        <div>
+                            <h2
+                                class="text-gray-900 dark:text-white text-2xl font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">
+                                Ordering &amp; Payment</h2>
+                            <div
+                                class="flex flex-col p-4 bg-white dark:bg-gray-800/50 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700/50">
+                                <details class="flex flex-col border-b border-gray-200 dark:border-gray-700 py-2 group"
+                                    open="">
+                                    <summary
+                                        class="flex cursor-pointer items-center justify-between gap-6 py-3 list-none">
+                                        <p
+                                            class="text-gray-800 dark:text-gray-200 text-base font-medium leading-normal">
+                                            What payment methods do you accept?</p>
+                                        <span
+                                            class="material-symbols-outlined text-gray-600 dark:text-gray-400 group-open:rotate-180 transition-transform">expand_more</span>
+                                    </summary>
+                                    <p
+                                        class="text-gray-600 dark:text-gray-400 text-sm font-normal leading-normal pb-3 pr-6">
+                                        We accept all major credit cards (Visa, MasterCard, American Express), PayPal,
+                                        and Apple Pay for a seamless checkout experience.</p>
+                                </details>
+                                <details class="flex flex-col border-b border-gray-200 dark:border-gray-700 py-2 group">
+                                    <summary
+                                        class="flex cursor-pointer items-center justify-between gap-6 py-3 list-none">
+                                        <p
+                                            class="text-gray-800 dark:text-gray-200 text-base font-medium leading-normal">
+                                            Can I modify or cancel my order?</p>
+                                        <span
+                                            class="material-symbols-outlined text-gray-600 dark:text-gray-400 group-open:rotate-180 transition-transform">expand_more</span>
+                                    </summary>
+                                    <p
+                                        class="text-gray-600 dark:text-gray-400 text-sm font-normal leading-normal pb-3 pr-6">
+                                        Once an order is placed, we are unable to make modifications. If you wish to
+                                        cancel, please contact our support team within 30 minutes of placing the order.
+                                        We cannot guarantee cancellation after this window.</p>
+                                </details>
+                                <details class="flex flex-col py-2 group">
+                                    <summary
+                                        class="flex cursor-pointer items-center justify-between gap-6 py-3 list-none">
+                                        <p
+                                            class="text-gray-800 dark:text-gray-200 text-base font-medium leading-normal">
+                                            Is my payment information secure?</p>
+                                        <span
+                                            class="material-symbols-outlined text-gray-600 dark:text-gray-400 group-open:rotate-180 transition-transform">expand_more</span>
+                                    </summary>
+                                    <p
+                                        class="text-gray-600 dark:text-gray-400 text-sm font-normal leading-normal pb-3 pr-6">
+                                        Absolutely. We use industry-standard SSL encryption to protect your details.
+                                        Your payment information is processed securely and is never stored on our
+                                        servers.</p>
+                                </details>
+                            </div>
+                        </div>
+                        <!-- Shipping & Delivery Section -->
+                        <div>
+                            <h2
+                                class="text-gray-900 dark:text-white text-2xl font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">
+                                Shipping &amp; Delivery</h2>
+                            <div
+                                class="flex flex-col p-4 bg-white dark:bg-gray-800/50 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700/50">
+                                <details class="flex flex-col border-b border-gray-200 dark:border-gray-700 py-2 group">
+                                    <summary
+                                        class="flex cursor-pointer items-center justify-between gap-6 py-3 list-none">
+                                        <p
+                                            class="text-gray-800 dark:text-gray-200 text-base font-medium leading-normal">
+                                            How long does shipping take?</p>
+                                        <span
+                                            class="material-symbols-outlined text-gray-600 dark:text-gray-400 group-open:rotate-180 transition-transform">expand_more</span>
+                                    </summary>
+                                    <p
+                                        class="text-gray-600 dark:text-gray-400 text-sm font-normal leading-normal pb-3 pr-6">
+                                        Standard shipping typically takes 5-7 business days. Expedited options are
+                                        available at checkout for faster delivery.</p>
+                                </details>
+                                <details class="flex flex-col py-2 group">
+                                    <summary
+                                        class="flex cursor-pointer items-center justify-between gap-6 py-3 list-none">
+                                        <p
+                                            class="text-gray-800 dark:text-gray-200 text-base font-medium leading-normal">
+                                            How can I track my order?</p>
+                                        <span
+                                            class="material-symbols-outlined text-gray-600 dark:text-gray-400 group-open:rotate-180 transition-transform">expand_more</span>
+                                    </summary>
+                                    <p
+                                        class="text-gray-600 dark:text-gray-400 text-sm font-normal leading-normal pb-3 pr-6">
+                                        Once your order has shipped, you will receive an email with a tracking number
+                                        and a link to view the status of your delivery.</p>
+                                </details>
+                            </div>
+                        </div>
+                        <!-- Returns & Exchanges Section -->
+                        <div>
+                            <h2
+                                class="text-gray-900 dark:text-white text-2xl font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">
+                                Returns &amp; Exchanges</h2>
+                            <div
+                                class="flex flex-col p-4 bg-white dark:bg-gray-800/50 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700/50">
+                                <details class="flex flex-col py-2 group">
+                                    <summary
+                                        class="flex cursor-pointer items-center justify-between gap-6 py-3 list-none">
+                                        <p
+                                            class="text-gray-800 dark:text-gray-200 text-base font-medium leading-normal">
+                                            What is your return policy?</p>
+                                        <span
+                                            class="material-symbols-outlined text-gray-600 dark:text-gray-400 group-open:rotate-180 transition-transform">expand_more</span>
+                                    </summary>
+                                    <p
+                                        class="text-gray-600 dark:text-gray-400 text-sm font-normal leading-normal pb-3 pr-6">
+                                        We offer a 30-day return policy for all items in their original, unworn
+                                        condition. Please visit our returns portal to initiate a return or exchange.</p>
+                                </details>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- CTA Section -->
+                    <div
+                        class="mt-12 mb-6 bg-white dark:bg-gray-800 p-8 rounded-xl text-center shadow-sm border border-gray-200 dark:border-gray-700">
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Can't find your answer?</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-6">Our customer support team is here to help.</p>
+                        <button
+                            class="flex items-center justify-center gap-2 h-12 px-8 mx-auto bg-primary text-white font-bold rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:focus:ring-offset-background-dark">
+                            <span>Contact Support</span>
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+
+</html>

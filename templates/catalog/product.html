@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Product Detail Page</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1173d4",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings:
+                'FILL' 0,
+                'wght' 400,
+                'GRAD' 0,
+                'opsz' 24
+        }
+    </style>
+</head>
+
+<body class="font-display bg-background-light dark:bg-background-dark">
+    <div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+        <div class="layout-container flex h-full grow flex-col">
+            <header
+                class="flex items-center justify-between whitespace-nowrap border-b border-solid border-neutral-200 dark:border-white/10 px-4 sm:px-6 lg:px-10 py-3">
+                <div class="flex items-center gap-8">
+                    <div class="flex items-center gap-4 text-black dark:text-white">
+                        <div class="size-6">
+                            <svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z"
+                                    fill="currentColor"></path>
+                            </svg>
+                        </div>
+                        <h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">KiloWear</h2>
+                    </div>
+                    <label class="hidden md:flex flex-col min-w-40 !h-10 max-w-64">
+                        <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+                            <div
+                                class="text-neutral-500 dark:text-neutral-400 flex border border-neutral-300 dark:border-white/20 bg-white dark:bg-background-dark items-center justify-center pl-4 rounded-l-lg border-r-0">
+                                <span class="material-symbols-outlined text-base">search</span>
+                            </div>
+                            <input
+                                class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-black dark:text-white focus:outline-0 focus:ring-0 border border-neutral-300 dark:border-white/20 bg-white dark:bg-background-dark focus:border-primary h-full placeholder:text-neutral-400 dark:placeholder:text-neutral-500 px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+                                placeholder="Search" value="" />
+                        </div>
+                    </label>
+                </div>
+                <div class="flex flex-1 justify-end gap-4 md:gap-8">
+                    <div class="hidden lg:flex items-center gap-9">
+                        <a class="text-neutral-800 dark:text-neutral-100 text-sm font-medium leading-normal"
+                            href="#">New Arrivals</a>
+                        <a class="text-neutral-800 dark:text-neutral-100 text-sm font-medium leading-normal"
+                            href="#">Women</a>
+                        <a class="text-neutral-800 dark:text-neutral-100 text-sm font-medium leading-normal"
+                            href="#">Men</a>
+                        <a class="text-neutral-800 dark:text-neutral-100 text-sm font-medium leading-normal"
+                            href="#">Kids</a>
+                        <a class="text-neutral-800 dark:text-neutral-100 text-sm font-medium leading-normal"
+                            href="#">Sale</a>
+                    </div>
+                    <div class="flex gap-2">
+                        <button
+                            class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-neutral-100 dark:bg-white/10 text-black dark:text-white gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
+                            <span class="material-symbols-outlined">favorite</span>
+                        </button>
+                        <button
+                            class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-neutral-100 dark:bg-white/10 text-black dark:text-white gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
+                            <span class="material-symbols-outlined">shopping_bag</span>
+                        </button>
+                        <button
+                            class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-neutral-100 dark:bg-white/10 text-black dark:text-white gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
+                            <span class="material-symbols-outlined">person</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            <main class="flex flex-1 justify-center py-5 px-4 sm:px-6 lg:px-8">
+                <div class="layout-content-container flex flex-col w-full max-w-6xl flex-1">
+                    <div class="flex flex-wrap gap-2 p-4">
+                        <a class="text-neutral-600 dark:text-neutral-400 text-sm font-medium leading-normal"
+                            href="#">Home</a>
+                        <span class="text-neutral-600 dark:text-neutral-400 text-sm font-medium leading-normal">/</span>
+                        <a class="text-neutral-600 dark:text-neutral-400 text-sm font-medium leading-normal"
+                            href="#">Women</a>
+                        <span class="text-neutral-600 dark:text-neutral-400 text-sm font-medium leading-normal">/</span>
+                        <a class="text-neutral-600 dark:text-neutral-400 text-sm font-medium leading-normal"
+                            href="#">Jackets</a>
+                        <span class="text-neutral-600 dark:text-neutral-400 text-sm font-medium leading-normal">/</span>
+                        <span class="text-neutral-900 dark:text-white text-sm font-medium leading-normal">Vintage Denim
+                            Jacket</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 p-4">
+                        <!-- Left Column: Image Gallery -->
+                        <div class="flex flex-col gap-4">
+                            <div class="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden rounded-xl aspect-[4/5] bg-neutral-200 dark:bg-white/10"
+                                data-alt="Front view of a vintage denim jacket"
+                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBmBqemqJYfz9pSmKxnOQpKl0mNp6ExckQeo7FaCt2Vcq2M6OxWvjRA1auJp4srnJkflpR9emKxos4g-bNiJgYu5V7Ep2cu6Zcsm_raH03iPnx7PnhiX_WAuR5ohJ0vpkfhmjHh3ELnkZ_VjStnENLajxZgFW07qwsF7DVMmYC8TFTMq08i_hXzjEx0RQxuAB_fSochjQLvFfbhVloB4CDxJpCd08r8pRqxGO_DQy4KrTFspO2tkA7dtWsHa3X4_q1Yf49X9AdOnoo");'>
+                            </div>
+                            <div class="grid grid-cols-[repeat(auto-fit,minmax(80px,1fr))] gap-3">
+                                <div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg border-2 border-primary"
+                                    data-alt="Front view of the denim jacket"
+                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB2IksLrr6OMaijgX-qZVYMJIGbOxIvGptEODmqT93-f-HaeM7xl-YYOedMyPjnrjegwVpIEuj5VgZ2LF9HRD576sCw3eRGiqRHCm60VguLU_3N_9x7yAQiu8tTVI0I-YadpMV4kAYtpS3V8QsQiOkeaRNgwktRdqmjXviZjrf2Wg8cdf210qfinV8zqoBPFDdsplk15EcArFllaJO5chXn-t6rthXdKd_zClx1gNTSdvWJde3RmJM4Ubvd0C4G_h2rGOHxNS_dLW4");'>
+                                </div>
+                                <div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
+                                    data-alt="Back view of the denim jacket"
+                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCqkBlPFUjsZU0IzcIWNsvGWYOzOev-tsOXb_X4T4hS8Wr55Wfv3WAPP3eFm1KqpmyMuXJVDLlCSJlvZFj9wyEWUNXSJJXkPFqQVt9OCdqSSJOc15kkkJr0QcmDg0cQlCgSLMQcecxV9eoEpEOcYRE-3uFTVwim_5fBRtn6dxP-cywS5agc2u8WVAjXwTKRgrXOy0SUWi0Wyt4xgOjAlfSEzPSC69qg2s8E8mQIe_L5JqSihujoeN22yZfoOaET-Gn8WuDD3hW243Q");'>
+                                </div>
+                                <div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
+                                    data-alt="Close-up of the jacket's fabric"
+                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDA8910_3ASfbn4GEQ4AbiVMdwjki0qFeed6eIRpfDBi51ae00MPa0LZTbB-eoVwtKTlMqslhvAF_sRd8lgj5LUSZopaXedCR-jokVEB_svhLn5XLWr_mmjbwXGRtgicOaG0PqtTHc4uKvn0i_qBO5tS88wIS7-kmW4gRvZgL8NTgvFo1rv_Wj7kP9xXK4Tyvglnx097MOcyMKUbOwCA8pI07Oj7xEh512N7Wypaf9_MHiMIWJALWAGl3HPU-nQ1S_z1CyIg4gLKLA");'>
+                                </div>
+                                <div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg"
+                                    data-alt="Jacket being worn by a model"
+                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBr2SPb8hhpU5LiEmM7sp9zQiNEnlnM-mBIGA8WJe73OEG_XJ5yiJT-74WtiPlfaWliefo3or_nuilEabajQCN7F-60AxE2N5TYLqhFmD370pdxQLce3tq1b2RTunNuYLam2KlB6sQ1Idq0ChEbCait3l9gXJiO1sZ6qtCVB4HhwRxzO6cf1FSRLPQBsbkzKS8avhyjhQmXlalIS_1d9JM6VTPYAVrL2wipJ-fr1C7ZTjkFq8M7Gf0EX2BPTXocijzkBoBbkHrpRxo");'>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Right Column: Product Details -->
+                        <div class="flex flex-col gap-6 py-4">
+                            <div class="flex flex-col gap-3">
+                                <h1
+                                    class="text-black dark:text-white text-3xl sm:text-4xl font-black leading-tight tracking-[-0.033em]">
+                                    Vintage Denim Jacket</h1>
+                                <div class="flex items-center gap-2">
+                                    <div class="flex items-center text-yellow-500">
+                                        <span class="material-symbols-outlined !text-xl"
+                                            style="font-variation-settings: 'FILL' 1;">star</span>
+                                        <span class="material-symbols-outlined !text-xl"
+                                            style="font-variation-settings: 'FILL' 1;">star</span>
+                                        <span class="material-symbols-outlined !text-xl"
+                                            style="font-variation-settings: 'FILL' 1;">star</span>
+                                        <span class="material-symbols-outlined !text-xl"
+                                            style="font-variation-settings: 'FILL' 1;">star</span>
+                                        <span class="material-symbols-outlined !text-xl">star</span>
+                                    </div>
+                                    <p class="text-sm text-neutral-600 dark:text-neutral-400">(121 reviews)</p>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-4 p-4 rounded-lg bg-neutral-100 dark:bg-white/5">
+                                <div class="flex justify-between items-baseline">
+                                    <span class="text-lg font-semibold text-neutral-700 dark:text-neutral-200">Price per
+                                        kg</span>
+                                    <span class="text-2xl font-bold text-black dark:text-white">$35.00</span>
+                                </div>
+                                <div class="border-b border-neutral-200 dark:border-white/10"></div>
+                                <div
+                                    class="flex justify-between items-baseline text-sm text-neutral-600 dark:text-neutral-400">
+                                    <span>Average weight per piece</span>
+                                    <span>~0.75 kg</span>
+                                </div>
+                                <div
+                                    class="flex justify-between items-baseline text-sm text-green-600 dark:text-green-400 font-semibold">
+                                    <span>Stock Status</span>
+                                    <span>In Stock</span>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-4">
+                                <p class="text-neutral-700 dark:text-neutral-300 text-base">An iconic staple for any
+                                    wardrobe. This vintage denim jacket offers a timeless look with a comfortable,
+                                    worn-in feel. Perfect for layering over any outfit.</p>
+                                <div class="flex flex-col gap-4">
+                                    <div class="flex items-center gap-4">
+                                        <label class="text-base font-semibold text-black dark:text-white"
+                                            for="quantity">Quantity (pieces):</label>
+                                        <div
+                                            class="flex items-center rounded-lg border border-neutral-300 dark:border-white/20">
+                                            <button class="px-3 py-2 text-neutral-600 dark:text-neutral-400">-</button>
+                                            <input
+                                                class="w-12 text-center border-0 bg-transparent text-black dark:text-white focus:ring-0"
+                                                id="quantity" type="text" value="1" />
+                                            <button class="px-3 py-2 text-neutral-600 dark:text-neutral-400">+</button>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="flex flex-col gap-2 text-sm p-4 rounded-lg border border-neutral-200 dark:border-white/10">
+                                        <div
+                                            class="flex justify-between items-center text-neutral-600 dark:text-neutral-400">
+                                            <span>Total Estimated Weight:</span>
+                                            <span class="font-semibold">0.75 kg</span>
+                                        </div>
+                                        <div class="flex justify-between items-center text-black dark:text-white">
+                                            <span class="text-lg font-bold">Total Price:</span>
+                                            <span class="text-lg font-bold">$26.25</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col sm:flex-row gap-3 mt-2">
+                                <button
+                                    class="flex w-full sm:w-auto flex-1 max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-primary text-white gap-2 text-base font-bold leading-normal tracking-[0.015em] px-6">
+                                    <span class="material-symbols-outlined">shopping_bag</span>
+                                    Add to Cart
+                                </button>
+                                <button
+                                    class="flex w-full sm:w-auto max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-transparent text-primary dark:text-primary border-2 border-primary gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 px-6">
+                                    <span class="material-symbols-outlined">favorite</span>
+                                    Add to Wishlist
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Full-width Section Below -->
+                    <div class="p-4 mt-8">
+                        <div class="border-b border-neutral-200 dark:border-white/10">
+                            <nav class="flex gap-6 -mb-px">
+                                <a class="py-4 px-1 inline-flex items-center gap-2 text-sm whitespace-nowrap text-primary border-b-2 border-primary font-semibold"
+                                    href="#">Description</a>
+                                <a class="py-4 px-1 inline-flex items-center gap-2 text-sm whitespace-nowrap text-neutral-500 hover:text-primary dark:text-neutral-400 dark:hover:text-primary font-medium"
+                                    href="#">Details</a>
+                                <a class="py-4 px-1 inline-flex items-center gap-2 text-sm whitespace-nowrap text-neutral-500 hover:text-primary dark:text-neutral-400 dark:hover:text-primary font-medium"
+                                    href="#">Shipping &amp; Returns</a>
+                                <a class="py-4 px-1 inline-flex items-center gap-2 text-sm whitespace-nowrap text-neutral-500 hover:text-primary dark:text-neutral-400 dark:hover:text-primary font-medium"
+                                    href="#">Reviews (121)</a>
+                            </nav>
+                        </div>
+                        <div class="py-6">
+                            <h3 class="text-lg font-bold text-black dark:text-white mb-2">About This Jacket</h3>
+                            <p class="text-neutral-700 dark:text-neutral-300">Discover the perfect blend of classic
+                                style and modern comfort. Our Vintage Denim Jacket is crafted from high-quality,
+                                pre-loved denim, giving it a unique character and a soft, broken-in feel from the moment
+                                you put it on. Each jacket is a one-of-a-kind piece, sourced as new surplus from premium
+                                brands. Its versatile design makes it an essential layering piece for all seasons,
+                                easily paired with anything from a simple t-shirt to a cozy hoodie.</p>
+                            <ul class="list-disc list-inside space-y-2 mt-4 text-neutral-700 dark:text-neutral-300">
+                                <li>100% Cotton Surplus Denim</li>
+                                <li>Classic button-front closure</li>
+                                <li>Two chest pockets and two side pockets</li>
+                                <li>Condition: New Surplus, Unworn</li>
+                                <li>Care: Machine wash cold, tumble dry low</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+
+</html>
