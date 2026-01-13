@@ -110,8 +110,12 @@
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
                             <thead class="bg-gray-50 dark:bg-gray-800/50">
                                 <tr>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-[35%]"
-                                        scope="col">Product</th>
+                                    <th class="px-10 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-[35%]"
+                                        scope="col">Image</th>
+
+                                    <th class="px-sm-1 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-[35%]"
+                                        scope="col">Product Name </th>
+
                                     <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell w-[25%]"
                                         scope="col">Category</th>
 
@@ -129,32 +133,36 @@
                                 {% for product in products %}
                                 <!-- Row 1 -->
                                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group">
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <a href="{% url 'adminpanel:variant_list' product.id %}"
-                                            class="flex items-center group">
+                                    <!-- Image column -->
+                                    <td class="px-8 py-2 whitespace-nowrap">
+                                        <a href="{% url 'adminpanel:variant_list' product.id %}" class="group block">
                                             <div
                                                 class="h-12 w-12 flex-shrink-0 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700 bg-gray-50">
                                                 {% if product.main_image %}
                                                 <img src="{{ product.main_image.url }}"
                                                     class="h-full w-full object-cover" alt="{{ product.name }}">
                                                 {% else %}
-                                                <span class="material-symbols-outlined text-gray-300 text-3xl">
+                                                <span
+                                                    class="material-symbols-outlined text-gray-300 text-3xl flex items-center justify-center">
                                                     image_not_supported
                                                 </span>
                                                 {% endif %}
-
-                                            </div>
-                                            <div class="ml-4">
-                                                <div
-                                                    class="text-sm font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors cursor-pointer">
-                                                    {{ product.name }}
-                                                </div>
-                                                <!-- <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">SKU:
-                                                    DNM-001-A</div>
-                                            </div> -->
                                             </div>
                                         </a>
                                     </td>
+
+                                    <!-- Name column -->
+                                    <td class="px-sm-1 py-4 whitespace-nowrap">
+                                        <a href="{% url 'adminpanel:variant_list' product.id %}" class="group">
+                                            <div
+                                                class="text-sm font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors cursor-pointer">
+                                                {{ product.name }}
+                                            </div>
+                                        </a>
+                                    </td>
+
+
+
                                     <td class="px-6 py-4 whitespace-nowrap hidden md:table-cell">
                                         <div class="flex items-center text-sm text-gray-600 dark:text-gray-300">
                                             <span
@@ -196,7 +204,8 @@
 
                                             <div class="w-px h-4 bg-gray-200 dark:bg-gray-700 mx-1"></div>
 
-                                            <a href="#" title="Add Varient" class="inline-flex items-center justify-center
+                                            <a href="{% url 'adminpanel:variant_create' product.id %}"
+                                                title="Add Varient" class="inline-flex items-center justify-center
                                                       h-8 w-8 rounded-[10px] border border-slate-400
                                                       text-slate-700 hover:border-primary hover:text-primary
                                                       bg-white transition-colors">

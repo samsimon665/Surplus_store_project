@@ -15,6 +15,8 @@ from apps.adminpanel.views.products import product_list, product_create, product
 
 from apps.adminpanel.views.variants import variant_list, variant_create
 
+from apps.adminpanel.views.faq import faq_list, faq_create
+
 
 app_name = "adminpanel"
 
@@ -49,6 +51,10 @@ urlpatterns = [
 
     path("products/<int:product_id>/variants/", variant_list, name="variant_list"),
     path("products/<int:product_id>/variants/create/", variant_create, name="variant_create"),
+
+
+    path("faqs/", faq_list , name="faq_list"),
+    path("faqs/add/", faq_create , name="faq_add"),
     
 
 

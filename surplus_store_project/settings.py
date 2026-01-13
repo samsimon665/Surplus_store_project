@@ -65,6 +65,8 @@ INSTALLED_APPS = [
     'apps.accounts.apps.AccountsConfig',
     'apps.catalog.apps.CatalogConfig',
     'apps.adminpanel.apps.AdminpanelConfig',
+    'apps.support.apps.SupportConfig',
+
 
 ]
 

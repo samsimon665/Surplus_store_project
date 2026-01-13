@@ -1,18 +1,23 @@
 <!DOCTYPE html>
-
 <html class="light" lang="en">
 
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Create Product Variants Form</title>
+
+    <!-- Tailwind + plugins -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
         rel="stylesheet" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
         rel="stylesheet" />
+
+    <!-- Cropper CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -31,6 +36,7 @@
             },
         }
     </script>
+
     <style>
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -38,6 +44,27 @@
 
         body {
             font-family: 'Inter', sans-serif;
+        }
+
+        /* Cropper polish */
+        .cropper-modal {
+            background-color: rgba(0, 0, 0, 0.25) !important;
+        }
+
+        .cropper-view-box {
+            outline: 2px solid rgba(99, 102, 241, 0.9);
+            outline-offset: -2px;
+        }
+
+        .cropper-point {
+            width: 12px;
+            height: 12px;
+            background-color: #6366f1;
+            opacity: 1;
+        }
+
+        .cropper-line {
+            background-color: rgba(99, 102, 241, 0.8);
         }
     </style>
 </head>
@@ -50,6 +77,41 @@
         {% csrf_token %}
         <main class="max-w-[960px] mx-auto py-8 px-4 md:px-10">
 
+
+            {% if messages %}
+            <section class="space-y-3 mb-6">
+                {% for message in messages %}
+                <div class="
+                        flex items-start gap-3
+                        px-5 py-4 rounded-xl
+                        border
+                        {% if message.tags == 'error' %}
+                            bg-red-50 border-red-200 text-red-700
+                        {% elif message.tags == 'success' %}
+                            bg-green-50 border-green-200 text-green-700
+                        {% else %}
+                            bg-slate-50 border-slate-200 text-slate-700
+                        {% endif %}
+                    ">
+                    <span class="material-symbols-outlined text-xl mt-0.5">
+                        {% if message.tags == 'error' %}
+                        error
+                        {% elif message.tags == 'success' %}
+                        check_circle
+                        {% else %}
+                        info
+                        {% endif %}
+                    </span>
+
+                    <p class="text-sm font-medium leading-relaxed">
+                        {{ message }}
+                    </p>
+                </div>
+                {% endfor %}
+            </section>
+            {% endif %}
+
+
             <!-- Breadcrumbs -->
             <nav class="flex items-center gap-2 mb-6">
                 <a class="text-slate-500 dark:text-slate-400 text-sm font-medium hover:text-primary"
@@ -61,6 +123,7 @@
                 <span class="material-symbols-outlined text-slate-400 text-sm leading-none">chevron_right</span>
                 <span class="text-slate-900 dark:text-white text-sm font-semibold">New Variant</span>
             </nav>
+
             <!-- Page Heading -->
             <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
                 <h1 class="text-slate-900 dark:text-white text-3xl md:text-4xl font-black tracking-tight">Create Product
@@ -71,90 +134,103 @@
                     <span>Back to Product</span>
                 </button>
             </div>
+
             <div class="space-y-6">
+
                 <!-- 1. Product Overview (Read-Only) -->
                 <section
                     class="bg-white dark:bg-slate-900 p-6 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
                     <div class="flex flex-col md:flex-row gap-6">
-                        <div class="flex-1 space-y-4">
+                        <!-- LEFT SIDE -->
+                        <div class="flex-1 space-y-4 pt-6 md:pt-10">
                             <div class="flex items-center gap-2 text-primary">
                                 <span class="material-symbols-outlined">info</span>
                                 <h2 class="text-lg font-bold">Product Overview</h2>
                             </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+                            <!-- DETAILS ROW: moved further down -->
+                            <div class="mt-6 md:mt-8 grid grid-cols-7 sm:grid-cols-3 gap-4">
                                 <div>
-                                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Product</p>
-                                    <p class="text-slate-900 dark:text-white font-medium">Vintage Denim Jacket</p>
-                                </div>
-                                <div>
-                                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">SubCategory
+                                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                                        Product
                                     </p>
-                                    <p class="text-slate-900 dark:text-white font-medium">Outerwear</p>
+                                    <p class="text-slate-900 dark:text-white font-medium">
+                                        {{ product.name }}
+                                    </p>
                                 </div>
+
                                 <div>
-                                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Pricing</p>
-                                    <p class="text-primary font-bold">₹450/kg</p>
+                                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                                        SubCategory
+                                    </p>
+                                    <p class="text-slate-900 dark:text-white font-medium">
+                                        {{ product.subcategory.name }}
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                                        Pricing
+                                    </p>
+                                    <p class="text-primary font-bold">
+                                        ₹{{ product.subcategory.price_per_kg }}/kg
+                                    </p>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- RIGHT SIDE IMAGE -->
                         <div
                             class="w-full md:w-48 aspect-video md:aspect-square bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden">
-                            <img class="w-full h-full object-cover"
-                                data-alt="Product placeholder showing a blue denim jacket texture"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkGAoqFonqvI4bxweX_NJoumxQQM_H00ja4Nqu-EUml5G1S6eL3Lcpof-jjZduz5hz7RIMPDOP6ZX1eOj0GSWH6TanI5uogzY0VM1uY3ZT_QGGF7artU0fo777AljxDrL1CNmKFB--zThJiUGgy9xkGdaqOreeKa9wrtILD1QEp7XHXgP3a8ppzKuPIwAsDPIF4cGWZIE1LRAkj1JxZc7QMjSUIkCBGVkAe1stnx7o4x3HMq9pwnpqtEeUNAEdOMTv3z_NeIvG1So" />
+                            {% if product.main_image %}
+                            <img src="{{ product.main_image.url }}" class="w-full h-full object-cover"
+                                alt="{{ product.name }}" />
+                            {% else %}
+                            <div class="w-full h-full flex items-center justify-center text-slate-400">
+                                No Image
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                 </section>
+
                 <!-- 2. Variant Identity -->
                 <section
                     class="bg-white dark:bg-slate-900 p-6 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
-                    <h2 class="text-slate-900 dark:text-white text-xl font-bold mb-4">Variant Identity</h2>
+                    <h2 class="text-slate-900 dark:text-white text-xl font-bold mb-4">Variant Color</h2>
                     <div class="max-w-md">
                         <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Color Name
                             <span class="text-red-500">*</span></label>
-                        <input type="text" name="color" required
+                        <input type="text" name="color" value="{{ posted_data.color|default:'' }}" required
                             class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3"
                             placeholder="e.g., Navy Blue" />
+
 
                         <p class="mt-2 text-xs text-slate-500">The specific color label for this inventory batch.</p>
                     </div>
                 </section>
+
                 <!-- 3. Color Media -->
                 <section
                     class="bg-white dark:bg-slate-900 p-6 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
+
                     <div class="mb-4">
-                        <h2 class="text-slate-900 dark:text-white text-xl font-bold">Color Media</h2>
-                        <p class="text-slate-500 text-sm">Upload 2-4 high-resolution images for this color variant.</p>
+                        <h2 class="text-slate-900 dark:text-white text-xl font-bold">
+                            Variant Images
+                        </h2>
+                        <p class="text-slate-500 text-sm">
+                            Upload 2–4 high-resolution images for this color variant.
+                        </p>
                     </div>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                        <div
-                            class="aspect-square rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 flex flex-col items-center justify-center cursor-pointer hover:border-primary hover:bg-primary/5 transition-all group">
-                            <span
-                                class="material-symbols-outlined text-slate-400 group-hover:text-primary text-3xl">add_photo_alternate</span>
-                            <span class="text-xs text-slate-400 mt-2 font-medium">Add Image</span>
-                        </div>
-                        <div class="relative aspect-square rounded-lg overflow-hidden group">
-                            <img class="w-full h-full object-cover"
-                                data-alt="Abstract blue fabric detail for product preview"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0Zkph5OCuWRfsD5_5a--ZP3_2Utbs5KmWMkX_B88Md-c6yIlEiBmnX2d5slaf-bNVltHDoMLRbTCoMEa3f2-UslQRRAqxXtUWS9zayQUq-_6c5fBd0dFRUP0JADBDeGskkAdsEAZ5CyO15Xpexvkz92XHUfHSU8wSgF-L0-Xv2ZsP8w5p3p_7Vdi7NfTiDbLFC-O1-hdmkXKMOrFcfQUbMRSBVYxmBQAFszXK0IkXTLzrluk37skwn08avunCEos0LHdeN3dyj58" />
-                            <button
-                                class="absolute top-2 right-2 size-8 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                <span class="material-symbols-outlined text-lg">delete</span>
-                            </button>
-                        </div>
-                        <!-- Placeholder placeholders -->
-                        <div
-                            class="aspect-square rounded-lg border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center">
-                            <span
-                                class="material-symbols-outlined text-slate-200 dark:text-slate-800 text-3xl">image</span>
-                        </div>
-                        <div
-                            class="aspect-square rounded-lg border-2 border-dashed border-slate-200 dark:border-slate-800 flex items-center justify-center">
-                            <span
-                                class="material-symbols-outlined text-slate-200 dark:text-slate-800 text-3xl">image</span>
-                        </div>
-                    </div>
+
+                    <!-- REAL FILE INPUT -->
+                    <input type="file" name="images" id="variant-images" accept="image/*" multiple class="hidden" />
+
+                    <!-- IMAGE GRID (JS will render slots here) -->
+                    <div id="image-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-4"></div>
+
                 </section>
+
                 <!-- 4. Size & Inventory -->
                 <section
                     class="bg-white dark:bg-slate-900 p-6 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
@@ -164,101 +240,108 @@
                             Available
                             Sizes</label>
                         <div class="flex flex-wrap gap-3">
+
                             <label class="cursor-pointer">
-                                <input checked="" class="peer sr-only" type="checkbox" />
+                                {% if "XS" in posted_sizes %}
+                                <input type="checkbox" name="sizes" value="XS" class="size-checkbox peer sr-only"
+                                    checked />
+                                {% else %}
+                                <input type="checkbox" name="sizes" value="XS" class="size-checkbox peer sr-only" />
+                                {% endif %}
                                 <span
-                                    class="px-6 py-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all inline-block">XS</span>
+                                    class="px-6 py-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all inline-block">
+                                    XS
+                                </span>
                             </label>
+
                             <label class="cursor-pointer">
-                                <input checked="" class="peer sr-only" type="checkbox" />
+                                {% if "S" in posted_sizes %}
+                                <input type="checkbox" name="sizes" value="S" class="size-checkbox peer sr-only"
+                                    checked />
+                                {% else %}
+                                <input type="checkbox" name="sizes" value="S" class="size-checkbox peer sr-only" />
+                                {% endif %}
                                 <span
-                                    class="px-6 py-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all inline-block">S</span>
+                                    class="px-6 py-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all inline-block">
+                                    S
+                                </span>
                             </label>
+
                             <label class="cursor-pointer">
-                                <input class="peer sr-only" type="checkbox" />
+                                {% if "M" in posted_sizes %}
+                                <input type="checkbox" name="sizes" value="M" class="size-checkbox peer sr-only"
+                                    checked />
+                                {% else %}
+                                <input type="checkbox" name="sizes" value="M" class="size-checkbox peer sr-only" />
+                                {% endif %}
                                 <span
-                                    class="px-6 py-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all inline-block">M</span>
+                                    class="px-6 py-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all inline-block">
+                                    M
+                                </span>
                             </label>
+
                             <label class="cursor-pointer">
-                                <input class="peer sr-only" type="checkbox" />
+                                {% if "L" in posted_sizes %}
+                                <input type="checkbox" name="sizes" value="L" class="size-checkbox peer sr-only"
+                                    checked />
+                                {% else %}
+                                <input type="checkbox" name="sizes" value="L" class="size-checkbox peer sr-only" />
+                                {% endif %}
                                 <span
-                                    class="px-6 py-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all inline-block">L</span>
+                                    class="px-6 py-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all inline-block">
+                                    L
+                                </span>
                             </label>
+
                             <label class="cursor-pointer">
-                                <input class="peer sr-only" type="checkbox" />
+                                {% if "XL" in posted_sizes %}
+                                <input type="checkbox" name="sizes" value="XL" class="size-checkbox peer sr-only"
+                                    checked />
+                                {% else %}
+                                <input type="checkbox" name="sizes" value="XL" class="size-checkbox peer sr-only" />
+                                {% endif %}
                                 <span
-                                    class="px-6 py-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all inline-block">XL</span>
+                                    class="px-6 py-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all inline-block">
+                                    XL
+                                </span>
                             </label>
+
                             <label class="cursor-pointer">
-                                <input class="peer sr-only" type="checkbox" />
+                                {% if "XXL" in posted_sizes %}
+                                <input type="checkbox" name="sizes" value="XXL" class="size-checkbox peer sr-only"
+                                    checked />
+                                {% else %}
+                                <input type="checkbox" name="sizes" value="XXL" class="size-checkbox peer sr-only" />
+                                {% endif %}
                                 <span
-                                    class="px-6 py-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all inline-block">XXL</span>
+                                    class="px-6 py-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all inline-block">
+                                    XXL
+                                </span>
                             </label>
+
                         </div>
                     </div>
+
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
                             <thead>
                                 <tr class="border-b border-slate-100 dark:border-slate-800">
-                                    <th class="pb-4 pt-2 px-2 text-sm font-semibold text-slate-400">Size</th>
+                                    <th class="pb-4 pt-2 px-2 text-sm font-semibold text-primary">Size</th>
                                     <th class="pb-4 pt-2 px-2 text-sm font-semibold text-primary">Weight (kg) *</th>
-                                    <th class="pb-4 pt-2 px-2 text-sm font-semibold text-slate-400">Initial Stock *</th>
+                                    <th class="pb-4 pt-2 px-2 text-sm font-semibold text-primary">Available Units
+                                        (Stock) *</th>
                                     <th class="pb-4 pt-2 px-2 w-10"></th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-                                <!-- Selected Row 1 -->
-                                <tr class="group">
-                                    <td class="py-4 px-2">
-                                        <span
-                                            class="font-bold text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-lg">XS</span>
-                                    </td>
-                                    <td class="py-4 px-2">
-                                        <div class="relative">
-                                            <input
-                                                class="w-full max-w-[150px] bg-primary/5 border-primary/30 rounded-lg focus:ring-primary focus:border-primary text-slate-900 dark:text-white font-bold px-3 py-2"
-                                                step="0.01" type="number" value="0.45" />
-                                        </div>
-                                    </td>
-                                    <td class="py-4 px-2">
-                                        <input
-                                            class="w-full max-w-[150px] bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg focus:ring-primary focus:border-primary text-slate-900 dark:text-white px-3 py-2"
-                                            placeholder="0" type="number" />
-                                    </td>
-                                    <td class="py-4 px-2 text-right">
-                                        <button class="text-slate-300 hover:text-red-500 transition-colors">
-                                            <span class="material-symbols-outlined">close</span>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <!-- Selected Row 2 -->
-                                <tr class="group">
-                                    <td class="py-4 px-2">
-                                        <span
-                                            class="font-bold text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-lg">S</span>
-                                    </td>
-                                    <td class="py-4 px-2">
-                                        <div class="relative">
-                                            <input
-                                                class="w-full max-w-[150px] bg-primary/5 border-primary/30 rounded-lg focus:ring-primary focus:border-primary text-slate-900 dark:text-white font-bold px-3 py-2"
-                                                step="0.01" type="number" value="0.52" />
-                                        </div>
-                                    </td>
-                                    <td class="py-4 px-2">
-                                        <input
-                                            class="w-full max-w-[150px] bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg focus:ring-primary focus:border-primary text-slate-900 dark:text-white px-3 py-2"
-                                            placeholder="0" type="number" />
-                                    </td>
-                                    <td class="py-4 px-2 text-right">
-                                        <button class="text-slate-300 hover:text-red-500 transition-colors">
-                                            <span class="material-symbols-outlined">close</span>
-                                        </button>
-                                    </td>
-                                </tr>
+
+                            <tbody id="size-rows" class="divide-y divide-slate-100 dark:divide-slate-800">
+                                <!-- rows will be injected dynamically -->
                             </tbody>
+
                         </table>
                     </div>
                 </section>
+
                 <!-- 5. Action Footer -->
                 <footer class="flex items-center justify-end gap-4 pt-6">
                     <button
@@ -275,7 +358,370 @@
         </main>
     </form>
 
+
+
+    {{ posted_sizes|json_script:"posted-sizes" }}
+    {{ posted_data|json_script:"posted-data" }}
+
+
+
+
     <div class="h-12"></div>
+
+    <!-- Full-screen image preview modal -->
+    <div id="imagePreviewModal" class="fixed inset-0 z-40 hidden bg-black/70 flex items-center justify-center">
+        <div class="max-w-3xl max-h-[90vh] mx-4 bg-white dark:bg-slate-900 rounded-xl overflow-hidden">
+            <img id="imagePreviewModalImg" class="w-full h-full object-contain" alt="Full image preview" />
+        </div>
+    </div>
+
+    <!-- Cropper modal -->
+    <div id="cropperModal" class="fixed inset-0 z-50 hidden bg-black/60 flex items-center justify-center">
+        <div class="bg-white dark:bg-slate-900 rounded-xl
+                    w-full max-w-4xl h-[90vh]
+                    p-4 flex flex-col">
+
+            <h3 class="text-base font-semibold mb-2 shrink-0">
+                Crop Image
+            </h3>
+
+            <div class="flex-1 flex items-center justify-center">
+                <img id="cropperImage" class="max-h-full max-w-full object-contain" />
+            </div>
+
+            <div class="flex justify-end gap-3 mt-3 shrink-0">
+                <button id="cropCancel" type="button" class="px-4 py-2 rounded-lg border">
+                    Cancel
+                </button>
+                <button id="cropConfirm" type="button" class="px-4 py-2 rounded-lg bg-primary text-white">
+                    Crop &amp; Apply
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cropper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+    <!-- Variant Images + Cropper -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const fileInput = document.getElementById("variant-images");
+            const imageGrid = document.getElementById("image-grid");
+
+            const MAX_IMAGES = 4;
+            let selectedImages = []; // { file, url }
+
+            // Cropper-related
+            const cropModal = document.getElementById("cropperModal");
+            const cropImage = document.getElementById("cropperImage");
+            const cropConfirmBtn = document.getElementById("cropConfirm");
+            const cropCancelBtn = document.getElementById("cropCancel");
+
+            let cropper = null;
+            let pendingFiles = []; // queue of original File objects to crop
+
+            // Big preview modal
+            const imagePreviewModal = document.getElementById("imagePreviewModal");
+            const imagePreviewModalImg = document.getElementById("imagePreviewModalImg");
+
+            /* 1) Handle file selection */
+            fileInput.addEventListener("change", () => {
+                const newFiles = Array.from(fileInput.files);
+
+                for (let file of newFiles) {
+                    if (selectedImages.length + pendingFiles.length >= MAX_IMAGES) break;
+                    if (!file.type.startsWith("image/")) continue;
+                    pendingFiles.push(file);
+                }
+
+                fileInput.value = ""; // allow reselection of same file
+
+                if (!cropper && pendingFiles.length > 0) {
+                    startNextCrop();
+                }
+            });
+
+            /* 2) Crop workflow */
+            function startNextCrop() {
+                if (pendingFiles.length === 0) return;
+
+                const file = pendingFiles.shift();
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    cropImage.src = e.target.result;
+                    cropModal.classList.remove("hidden");
+
+                    if (cropper) cropper.destroy();
+
+                    cropper = new Cropper(cropImage, {
+                        aspectRatio: 4 / 5,
+                        viewMode: 0,
+                        dragMode: "move",
+                        autoCropArea: 0.9,
+                        background: false,
+                        guides: true,
+                        center: true,
+                        highlight: false,
+                        cropBoxMovable: true,
+                        cropBoxResizable: true,
+                        toggleDragModeOnDblclick: false,
+                    });
+
+                    cropImage.dataset.originalName = file.name;
+                };
+
+                reader.readAsDataURL(file);
+            }
+
+            cropConfirmBtn.addEventListener("click", function () {
+                if (!cropper) return;
+
+                cropper.getCroppedCanvas({
+                    width: 1200,
+                    height: 1500,
+                }).toBlob(blob => {
+                    if (!blob) return;
+
+                    const fileName = cropImage.dataset.originalName || "cropped.jpg";
+
+                    const croppedFile = new File(
+                        [blob],
+                        fileName,
+                        { type: "image/jpeg" }
+                    );
+
+                    const objectUrl = URL.createObjectURL(croppedFile);
+
+                    selectedImages.push({
+                        file: croppedFile,
+                        url: objectUrl,
+                    });
+
+                    renderImages();
+                    syncFilesBeforeSubmit();
+
+                    cropper.destroy();
+                    cropper = null;
+                    cropModal.classList.add("hidden");
+
+                    if (pendingFiles.length > 0 && selectedImages.length < MAX_IMAGES) {
+                        startNextCrop();
+                    } else {
+                        pendingFiles = [];
+                    }
+                }, "image/jpeg", 0.9);
+            });
+
+            cropCancelBtn.addEventListener("click", function () {
+                if (cropper) cropper.destroy();
+                cropper = null;
+                cropModal.classList.add("hidden");
+
+                if (pendingFiles.length > 0) {
+                    startNextCrop();
+                }
+            });
+
+            /* 3) Render grid + small preview */
+            function renderImages() {
+                imageGrid.innerHTML = "";
+
+                selectedImages.forEach((item, index) => {
+                    const slot = document.createElement("div");
+                    slot.className = `
+                        relative aspect-square rounded-3xl border
+                        border-slate-200 dark:border-slate-800
+                        bg-slate-100 dark:bg-slate-800 overflow-hidden cursor-pointer
+                    `;
+
+                    slot.innerHTML = `
+                        <img src="${item.url}" class="w-full h-full object-cover" />
+
+                        <div class="absolute bottom-3 left-3 px-3 py-1.5 rounded-full
+                                    text-xs sm:text-sm font-semibold
+                                    bg-black/70 text-white shadow-md">
+                            ${index === 0 ? "Primary (1)" : `Image ${index + 1}`}
+                        </div>
+
+                        <button type="button"
+                                class="absolute top-3 right-3 w-9 h-9 rounded-full
+                                       bg-black/70 flex items-center justify-center
+                                       text-white text-lg shadow-md
+                                       hover:bg-red-500 transition-colors"
+                                data-remove-index="${index}">
+                            <span class="material-symbols-outlined text-[22px]">
+                                delete
+                            </span>
+                        </button>
+                    `;
+
+                    slot.addEventListener("click", (e) => {
+                        const removeBtn = e.target.closest("button[data-remove-index]");
+                        if (removeBtn) return;
+
+                        if (!imagePreviewModalImg || !imagePreviewModal) return;
+                        imagePreviewModalImg.src = item.url;
+                        imagePreviewModal.classList.remove("hidden");
+                    });
+
+                    imageGrid.appendChild(slot);
+                });
+
+                imageGrid.querySelectorAll("button[data-remove-index]").forEach(btn => {
+                    btn.addEventListener("click", (e) => {
+                        e.stopPropagation();
+                        const index = parseInt(btn.dataset.removeIndex, 10);
+                        removeImage(index);
+                    });
+                });
+
+                if (selectedImages.length < MAX_IMAGES) {
+                    const addSlot = document.createElement("div");
+                    addSlot.className = `
+                        aspect-square rounded-3xl border-2 border-dashed
+                        border-slate-300 dark:border-slate-700
+                        bg-slate-50 dark:bg-slate-800
+                        flex flex-col items-center justify-center
+                        cursor-pointer hover:border-primary
+                        hover:bg-primary/5 transition-all group
+                    `;
+                    addSlot.onclick = () => fileInput.click();
+
+                    addSlot.innerHTML = `
+                        <span class="material-symbols-outlined text-slate-400 group-hover:text-primary text-4xl">
+                            add_photo_alternate
+                        </span>
+                        <span class="text-sm text-slate-400 mt-2 font-medium">
+                            ${selectedImages.length === 0 ? "Add Image" : "Add More"}
+                        </span>
+                    `;
+
+                    imageGrid.appendChild(addSlot);
+                }
+            }
+
+            function removeImage(index) {
+                URL.revokeObjectURL(selectedImages[index].url);
+                selectedImages.splice(index, 1);
+                renderImages();
+                syncFilesBeforeSubmit();
+            }
+
+            /* 4) Big preview modal close */
+            if (imagePreviewModal && imagePreviewModalImg) {
+                imagePreviewModal.addEventListener("click", function (e) {
+                    if (e.target === imagePreviewModal) {
+                        imagePreviewModal.classList.add("hidden");
+                        imagePreviewModalImg.src = "";
+                    }
+                });
+            }
+
+            /* 5) Sync to real input (for Django) */
+            function syncFilesBeforeSubmit() {
+                const dt = new DataTransfer();
+                selectedImages.forEach(item => dt.items.add(item.file));
+                fileInput.files = dt.files;
+            }
+
+            const formEl = document.querySelector("form");
+            if (formEl) {
+                formEl.addEventListener("submit", function () {
+                    syncFilesBeforeSubmit();
+                });
+            }
+
+            renderImages();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const SIZE_ORDER = ["XS", "S", "M", "L", "XL", "XXL"];
+            const tableBody = document.getElementById("size-rows");
+            const checkboxes = document.querySelectorAll(".size-checkbox");
+
+            function addRow(size) {
+                if (document.getElementById(`row-${size}`)) return;
+
+                const row = document.createElement("tr");
+                row.id = `row-${size}`;
+
+                row.innerHTML = `
+                    <td class="py-4 px-2">
+                        <span class="font-bold bg-slate-100 px-3 py-1 rounded-lg">${size}</span>
+                    </td>
+
+                    <td class="py-4 px-2">
+                        <input type="number"
+                            step="0.1"
+                            name="weight[${size}]"
+                            value="0.00"
+                            required
+                            class="w-full max-w-[150px] bg-primary/5 border border-primary/40 rounded-full px-4 py-2">
+                    </td>
+
+                    <td class="py-4 px-2">
+                        <input type="number"
+                            min="1"
+                            name="stock[${size}]"
+                            value="1"
+                            required
+                            class="w-full max-w-[150px] bg-primary/5 border border-primary/40 rounded-full px-4 py-2">
+                    </td>
+
+                    <td class="py-4 px-2 text-right">
+                        <button type="button"
+                                data-remove="${size}"
+                                class="text-red-500 text-xl">×</button>
+                    </td>
+                `;
+
+
+                const index = SIZE_ORDER.indexOf(size);
+                const rows = [...tableBody.children];
+                const before = rows.find(r =>
+                    SIZE_ORDER.indexOf(r.id.replace("row-", "")) > index
+                );
+
+                before ? tableBody.insertBefore(row, before) : tableBody.appendChild(row);
+            }
+
+            function removeRow(size) {
+                document.getElementById(`row-${size}`)?.remove();
+                document.querySelector(`.size-checkbox[value="${size}"]`).checked = false;
+            }
+
+            function syncFromCheckboxes() {
+                checkboxes.forEach(cb => {
+                    cb.checked ? addRow(cb.value) : removeRow(cb.value);
+                });
+            }
+
+            /* 🔥 ONE GLOBAL CLICK — NO TIMING ISSUES */
+            document.addEventListener("click", function (e) {
+                if (e.target.closest("label")) {
+                    requestAnimationFrame(syncFromCheckboxes);
+                }
+            });
+
+            /* Remove button */
+            tableBody.addEventListener("click", e => {
+                if (e.target.dataset.remove) {
+                    removeRow(e.target.dataset.remove);
+                }
+            });
+
+            /* Initial restore (POST-back safe) */
+            syncFromCheckboxes();
+
+        });
+    </script>
+
+
 </body>
 
 </html>

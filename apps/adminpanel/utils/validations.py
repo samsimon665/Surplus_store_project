@@ -87,3 +87,82 @@ def validate_image(image, *, max_size_mb=10):
         )
 
     return image
+   
+
+def validate_variant_data(
+    *,
+    color,
+    sizes,
+    weights,
+    stocks,
+    images,
+):
+    """
+    Backend validation for Variant creation.
+    Frontend validation is NOT trusted.
+    """
+
+    # ---------- COLOR ----------
+    validate_name(
+        color,
+        field_label="Color name",
+        min_length=2,
+        max_length=50,
+    )
+
+    # ---------- SIZES ----------
+    if not sizes:
+        raise forms.ValidationError("At least one size must be selected.")
+
+    # ---------- IMAGES ----------
+    if not images or len(images) < 2:
+        raise forms.ValidationError(
+            "At least 2 images are required for a variant."
+        )
+
+    if len(images) > 4:
+        raise forms.ValidationError(
+            "You can upload a maximum of 4 images."
+        )
+
+    for image in images:
+        validate_image(image, max_size_mb=10)
+
+    # ---------- SIZE DATA ----------
+    for size in sizes:
+        weight = weights.get(size)
+        stock = stocks.get(size)
+
+        if weight in (None, "",):
+            raise forms.ValidationError(
+                f"Weight is required for size {size}."
+            )
+
+        try:
+            weight = float(weight)
+        except ValueError:
+            raise forms.ValidationError(
+                f"Weight must be a number for size {size}."
+            )
+
+        if weight <= 0:
+            raise forms.ValidationError(
+                f"Weight must be greater than 0 for size {size}."
+            )
+
+        if stock in (None, "",):
+            raise forms.ValidationError(
+                f"Stock is required for size {size}."
+            )
+
+        try:
+            stock = int(stock)
+        except ValueError:
+            raise forms.ValidationError(
+                f"Stock must be an integer for size {size}."
+            )
+
+        if stock < 1:
+            raise forms.ValidationError(
+                f"Stock must be at least 1 for size {size}."
+            )
