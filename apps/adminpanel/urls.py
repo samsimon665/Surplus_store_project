@@ -17,6 +17,8 @@ from apps.adminpanel.views.variants import variant_list, variant_create
 
 from apps.adminpanel.views.faq import faq_list, faq_create
 
+from apps.adminpanel.views.promotions import promo_list, promo_create
+
 
 app_name = "adminpanel"
 
@@ -49,14 +51,17 @@ urlpatterns = [
     path("products/<int:pk>/edit/", product_edit, name="product_edit"),
     path("ajax/load-subcategories/", ajax_load_subcategories, name="adminpanel_ajax_load_subcategories"),
 
+
     path("products/<int:product_id>/variants/", variant_list, name="variant_list"),
     path("products/<int:product_id>/variants/create/", variant_create, name="variant_create"),
 
 
-    path("faqs/", faq_list , name="faq_list"),
-    path("faqs/add/", faq_create , name="faq_add"),
-    
+    path("faqs/", faq_list, name="faq_list"),
+    path("faqs/add/", faq_create, name="faq_add"),
 
+
+    path("promos/", promo_list, name="promo_list"),
+    path("promos/add/", promo_create, name="promo_create"),
 
 
 

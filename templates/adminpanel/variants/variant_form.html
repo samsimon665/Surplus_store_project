@@ -128,11 +128,18 @@
             <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
                 <h1 class="text-slate-900 dark:text-white text-3xl md:text-4xl font-black tracking-tight">Create Product
                     Variants</h1>
-                <button
-                    class="flex items-center gap-2 rounded-full h-10 px-6 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-bold hover:bg-slate-300 dark:hover:bg-slate-700 transition-all">
+                <a href="{% url 'adminpanel:variant_list' product.id %}" class="flex items-center gap-2
+                              rounded-full h-10 px-6
+                              bg-slate-200 dark:bg-slate-800
+                              text-slate-700 dark:text-slate-300
+                              text-sm font-bold
+                              hover:bg-slate-300 dark:hover:bg-slate-700
+                              transition-all">
+
                     <span class="material-symbols-outlined text-lg">arrow_back</span>
-                    <span>Back to Product</span>
-                </button>
+                    <span>Back to Variants</span>
+                </a>
+
             </div>
 
             <div class="space-y-6">
@@ -234,94 +241,60 @@
                 <!-- 4. Size & Inventory -->
                 <section
                     class="bg-white dark:bg-slate-900 p-6 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
-                    <h2 class="text-slate-900 dark:text-white text-xl font-bold mb-6">Size &amp; Inventory</h2>
-                    <div class="mb-8">
-                        <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-4">Select
-                            Available
-                            Sizes</label>
-                        <div class="flex flex-wrap gap-3">
 
-                            <label class="cursor-pointer">
-                                {% if "XS" in posted_sizes %}
-                                <input type="checkbox" name="sizes" value="XS" class="size-checkbox peer sr-only"
-                                    checked />
-                                {% else %}
-                                <input type="checkbox" name="sizes" value="XS" class="size-checkbox peer sr-only" />
-                                {% endif %}
-                                <span
-                                    class="px-6 py-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all inline-block">
-                                    XS
-                                </span>
+                    <!-- header row -->
+                    <div class="flex items-start justify-between mb-6">
+                        <!-- left: title + label -->
+                        <div>
+                            <h2 class="text-slate-900 dark:text-white text-xl font-bold mb-2">
+                                Size &amp; Inventory
+                            </h2>
+                            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                Select Available Sizes
                             </label>
+                        </div>
 
-                            <label class="cursor-pointer">
-                                {% if "S" in posted_sizes %}
-                                <input type="checkbox" name="sizes" value="S" class="size-checkbox peer sr-only"
-                                    checked />
-                                {% else %}
-                                <input type="checkbox" name="sizes" value="S" class="size-checkbox peer sr-only" />
-                                {% endif %}
-                                <span
-                                    class="px-6 py-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all inline-block">
-                                    S
-                                </span>
-                            </label>
+                        <!-- right: toggle -->
+                        <div class="flex items-center">
+                            <!-- Premium size mode toggle -->
+                            <div
+                                class="inline-flex items-center gap-2 rounded-full bg-slate-100/80 dark:bg-slate-900/80 px-2 py-2 border border-slate-200/70 dark:border-slate-700/70 shadow-sm">
 
-                            <label class="cursor-pointer">
-                                {% if "M" in posted_sizes %}
-                                <input type="checkbox" name="sizes" value="M" class="size-checkbox peer sr-only"
-                                    checked />
-                                {% else %}
-                                <input type="checkbox" name="sizes" value="M" class="size-checkbox peer sr-only" />
-                                {% endif %}
-                                <span
-                                    class="px-6 py-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all inline-block">
-                                    M
-                                </span>
-                            </label>
+                                <!-- XS‑XXL chip -->
+                                <button type="button" id="size-mode-alpha"
+                                    class="group flex items-center gap-2 rounded-full px-3 py-2 bg-white/90 dark:bg-slate-900/90 shadow-sm border border-primary/30 text-[11px]">
+                                    <span
+                                        class="flex items-center justify-center h-7 w-7 rounded-full bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                                        <span class="material-symbols-outlined text-[18px]">straighten</span>
+                                    </span>
+                                    <span class="flex flex-col items-start leading-tight">
+                                        <span class="font-semibold text-primary text-xs tracking-tight">XS‑XXL</span>
+                                        <span class="text-[10px] text-slate-400">Standard sizes</span>
+                                    </span>
+                                </button>
 
-                            <label class="cursor-pointer">
-                                {% if "L" in posted_sizes %}
-                                <input type="checkbox" name="sizes" value="L" class="size-checkbox peer sr-only"
-                                    checked />
-                                {% else %}
-                                <input type="checkbox" name="sizes" value="L" class="size-checkbox peer sr-only" />
-                                {% endif %}
-                                <span
-                                    class="px-6 py-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all inline-block">
-                                    L
-                                </span>
-                            </label>
-
-                            <label class="cursor-pointer">
-                                {% if "XL" in posted_sizes %}
-                                <input type="checkbox" name="sizes" value="XL" class="size-checkbox peer sr-only"
-                                    checked />
-                                {% else %}
-                                <input type="checkbox" name="sizes" value="XL" class="size-checkbox peer sr-only" />
-                                {% endif %}
-                                <span
-                                    class="px-6 py-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all inline-block">
-                                    XL
-                                </span>
-                            </label>
-
-                            <label class="cursor-pointer">
-                                {% if "XXL" in posted_sizes %}
-                                <input type="checkbox" name="sizes" value="XXL" class="size-checkbox peer sr-only"
-                                    checked />
-                                {% else %}
-                                <input type="checkbox" name="sizes" value="XXL" class="size-checkbox peer sr-only" />
-                                {% endif %}
-                                <span
-                                    class="px-6 py-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary transition-all inline-block">
-                                    XXL
-                                </span>
-                            </label>
-
+                                <!-- 28‑36 chip -->
+                                <button type="button" id="size-mode-numeric"
+                                    class="group flex items-center gap-2 rounded-full px-3 py-2 bg-transparent text-[11px] text-slate-600 dark:text-slate-300 hover:bg-white/70 hover:dark:bg-slate-800/80 border border-transparent">
+                                    <span
+                                        class="flex items-center justify-center h-7 w-7 rounded-full bg-slate-200/60 dark:bg-slate-800/80 text-slate-500 group-hover:bg-primary group-hover:text-white transition-colors">
+                                        <span class="material-symbols-outlined text-[18px]">straighten</span>
+                                    </span>
+                                    <span class="flex flex-col items-start leading-tight">
+                                        <span class="font-semibold text-xs tracking-tight">28‑36</span>
+                                        <span class="text-[10px] text-slate-400">Waist sizes</span>
+                                    </span>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
+                    <!-- size pills row -->
+                    <div class="mb-6">
+                        <div id="size-checkbox-container" class="flex flex-wrap gap-3"></div>
+                    </div>
+
+                    <!-- table (must keep id="size-rows") -->
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
                             <thead>
@@ -333,26 +306,42 @@
                                     <th class="pb-4 pt-2 px-2 w-10"></th>
                                 </tr>
                             </thead>
-
                             <tbody id="size-rows" class="divide-y divide-slate-100 dark:divide-slate-800">
-                                <!-- rows will be injected dynamically -->
+                                <!-- rows get injected by JS -->
                             </tbody>
-
                         </table>
                     </div>
                 </section>
 
+
+
+
+
+
                 <!-- 5. Action Footer -->
                 <footer class="flex items-center justify-end gap-4 pt-6">
-                    <button
-                        class="px-8 py-3 text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-                        Cancel
-                    </button>
-                    <button
-                        class="px-8 py-3 bg-primary text-white text-sm font-bold rounded-full shadow-lg shadow-primary/30 hover:bg-primary/90 hover:scale-[1.02] transition-all flex items-center gap-2">
-                        <span class="material-symbols-outlined text-xl">check_circle</span>
-                        <span>Create Variants</span>
-                    </button>
+                    <div class="flex justify-end gap-3 pt-4">
+                        <a href="{% url 'adminpanel:variant_list' product.id %}" class="
+                             inline-flex items-center justify-center
+                             px-8 py-3
+                             text-sm font-bold
+                             rounded-full
+                             text-slate-600 dark:text-slate-400
+                             border border-slate-200 dark:border-slate-700
+                             bg-transparent
+                             hover:text-slate-900 dark:hover:text-white
+                             hover:bg-slate-300 dark:hover:bg-slate-800
+                             transition-colors
+                           ">
+                            Cancel
+                        </a>
+
+
+                        <button
+                            class="px-8 py-3 bg-primary text-white text-sm font-bold rounded-full shadow-lg shadow-primary/30 hover:bg-primary/90 hover:scale-[1.02] transition-all flex items-center gap-2">
+                            <span class="material-symbols-outlined text-xl">check_circle</span>
+                            <span>Create Variants</span>
+                        </button>
                 </footer>
             </div>
         </main>
@@ -639,10 +628,75 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            const postedSizes = JSON.parse(document.getElementById("posted-sizes").textContent || "[]");
 
-            const SIZE_ORDER = ["XS", "S", "M", "L", "XL", "XXL"];
+            const MODE_ALPHA = { id: "alpha", sizes: ["XS", "S", "M", "L", "XL", "XXL"] };
+            const MODE_NUMERIC = { id: "numeric", sizes: ["28", "30", "32", "34", "36"] };
+            const ORDER = [...MODE_ALPHA.sizes, ...MODE_NUMERIC.sizes];
+
+            let currentMode = MODE_ALPHA;
+
+            const modeAlphaBtn = document.getElementById("size-mode-alpha");
+            const modeNumericBtn = document.getElementById("size-mode-numeric");
+            const checkboxContainer = document.getElementById("size-checkbox-container");
             const tableBody = document.getElementById("size-rows");
-            const checkboxes = document.querySelectorAll(".size-checkbox");
+
+            function clearAllRows() {
+                [...tableBody.children].forEach(row => row.remove());
+            }
+
+            function createPill(size, checked) {
+                const label = document.createElement("label");
+                label.className = "cursor-pointer";
+
+                label.innerHTML = `
+                <input type="checkbox"
+                    name="sizes"
+                    class="size-checkbox peer sr-only"
+                    value="${size}"
+                    ${checked ? "checked" : ""} />
+
+          <span
+            class="px-6 py-2 rounded-full border border-slate-200 dark:border-slate-700
+                   bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400
+                   font-bold peer-checked:bg-primary peer-checked:text-white
+                   peer-checked:border-primary transition-all inline-block">
+            ${size}
+          </span>
+        `;
+                return label;
+            }
+
+            function renderPills() {
+                checkboxContainer.innerHTML = "";
+                currentMode.sizes.forEach(size => {
+                    const isChecked = postedSizes.includes(size);
+                    checkboxContainer.appendChild(createPill(size, isChecked));
+                });
+                attachCheckboxEvents();
+                syncFromCheckboxes();
+            }
+
+            function setMode(mode) {
+                if (currentMode.id !== mode.id) {
+                    clearAllRows(); // never mix XS rows with 28 rows
+                }
+                currentMode = mode;
+
+                if (mode.id === "alpha") {
+                    modeAlphaBtn.className =
+                        "group flex items-center gap-2 rounded-full px-3 py-2 bg-white/90 dark:bg-slate-900/90 shadow-sm border border-primary/30 text-[11px]";
+                    modeNumericBtn.className =
+                        "group flex items-center gap-2 rounded-full px-3 py-2 bg-transparent text-[11px] text-slate-600 dark:text-slate-300 hover:bg-white/70 hover:dark:bg-slate-800/80 border border-transparent";
+                } else {
+                    modeNumericBtn.className =
+                        "group flex items-center gap-2 rounded-full px-3 py-2 bg-white/90 dark:bg-slate-900/90 shadow-sm border border-primary/30 text-[11px]";
+                    modeAlphaBtn.className =
+                        "group flex items-center gap-2 rounded-full px-3 py-2 bg-transparent text-[11px] text-slate-600 dark:text-slate-300 hover:bg-white/70 hover:dark:bg-slate-800/80 border border-transparent";
+                }
+
+                renderPills();
+            }
 
             function addRow(size) {
                 if (document.getElementById(`row-${size}`)) return;
@@ -651,75 +705,77 @@
                 row.id = `row-${size}`;
 
                 row.innerHTML = `
-                    <td class="py-4 px-2">
-                        <span class="font-bold bg-slate-100 px-3 py-1 rounded-lg">${size}</span>
-                    </td>
+          <td class="py-4 px-2">
+            <span class="font-bold bg-slate-100 px-3 py-1 rounded-lg">${size}</span>
+          </td>
+          <td class="py-4 px-2">
+            <input type="number"
+                   step="0.1"
+                   name="weight[${size}]"
+                   value="0.00"
+                   required
+                   class="w-full max-w-[150px] bg-primary/5 border border-primary/40 rounded-full px-4 py-2">
+          </td>
+          <td class="py-4 px-2">
+            <input type="number"
+                   min="1"
+                   name="stock[${size}]"
+                   value="1"
+                   required
+                   class="w-full max-w-[150px] bg-primary/5 border border-primary/40 rounded-full px-4 py-2">
+          </td>
+          <td class="py-4 px-2 text-right">
+            <button type="button"
+                    data-remove="${size}"
+                    class="text-red-500 text-xl">×</button>
+          </td>
+        `;
 
-                    <td class="py-4 px-2">
-                        <input type="number"
-                            step="0.1"
-                            name="weight[${size}]"
-                            value="0.00"
-                            required
-                            class="w-full max-w-[150px] bg-primary/5 border border-primary/40 rounded-full px-4 py-2">
-                    </td>
-
-                    <td class="py-4 px-2">
-                        <input type="number"
-                            min="1"
-                            name="stock[${size}]"
-                            value="1"
-                            required
-                            class="w-full max-w-[150px] bg-primary/5 border border-primary/40 rounded-full px-4 py-2">
-                    </td>
-
-                    <td class="py-4 px-2 text-right">
-                        <button type="button"
-                                data-remove="${size}"
-                                class="text-red-500 text-xl">×</button>
-                    </td>
-                `;
-
-
-                const index = SIZE_ORDER.indexOf(size);
+                const index = ORDER.indexOf(size);
                 const rows = [...tableBody.children];
-                const before = rows.find(r =>
-                    SIZE_ORDER.indexOf(r.id.replace("row-", "")) > index
-                );
-
+                const before = rows.find(r => ORDER.indexOf(r.id.replace("row-", "")) > index);
                 before ? tableBody.insertBefore(row, before) : tableBody.appendChild(row);
             }
 
             function removeRow(size) {
                 document.getElementById(`row-${size}`)?.remove();
-                document.querySelector(`.size-checkbox[value="${size}"]`).checked = false;
+                const cb = checkboxContainer.querySelector(`.size-checkbox[value="${size}"]`);
+                if (cb) cb.checked = false;
             }
 
             function syncFromCheckboxes() {
-                checkboxes.forEach(cb => {
+                const cbs = checkboxContainer.querySelectorAll(".size-checkbox");
+                cbs.forEach(cb => {
                     cb.checked ? addRow(cb.value) : removeRow(cb.value);
                 });
             }
 
-            /* 🔥 ONE GLOBAL CLICK — NO TIMING ISSUES */
-            document.addEventListener("click", function (e) {
-                if (e.target.closest("label")) {
-                    requestAnimationFrame(syncFromCheckboxes);
-                }
-            });
+            function attachCheckboxEvents() {
+                const cbs = checkboxContainer.querySelectorAll(".size-checkbox");
+                cbs.forEach(cb => {
+                    cb.addEventListener("change", () => {
+                        cb.checked ? addRow(cb.value) : removeRow(cb.value);
+                    });
+                });
+            }
 
-            /* Remove button */
             tableBody.addEventListener("click", e => {
                 if (e.target.dataset.remove) {
                     removeRow(e.target.dataset.remove);
                 }
             });
 
-            /* Initial restore (POST-back safe) */
-            syncFromCheckboxes();
+            modeAlphaBtn.addEventListener("click", () => setMode(MODE_ALPHA));
+            modeNumericBtn.addEventListener("click", () => setMode(MODE_NUMERIC));
 
+            // start in XS‑XXL mode
+            setMode(MODE_ALPHA);
+            postedSizes.forEach(size => {
+                if (currentMode.sizes.includes(size)) addRow(size);
+            });
         });
     </script>
+
 
 
 </body>

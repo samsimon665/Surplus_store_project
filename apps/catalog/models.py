@@ -1,3 +1,5 @@
+from django.db.models import UniqueConstraint
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from django.utils.text import slugify
@@ -124,13 +126,22 @@ class Product(TimeStampedModel):
 
 class ProductVariant(TimeStampedModel):
     product = models.ForeignKey(
-        Product,
+        "catalog.Product",
         on_delete=models.CASCADE,
         related_name="variants"
     )
 
-    color = models.CharField(max_length=50)
-    size = models.CharField(max_length=50)
+    # COLOR = variant group (validated at application level)
+    color = models.CharField(
+        max_length=50,
+        help_text="Color name (validated unique per product)"
+    )
+
+    # SIZE = row inside the color group
+    size = models.CharField(
+        max_length=20,
+        help_text="Size (S, M, L, XL, etc.)"
+    )
 
     weight_kg = models.DecimalField(
         max_digits=6,
@@ -138,11 +149,16 @@ class ProductVariant(TimeStampedModel):
         help_text="Weight of one physical piece in KG"
     )
 
-    stock = models.PositiveIntegerField(default=1)
+    stock = models.PositiveIntegerField(
+        default=1,
+        help_text="Available stock for this size"
+    )
 
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Controls visibility of this color variant"
+    )
 
-    # keep SKU optional for now
     sku = models.CharField(
         max_length=100,
         blank=True,
@@ -154,8 +170,29 @@ class ProductVariant(TimeStampedModel):
         verbose_name = "Product Variant"
         verbose_name_plural = "Product Variants"
 
+        # ✅ CORRECT DB RULE
+        constraints = [
+            models.UniqueConstraint(
+                fields=["product", "color", "size"],
+                name="unique_product_color_size"
+            )
+        ]
+
+    def clean(self):
+        """
+        Prevent changing color after creation.
+        Images and grouping depend on color.
+        """
+        if self.pk:
+            old = ProductVariant.objects.get(pk=self.pk)
+            if old.color != self.color:
+                raise ValidationError(
+                    {"color": "Color cannot be changed once created."}
+                )
+
     def __str__(self):
         return f"{self.product.name} | {self.color} | {self.size}"
+
 
 
 class ProductImage(TimeStampedModel):

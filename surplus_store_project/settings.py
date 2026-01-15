@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'apps.catalog.apps.CatalogConfig',
     'apps.adminpanel.apps.AdminpanelConfig',
     'apps.support.apps.SupportConfig',
+    'apps.promotions.apps.PromotionsConfig',
 
 
 ]

@@ -1,3 +1,4 @@
+from apps.catalog.models import ProductVariant
 import re
 from django import forms
 
@@ -91,6 +92,7 @@ def validate_image(image, *, max_size_mb=10):
 
 def validate_variant_data(
     *,
+    product,
     color,
     sizes,
     weights,
@@ -99,16 +101,24 @@ def validate_variant_data(
 ):
     """
     Backend validation for Variant creation.
-    Frontend validation is NOT trusted.
+    One color can be created ONLY ONCE per product.
     """
 
     # ---------- COLOR ----------
-    validate_name(
-        color,
-        field_label="Color name",
-        min_length=2,
-        max_length=50,
-    )
+    if not color:
+        raise forms.ValidationError("Color is required.")
+
+    color = color.strip()
+
+    # 🚨 HARD BUSINESS RULE (THIS IS THE FIX)
+    if ProductVariant.objects.filter(
+        product=product,
+        color__iexact=color
+    ).exists():
+        raise forms.ValidationError(
+            f"A variant with color '{color}' already exists for this product. "
+            "Edit the existing color instead of creating it again."
+        )
 
     # ---------- SIZES ----------
     if not sizes:
@@ -125,15 +135,12 @@ def validate_variant_data(
             "You can upload a maximum of 4 images."
         )
 
-    for image in images:
-        validate_image(image, max_size_mb=10)
-
     # ---------- SIZE DATA ----------
     for size in sizes:
         weight = weights.get(size)
         stock = stocks.get(size)
 
-        if weight in (None, "",):
+        if weight in (None, ""):
             raise forms.ValidationError(
                 f"Weight is required for size {size}."
             )
@@ -150,7 +157,7 @@ def validate_variant_data(
                 f"Weight must be greater than 0 for size {size}."
             )
 
-        if stock in (None, "",):
+        if stock in (None, ""):
             raise forms.ValidationError(
                 f"Stock is required for size {size}."
             )

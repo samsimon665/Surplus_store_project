@@ -1,15 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
-
-from apps.adminpanel.decorators import admin_required
-from apps.adminpanel.forms.variant_forms import ProductVariantForm
-from apps.catalog.models import Product, ProductVariant, ProductImage
-
 from django.contrib import messages
+from django import forms
 
 from django.db import transaction
 from django.db.models import F, DecimalField, ExpressionWrapper
 
-from django import forms
+from apps.adminpanel.decorators import admin_required
+from apps.catalog.models import Product, ProductVariant, ProductImage
 from apps.adminpanel.utils.validations import validate_variant_data
 
 
@@ -22,7 +19,6 @@ def variant_create(request, product_id):
         sizes = request.POST.getlist("sizes")
         images = request.FILES.getlist("images")
 
-        # Build size → weight / stock maps
         weights = {}
         stocks = {}
 
@@ -30,47 +26,46 @@ def variant_create(request, product_id):
             weights[size] = request.POST.get(f"weight[{size}]")
             stocks[size] = request.POST.get(f"stock[{size}]")
 
-        # ✅ CENTRALIZED VALIDATION
+        # ✅ PRE-DB VALIDATION (CRITICAL)
         try:
             validate_variant_data(
+                product=product,
                 color=color,
                 sizes=sizes,
                 weights=weights,
                 stocks=stocks,
                 images=images,
             )
+
         except forms.ValidationError as e:
             messages.error(request, e.message)
-
-            context = {
-                "product": product,
-                "posted_data": request.POST,
-                "posted_sizes": sizes,
-            }
-
             return render(
                 request,
                 "adminpanel/variants/variant_form.html",
-                context,
+                {
+                    "product": product,
+                    "posted_data": request.POST,
+                    "posted_sizes": sizes,
+                },
             )
 
-        # ✅ ONLY DB OPERATIONS BELOW THIS POINT
+        # ✅ SAFE DB OPERATIONS
         with transaction.atomic():
             created_variants = []
 
             for size in sizes:
-                variant = ProductVariant.objects.create(
-                    product=product,
-                    color=color,
-                    size=size,
-                    weight_kg=float(weights[size]),
-                    stock=int(stocks[size]),
-                    is_active=True,
+                created_variants.append(
+                    ProductVariant.objects.create(
+                        product=product,
+                        color=color.strip(),
+                        size=size,
+                        weight_kg=float(weights[size]),
+                        stock=int(stocks[size]),
+                        is_active=True,
+                    )
                 )
-                created_variants.append(variant)
 
-
-            # One image set per color
+            # Images belong to the COLOR (first variant)
             image_owner = created_variants[0]
 
             for index, image in enumerate(images):
@@ -80,9 +75,9 @@ def variant_create(request, product_id):
                     is_primary=(index == 0),
                 )
 
-        messages.success(request, "Variants created successfully.")
+        messages.success(request, "Variant created successfully.")
         return redirect(
-            "adminpanel:product_variant_list",
+            "adminpanel:variant_list",
             product_id=product.id,
         )
 
@@ -110,13 +105,11 @@ def variant_list(request, product_id):
         .order_by("color", "size")
     )
 
-    context = {
-        "product": product,
-        "variants": variants,
-    }
-
     return render(
         request,
         "adminpanel/variants/variant_list.html",
-        context,
+        {
+            "product": product,
+            "variants": variants,
+        },
     )
