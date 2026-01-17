@@ -89,6 +89,7 @@
 
         </div>
         <div class="p-8 max-w-7xl mx-auto w-full">
+
             <!-- Filter Bar -->
             <div
                 class="bg-white dark:bg-[#1a1d21] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm mb-6 p-4 flex flex-wrap items-center justify-between gap-4">
@@ -96,9 +97,12 @@
                     <div class="relative flex-1 max-w-md">
                         <span
                             class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
-                        <input
-                            class="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm"
-                            placeholder="Search code, type or value..." type="text" />
+                        <form method="get" class="w-full">
+                            <input name="q" value="{{ request.GET.q|default:'' }}"
+                                class="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm"
+                                placeholder="Search code, type or value..." type="text" />
+                        </form>
+
                     </div>
                     <div class="flex items-center gap-2">
                         <button class="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
@@ -106,21 +110,53 @@
                         </button>
                     </div>
                 </div>
+
                 <div class="flex items-center gap-3">
                     <label class="text-sm font-semibold text-slate-500">Status:</label>
+
                     <div
                         class="flex bg-slate-100 dark:bg-slate-900 p-1 rounded-lg border border-slate-200 dark:border-slate-800">
-                        <button
-                            class="px-4 py-1.5 text-sm font-bold bg-white dark:bg-slate-800 shadow-sm rounded-md text-primary">All</button>
-                        <button
-                            class="px-4 py-1.5 text-sm font-medium text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">Active</button>
-                        <button
-                            class="px-4 py-1.5 text-sm font-medium text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">Inactive</button>
-                        <button
-                            class="px-4 py-1.5 text-sm font-medium text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">Expired</button>
+                        <a href="?status=all" class="px-4 py-1.5 text-sm font-bold rounded-md
+                           {% if current_status == 'all' %}
+                                bg-white dark:bg-slate-800 shadow-sm text-primary
+                           {% else %}
+                                text-slate-500 hover:text-slate-700 dark:hover:text-slate-300
+                           {% endif %}">
+                            All
+                        </a>
+
+                        <a href="?status=active" class="px-4 py-1.5 text-sm font-medium rounded-md
+                           {% if current_status == 'active' %}
+                                bg-white dark:bg-slate-800 shadow-sm text-primary
+                           {% else %}
+                                text-slate-500 hover:text-slate-700 dark:hover:text-slate-300
+                           {% endif %}">
+                            Active
+                        </a>
+
+                        <a href="?status=inactive" class="px-4 py-1.5 text-sm font-medium rounded-md
+                           {% if current_status == 'inactive' %}
+                                bg-white dark:bg-slate-800 shadow-sm text-primary
+                           {% else %}
+                                text-slate-500 hover:text-slate-700 dark:hover:text-slate-300
+                           {% endif %}">
+                            Inactive
+                        </a>
+
+                        <a href="?status=expired" class="px-4 py-1.5 text-sm font-medium rounded-md
+                           {% if current_status == 'expired' %}
+                                bg-white dark:bg-slate-800 shadow-sm text-primary
+                           {% else %}
+                                text-slate-500 hover:text-slate-700 dark:hover:text-slate-300
+                           {% endif %}">
+                            Expired
+                        </a>
+
                     </div>
+
                 </div>
             </div>
+
             <!-- Table Container -->
             <div
                 class="bg-white dark:bg-[#1a1d21] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
@@ -153,226 +189,125 @@
                                     Actions</th>
                             </tr>
                         </thead>
+
                         <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-                                <!-- Row 1 -->
-                                <tr class="table-row-hover transition-all group">
-                                    <td class="px-6 py-5">
-                                        <span
-                                            class="text-sm font-black tracking-wide bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">SURPLUS20</span>
-                                    </td>
-                                    <td class="px-6 py-5">
-                                        <span
-                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
-                                            Percentage
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-5 text-sm font-semibold">20% Off</td>
-                                    <td class="px-6 py-5 text-sm text-slate-600 dark:text-slate-400">$80.00</td>
-                                    <td class="px-6 py-5">
-                                        <div class="flex flex-col gap-1.5 w-32">
-                                            <div class="flex justify-between text-[10px] font-bold text-slate-500">
-                                                <span>75% used</span>
-                                                <span>150/200</span>
-                                            </div>
-                                            <div
-                                                class="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                                                <div class="h-full bg-primary rounded-full" style="width: 75%"></div>
-                                            </div>
+                            {% for promo in page_obj %}
+
+
+                            <tr class="table-row-hover transition-all group">
+                                <!-- PROMO CODE -->
+                                <td class="px-6 py-5">
+                                    <span
+                                        class="text-sm font-black tracking-wide bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">
+                                        {{ promo.code }}
+                                    </span>
+                                </td>
+
+                                <!-- TYPE -->
+                                <td class="px-6 py-5">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                                                    {% if promo.discount_type == 'PERCENT' %}
+                                                                        bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300
+                                                                    {% else %}
+                                                                        bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300
+                                                                    {% endif %}">
+                                        {% if promo.discount_type == "PERCENT" %}
+                                        Percentage
+                                        {% else %}
+                                        Flat Amount
+                                        {% endif %}
+                                    </span>
+                                </td>
+
+                                <!-- VALUE -->
+                                <td class="px-6 py-5 text-sm font-semibold">
+                                    {% if promo.discount_type == "PERCENT" %}
+                                    {{ promo.discount_value }}% Off
+                                    {% else %}
+                                    ₹{{ promo.discount_value|floatformat:2 }}
+                                    {% endif %}
+                                </td>
+
+                                <!-- MIN CART -->
+                                <td class="px-6 py-5 text-sm text-slate-600 dark:text-slate-400">
+                                    ₹{{ promo.minimum_cart_value|floatformat:2 }}
+                                </td>
+
+                                <!-- USAGE (SAME STYLE, SAFE DEFAULT) -->
+                                <td class="px-6 py-5">
+                                    <div class="flex flex-col gap-1.5 w-32">
+                                        <div class="flex justify-between text-[10px] font-bold text-slate-500">
+                                            <span>
+                                                {% if promo.usage_limit_total %}
+                                                {{ promo.usage_limit_per_user }}/{{ promo.usage_limit_total }}
+                                                {% else %}
+                                                Unlimited
+                                                {% endif %}
+                                            </span>
+                                            <span>—</span>
                                         </div>
-                                    </td>
-                                    <td class="px-6 py-5">
-                                        <div class="text-xs">
-                                            <p class="font-medium text-slate-700 dark:text-slate-300">Oct 12, 2023</p>
-                                            <p class="text-slate-400">to Dec 31, 2024</p>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-5 text-center">
-                                        <span
-                                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-status-active/10 text-status-active">
-                                            <span class="h-1.5 w-1.5 rounded-full bg-status-active"></span>
-                                            Active
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-5 text-right">
                                         <div
-                                            class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button class="p-2 text-slate-400 hover:text-primary transition-colors"
-                                                title="View Details">
-                                                <span class="material-symbols-outlined text-[20px]">visibility</span>
-                                            </button>
-                                            <button class="p-2 text-slate-400 hover:text-primary transition-colors"
-                                                title="Edit">
-                                                <span class="material-symbols-outlined text-[20px]">edit_square</span>
-                                            </button>
-                                            <button class="p-2 text-slate-400 hover:text-status-expired transition-colors"
-                                                title="Delete">
-                                                <span class="material-symbols-outlined text-[20px]">delete</span>
-                                            </button>
+                                            class="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                            <div class="h-full bg-primary rounded-full" style="width: 40%"></div>
                                         </div>
-                                    </td>
-                                </tr>
-                                <!-- Row 2 -->
-                                <tr class="table-row-hover transition-all group">
-                                    <td class="px-6 py-5">
-                                        <span
-                                            class="text-sm font-black tracking-wide bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">WINTERSALE</span>
-                                    </td>
-                                    <td class="px-6 py-5">
-                                        <span
-                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
-                                            Flat Amount
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-5 text-sm font-semibold">$50.00</td>
-                                    <td class="px-6 py-5 text-sm text-slate-600 dark:text-slate-400">$200.00</td>
-                                    <td class="px-6 py-5">
-                                        <div class="flex flex-col gap-1.5 w-32">
-                                            <div class="flex justify-between text-[10px] font-bold text-slate-500">
-                                                <span>24% used</span>
-                                                <span>24/100</span>
-                                            </div>
-                                            <div
-                                                class="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                                                <div class="h-full bg-primary rounded-full" style="width: 24%"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-5">
-                                        <div class="text-xs">
-                                            <p class="font-medium text-slate-700 dark:text-slate-300">Nov 01, 2023</p>
-                                            <p class="text-slate-400">to Jan 15, 2024</p>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-5 text-center">
-                                        <span
-                                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-status-active/10 text-status-active">
-                                            <span class="h-1.5 w-1.5 rounded-full bg-status-active"></span>
-                                            Active
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-5 text-right">
-                                        <div
-                                            class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button class="p-2 text-slate-400 hover:text-primary transition-colors">
-                                                <span class="material-symbols-outlined text-[20px]">visibility</span>
-                                            </button>
-                                            <button class="p-2 text-slate-400 hover:text-primary transition-colors">
-                                                <span class="material-symbols-outlined text-[20px]">edit_square</span>
-                                            </button>
-                                            <button class="p-2 text-slate-400 hover:text-status-expired transition-colors">
-                                                <span class="material-symbols-outlined text-[20px]">delete</span>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <!-- Row 3 -->
-                                <tr class="table-row-hover transition-all group bg-slate-50/30 dark:bg-slate-900/10">
-                                    <td class="px-6 py-5">
-                                        <span
-                                            class="text-sm font-black tracking-wide bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded text-slate-500">FLASHSALE</span>
-                                    </td>
-                                    <td class="px-6 py-5">
-                                        <span
-                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
-                                            Percentage
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-5 text-sm font-semibold text-slate-500">15% Off</td>
-                                    <td class="px-6 py-5 text-sm text-slate-400 dark:text-slate-500">$50.00</td>
-                                    <td class="px-6 py-5">
-                                        <div class="flex flex-col gap-1.5 w-32">
-                                            <div class="flex justify-between text-[10px] font-bold text-slate-400">
-                                                <span>100% used</span>
-                                                <span>50/50</span>
-                                            </div>
-                                            <div
-                                                class="h-1.5 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-                                                <div class="h-full bg-slate-400 rounded-full" style="width: 100%"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-5">
-                                        <div class="text-xs opacity-60">
-                                            <p class="font-medium text-slate-700 dark:text-slate-300">Sep 01, 2023</p>
-                                            <p class="text-slate-400">to Sep 02, 2023</p>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-5 text-center">
-                                        <span
-                                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-status-expired/10 text-status-expired">
-                                            <span class="h-1.5 w-1.5 rounded-full bg-status-expired"></span>
-                                            Expired
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-5 text-right">
-                                        <div
-                                            class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button class="p-2 text-slate-400 hover:text-primary transition-colors">
-                                                <span class="material-symbols-outlined text-[20px]">visibility</span>
-                                            </button>
-                                            <button class="p-2 text-slate-400 hover:text-primary transition-colors">
-                                                <span class="material-symbols-outlined text-[20px]">edit_square</span>
-                                            </button>
-                                            <button class="p-2 text-slate-400 hover:text-status-expired transition-colors">
-                                                <span class="material-symbols-outlined text-[20px]">delete</span>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <!-- Row 4 -->
-                                <tr class="table-row-hover transition-all group">
-                                    <td class="px-6 py-5">
-                                        <span
-                                            class="text-sm font-black tracking-wide bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">WELCOME10</span>
-                                    </td>
-                                    <td class="px-6 py-5">
-                                        <span
-                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
-                                            Percentage
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-5 text-sm font-semibold">10% Off</td>
-                                    <td class="px-6 py-5 text-sm text-slate-600 dark:text-slate-400">$0.00</td>
-                                    <td class="px-6 py-5">
-                                        <div class="flex flex-col gap-1.5 w-32">
-                                            <div class="flex justify-between text-[10px] font-bold text-slate-500">
-                                                <span>Unlimited</span>
-                                                <span>1,240 used</span>
-                                            </div>
-                                            <div
-                                                class="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                                                <div class="h-full bg-primary rounded-full" style="width: 40%"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-5">
-                                        <div class="text-xs">
-                                            <p class="font-medium text-slate-700 dark:text-slate-300">Jan 01, 2024</p>
-                                            <p class="text-slate-400">No End Date</p>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-5 text-center">
-                                        <span
-                                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-status-inactive/10 text-status-inactive">
-                                            <span class="h-1.5 w-1.5 rounded-full bg-status-inactive"></span>
-                                            Inactive
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-5 text-right">
-                                        <div
-                                            class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button class="p-2 text-slate-400 hover:text-primary transition-colors">
-                                                <span class="material-symbols-outlined text-[20px]">visibility</span>
-                                            </button>
-                                            <button class="p-2 text-slate-400 hover:text-primary transition-colors">
-                                                <span class="material-symbols-outlined text-[20px]">edit_square</span>
-                                            </button>
-                                            <button class="p-2 text-slate-400 hover:text-status-expired transition-colors">
-                                                <span class="material-symbols-outlined text-[20px]">delete</span>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                    </div>
+                                </td>
+
+                                <!-- VALIDITY -->
+                                <td class="px-6 py-5">
+                                    <div class="text-xs">
+                                        <p class="font-medium text-slate-700 dark:text-slate-300">
+                                            {{ promo.valid_from|date:"M d, Y" }}
+                                        </p>
+                                        <p class="text-slate-400">
+                                            to {{ promo.valid_to|date:"M d, Y" }}
+                                        </p>
+                                    </div>
+                                </td>
+
+                                <!-- STATUS -->
+                                <td class="px-6 py-5 text-center">
+                                    {% if promo.get_status == "active" %}
+                                    <span
+                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-status-active/10 text-status-active">
+                                        <span class="h-1.5 w-1.5 rounded-full bg-status-active"></span>
+                                        Active
+                                    </span>
+                                    {% elif promo.get_status == "expired" %}
+                                    <span
+                                        class="inline-flex items-center gap-1.5 rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-700 dark:bg-red-500/10 dark:text-red-400">
+                                        <span class="h-1.5 w-1.5 rounded-full bg-status-expired"></span>
+                                        Expired
+                                    </span>
+                                    {% else %}
+                                    <span
+                                        class="inline-flex items-center gap-1.5 rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-700 dark:bg-red-500/10 dark:text-red-400">
+                                        <span class="h-1.5 w-1.5 rounded-full bg-status-inactive"></span>
+                                        Inactive
+                                    </span>
+                                    {% endif %}
+                                </td>
+
+                                <!-- ACTIONS (UNCHANGED) -->
+                                <td class="px-6 py-5 text-right">
+                                    <div
+                                        class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button class="p-2 text-slate-400 hover:text-primary transition-colors">
+                                            <span class="material-symbols-outlined text-[20px]">visibility</span>
+                                        </button>
+                                        <button class="p-2 text-slate-400 hover:text-primary transition-colors">
+                                            <span class="material-symbols-outlined text-[20px]">edit_square</span>
+                                        </button>
+                                        <button class="p-2 text-slate-400 hover:text-status-expired transition-colors">
+                                            <span class="material-symbols-outlined text-[20px]">delete</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+
+                            {% endfor %}
+
                         </tbody>
                     </table>
                 </div>

@@ -1,10 +1,14 @@
 from django.shortcuts import render, redirect
 
-from apps.promotions.models import PromoCode
-
-from apps.adminpanel.forms.promo_forms import PromoCodeForm
+from django.core.paginator import Paginator
 
 from apps.adminpanel.decorators import admin_required
+
+from django.db.models import Q
+
+from apps.promotions.models import PromoCode
+from apps.adminpanel.forms.promo_forms import PromoCodeForm
+
 
 
 @admin_required
@@ -14,10 +18,32 @@ def promo_create(request):
 
         if form.is_valid():
             promo = form.save(commit=False)
+
+            # ------------------------
+            # NORMALIZE DATA (CRITICAL)
+            # ------------------------
+
             promo.code = promo.code.upper()
+
+            # convert rupees → paise
+            promo.discount_value = int(promo.discount_value * 100)
+            promo.minimum_cart_value = int(promo.minimum_cart_value * 100)
+
+            if promo.maximum_discount_amount:
+                promo.maximum_discount_amount = int(
+                    promo.maximum_discount_amount * 100
+                )
+
+            # enforce your rule: one coupon per user
+            promo.usage_limit_per_user = 1
+
             promo.save()
 
             return redirect("adminpanel:promo_list")
+
+        else:
+            # 🔴 IMPORTANT: expose errors while developing
+            print(form.errors)
 
     else:
         form = PromoCodeForm()
@@ -25,20 +51,42 @@ def promo_create(request):
     return render(
         request,
         "adminpanel/promo/promo_create.html",
-        {
-            "form": form
-        }
+        {"form": form},
     )
 
 
 @admin_required
 def promo_list(request):
-    promos = PromoCode.objects.all().order_by("-created_at")
+    status = request.GET.get("status", "all")
+    query = request.GET.get("q", "").strip()
+
+    promos_qs = PromoCode.objects.all().order_by("-created_at")
+
+    # 🔎 SEARCH
+    if query:
+        promos_qs = promos_qs.filter(
+            Q(code__icontains=query) |
+            Q(discount_type__icontains=query)
+        )
+
+    # 🔘 STATUS FILTER (business logic)
+    promos = []
+    for promo in promos_qs:
+        promo_status = promo.get_status()
+        if status == "all" or promo_status == status:
+            promos.append(promo)
+
+    paginator = Paginator(promos, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
 
     return render(
         request,
         "adminpanel/promo/promo_list.html",
         {
-            "promos": promos
-        }
+            "promos": page_obj,
+            "page_obj": page_obj,
+            "paginator": paginator,
+            "current_status": status,
+        },
     )

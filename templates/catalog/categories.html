@@ -1,292 +1,543 @@
 <!DOCTYPE html>
-
-<html class="dark" lang="en">
+<html lang="en">
 
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Explore Product Categories</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;display=swap"
-        rel="stylesheet" />
+    <title>Explore Categories | Surplus</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- [web:24] -->
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1"
         rel="stylesheet" />
+
+    <!-- Anime.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
     <style>
-        .material-symbols-outlined {
-            font-variation-settings:
-                'FILL' 0,
-                'wght' 400,
-                'GRAD' 0,
-                'opsz' 24
+        :root {
+            --color-bg: #000000;
+            --color-accent: #F2E700;
+            --color-surface: #111111;
+            --color-surface-soft: #141414;
+            --color-text: #EEEEEE;
+            --color-text-muted: #888888;
+            --font-display: 'Bebas Neue', sans-serif;
+            --font-body: 'Montserrat', sans-serif;
+            --radius-lg: 18px;
+            --radius-pill: 999px;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            padding-top: 76px;
+            /* offset for fixed navbar so it never overlaps */
+            /* [web:26][web:27] */
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        .display-font,
+        .navbar-brand,
+        .nav-link,
+        .btn {
+            font-family: var(--font-display);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .text-accent {
+            color: var(--color-accent) !important;
+        }
+
+        .bg-accent {
+            background-color: var(--color-accent) !important;
+            color: #000;
+        }
+
+        .border-accent {
+            border-color: var(--color-accent) !important;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: rgba(0, 0, 0, 0.96);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.9rem 0;
+            backdrop-filter: blur(12px);
+        }
+
+        .navbar-brand {
+            font-size: 1.9rem;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.72) !important;
+            font-size: 1.05rem;
+            margin-left: 1rem;
+            padding-top: 0.35rem;
+            padding-bottom: 0.35rem;
+            transition: color 0.25s ease, opacity 0.25s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--color-accent) !important;
+            opacity: 1;
+        }
+
+        .navbar-toggler {
+            border-radius: var(--radius-pill);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .navbar-toggler-icon {
+            filter: invert(1);
+        }
+
+        /* SEARCH BAR */
+        .search-container {
+            position: relative;
+            border-radius: var(--radius-pill);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: linear-gradient(135deg, #050505, #101010);
+            transition: border-color 0.3s, box-shadow 0.3s;
+            overflow: hidden;
+        }
+
+        .search-container:focus-within {
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 1px rgba(242, 231, 0, 0.35);
+        }
+
+        .search-input {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-family: 'Montserrat', monospace;
+            box-shadow: none !important;
+            padding-top: 0.6rem;
+            padding-bottom: 0.6rem;
+        }
+
+        .search-input::placeholder {
+            color: #555;
+        }
+
+        .search-input:focus {
+            background: transparent;
+            color: #fff;
+            outline: none;
+        }
+
+        .search-icon {
+            color: var(--color-text-muted);
+            border-radius: var(--radius-pill);
+        }
+
+        /* CATEGORY CARD */
+        .cat-card {
+            background: radial-gradient(circle at top left, #1b1b1b, var(--color-surface-soft));
+            border-radius: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+            box-shadow:
+                0 18px 40px rgba(0, 0, 0, 0.75),
+                0 0 0 1px rgba(255, 255, 255, 0.02);
+        }
+
+        .cat-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 10% 0%, rgba(242, 231, 0, 0.08), transparent 55%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .cat-card:hover {
+            border-color: rgba(242, 231, 0, 0.7);
+            transform: translateY(-8px);
+            box-shadow:
+                0 26px 60px rgba(0, 0, 0, 0.9),
+                0 0 0 1px rgba(242, 231, 0, 0.25);
+        }
+
+        .cat-card:hover::before {
+            opacity: 1;
+        }
+
+        .cat-img-wrap {
+            position: relative;
+            width: 100%;
+            padding-bottom: 120%;
+            overflow: hidden;
+            border-radius: 18px;
+            margin: 10px 10px 0 10px;
+            background: #050505;
+        }
+
+        .cat-bg {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            filter: grayscale(100%) contrast(1.2);
+            transition: filter 0.5s ease, transform 0.5s ease;
+            transform: scale(1.03);
+        }
+
+        .cat-card:hover .cat-bg {
+            filter: grayscale(0%) contrast(1.05);
+            transform: scale(1.08);
+        }
+
+        .cat-overlay {
+            position: absolute;
+            inset: auto 0 0 0;
+            padding: 18px 18px 16px 18px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.92), transparent 105%);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        .cat-title-block h3 {
+            font-size: 1.05rem;
+            margin-bottom: 2px;
+        }
+
+        .cat-title-block small {
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+        }
+
+        .cat-btn {
+            background: var(--color-accent);
+            color: #000;
+            width: 42px;
+            height: 42px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            opacity: 0;
+            transform: translateX(10px) translateY(4px);
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(242, 231, 0, 0.45);
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .cat-card:hover .cat-btn {
+            opacity: 1;
+            transform: translateX(0) translateY(0);
+        }
+
+        .cat-btn span {
+            font-size: 1.4rem;
+        }
+
+        .cat-meta-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            font-size: 0.7rem;
+            color: var(--color-text-muted);
+            background: rgba(0, 0, 0, 0.65);
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            border-radius: 22px;
+            background: radial-gradient(circle at top, #181818, #080808);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+        }
+
+        /* FOOTER */
+        footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            background: #050505;
+            padding: 52px 0 30px;
+            margin-top: 80px;
+        }
+
+        .footer-brand {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            letter-spacing: 0.18em;
+            color: #fff;
+        }
+
+        .footer-link {
+            color: #777;
+            text-decoration: none;
+            margin: 0 14px;
+            font-size: 0.85rem;
+            letter-spacing: 0.08em;
+        }
+
+        .footer-link:hover {
+            color: var(--color-accent);
+        }
+
+        .footer-social {
+            width: 40px;
+            height: 40px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #777;
+            transition: all 0.25s ease;
+        }
+
+        .footer-social:hover {
+            color: #000;
+            background: var(--color-accent);
+            border-color: var(--color-accent);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            margin-top: 25px;
+            padding-top: 16px;
+        }
+
+        .footer-copy {
+            font-size: 0.8rem;
+            color: #666;
+            letter-spacing: 0.12em;
+        }
+
+        /* Animation base */
+        .el-fade {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .el-card {
+            opacity: 0;
+            transform: scale(0.96);
         }
     </style>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#1173d4",
-                        "background-light": "#f6f7f8",
-                        "background-dark": "#101922",
-                    },
-                    fontFamily: {
-                        "display": ["Manrope", "sans-serif"]
-                    },
-                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
-                },
-            },
-        }
-    </script>
 </head>
 
-<body class="font-display bg-background-light dark:bg-background-dark">
-    <div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
-        <div class="layout-container flex h-full grow flex-col">
-            <!-- TopNavBar -->
-            <header
-                class="flex items-center justify-between whitespace-nowrap border-b border-gray-200 dark:border-white/10 px-4 sm:px-6 lg:px-10 py-3">
-                <div class="flex items-center gap-8">
-                    <div class="flex items-center gap-2 text-gray-800 dark:text-white">
-                        <div class="size-6 text-primary">
-                            <svg fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M13.8261 17.4264C16.7203 18.1174 20.2244 18.5217 24 18.5217C27.7756 18.5217 31.2797 18.1174 34.1739 17.4264C36.9144 16.7722 39.9967 15.2331 41.3563 14.1648L24.8486 40.6391C24.4571 41.267 23.5429 41.267 23.1514 40.6391L6.64374 14.1648C8.00331 15.2331 11.0856 16.7722 13.8261 17.4264Z">
-                                </path>
-                                <path clip-rule="evenodd"
-                                    d="M39.998 12.236C39.9944 12.2537 39.9875 12.2845 39.9748 12.3294C39.9436 12.4399 39.8949 12.5741 39.8346 12.7175C39.8168 12.7597 39.7989 12.8007 39.7813 12.8398C38.5103 13.7113 35.9788 14.9393 33.7095 15.4811C30.9875 16.131 27.6413 16.5217 24 16.5217C20.3587 16.5217 17.0125 16.131 14.2905 15.4811C12.0012 14.9346 9.44505 13.6897 8.18538 12.8168C8.17384 12.7925 8.16216 12.767 8.15052 12.7408C8.09919 12.6249 8.05721 12.5114 8.02977 12.411C8.00356 12.3152 8.00039 12.2667 8.00004 12.2612C8.00004 12.261 8 12.2607 8.00004 12.2612C8.00004 12.2359 8.0104 11.9233 8.68485 11.3686C9.34546 10.8254 10.4222 10.2469 11.9291 9.72276C14.9242 8.68098 19.1919 8 24 8C28.8081 8 33.0758 8.68098 36.0709 9.72276C37.5778 10.2469 38.6545 10.8254 39.3151 11.3686C39.9006 11.8501 39.9857 12.1489 39.998 12.236ZM4.95178 15.2312L21.4543 41.6973C22.6288 43.5809 25.3712 43.5809 26.5457 41.6973L43.0534 15.223C43.0709 15.1948 43.0878 15.1662 43.104 15.1371L41.3563 14.1648C43.104 15.1371 43.1038 15.1374 43.104 15.1371L43.1051 15.135L43.1065 15.1325L43.1101 15.1261L43.1199 15.1082C43.1276 15.094 43.1377 15.0754 43.1497 15.0527C43.1738 15.0075 43.2062 14.9455 43.244 14.8701C43.319 14.7208 43.4196 14.511 43.5217 14.2683C43.6901 13.8679 44 13.0689 44 12.2609C44 10.5573 43.003 9.22254 41.8558 8.2791C40.6947 7.32427 39.1354 6.55361 37.385 5.94477C33.8654 4.72057 29.133 4 24 4C18.867 4 14.1346 4.72057 10.615 5.94478C8.86463 6.55361 7.30529 7.32428 6.14419 8.27911C4.99695 9.22255 3.99999 10.5573 3.99999 12.2609C3.99999 13.1275 4.29264 13.9078 4.49321 14.3607C4.60375 14.6102 4.71348 14.8196 4.79687 14.9689C4.83898 15.0444 4.87547 15.1065 4.9035 15.1529C4.91754 15.1762 4.92954 15.1957 4.93916 15.2111L4.94662 15.223L4.95178 15.2312ZM35.9868 18.996L24 38.22L12.0131 18.996C12.4661 19.1391 12.9179 19.2658 13.3617 19.3718C16.4281 20.1039 20.0901 20.5217 24 20.5217C27.9099 20.5217 31.5719 20.1039 34.6383 19.3718C35.082 19.2658 35.5339 19.1391 35.9868 18.996Z"
-                                    fill-rule="evenodd"></path>
-                            </svg>
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid px-lg-5">
+            <div class="d-flex align-items-center gap-2">
+                <span class="material-symbols-outlined text-accent" style="font-size: 2.1rem;">shopping_bag</span>
+                <a class="navbar-brand text-white m-0" href="{% url 'catalog:home' %}">
+                    SURPLUS<span class="text-accent">STORE</span>
+                </a>
+            </div>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-end" id="navContent">
+                <!-- Desktop Search -->
+                <form method="get" action="#" class="d-none d-lg-flex mx-auto search-container"
+                    style="max-width: 440px;">
+                    <span class="input-group-text bg-transparent border-0 search-icon">
+                        <span class="material-symbols-outlined">search</span>
+                    </span>
+                    <!-- uses request.GET.q; requires request context processor enabled in settings -->
+                    <!-- [web:32][web:35] -->
+                    <input type="text" name="q" class="form-control search-input" placeholder="SEARCH SKU / CATEGORY..."
+                        value="{{ request.GET.q|default:'' }}">
+                </form>
+
+                <ul class="navbar-nav align-items-center mt-3 mt-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'catalog:home' %}">HOME</a></li>
+                    <li class="nav-item"><a class="nav-link active text-accent"
+                            href="{% url 'catalog:all_subcategory_list' %}">SUBCATEGORIES</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">SALE</a></li>
+                    <li class="nav-item me-3"><a class="nav-link" href="#">ABOUT</a></li>
+                    <li class="nav-item d-none d-lg-block">
+                        <div class="border border-secondary rounded-circle bg-cover"
+                            style="width: 40px; height: 40px; background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCfCgd-QQXmRDKqUUDsPupUioHFzi8qIomUGsCu9TZ5Cx6anbnLndsZlfTFcoYmP18e4ELBRcBe-0_1FXSRiSysEERar4f3xo5yZBGVPwjgi8H11Mjrl1cnQXCIiNxRb0d_GdC-rS0Jy0wTbPudu6SOTiYwwZEIf2WvZCpWLsXP2o5xd3ZLN02z4rgHwu9lgkS9ECaUvN9TspQ-87aZgBpIPe5bFx5YdWy9mgpGgI-_VbCPF7sih6-Gbcfnhlc23D7OdSgNHzCBn6I'); background-size: cover;">
                         </div>
-                        <h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">Surplus</h2>
-                    </div>
-                    <div class="hidden lg:flex items-center gap-9">
-                        <a class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal"
-                            href="{% url 'catalog:home' %}">Home</a>
-                        <a class="text-primary text-sm font-bold leading-normal" href="#">Categories</a>
-                        <a class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal"
-                            href="#">Sale</a>
-                        <a class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal"
-                            href="#">About Us</a>
-                    </div>
-                </div>
-                <div class="flex flex-1 justify-end items-center gap-4">
-                    <label class="hidden md:flex flex-col min-w-40 !h-10 max-w-64">
-                        <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
-                            <div
-                                class="text-gray-400 dark:text-gray-500 flex bg-white dark:bg-background-dark border border-gray-200 dark:border-white/10 items-center justify-center pl-3 rounded-l-lg border-r-0">
-                                <span class="material-symbols-outlined">search</span>
-                            </div>
-                            <input
-                                class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-800 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-gray-200 dark:border-white/10 bg-white dark:bg-background-dark h-full placeholder:text-gray-400 dark:placeholder:text-gray-500 px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
-                                placeholder="Search" value="" />
-                        </div>
-                    </label>
-                    <div class="flex gap-2">
-                        <button
-                            class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 aspect-square bg-transparent text-gray-600 dark:text-gray-300 hover:bg-primary/10 hover:text-primary">
-                            <span class="material-symbols-outlined">favorite</span>
-                        </button>
-                        <button
-                            class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 aspect-square bg-transparent text-gray-600 dark:text-gray-300 hover:bg-primary/10 hover:text-primary">
-                            <span class="material-symbols-outlined">shopping_bag</span>
-                        </button>
-                    </div>
-                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
-                        data-alt="User avatar placeholder"
-                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCfCgd-QQXmRDKqUUDsPupUioHFzi8qIomUGsCu9TZ5Cx6anbnLndsZlfTFcoYmP18e4ELBRcBe-0_1FXSRiSysEERar4f3xo5yZBGVPwjgi8H11Mjrl1cnQXCIiNxRb0d_GdC-rS0Jy0wTbPudu6SOTiYwwZEIf2WvZCpWLsXP2o5xd3ZLN02z4rgHwu9lgkS9ECaUvN9TspQ-87aZgBpIPe5bFx5YdWy9mgpGgI-_VbCPF7sih6-Gbcfnhlc23D7OdSgNHzCBn6I");'>
-                    </div>
-                </div>
-            </header>
-            <main class="flex-1 px-4 sm:px-6 lg:px-10 py-8 lg:py-12">
-                <div class="mx-auto max-w-7xl">
-                    <!-- PageHeading -->
-                    <div class="flex flex-wrap justify-between gap-3 p-4 mb-8">
-                        <div class="flex flex-col gap-2">
-                            <h1
-                                class="text-gray-900 dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">
-                                Explore Categories</h1>
-                            <p class="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal">Discover
-                                unique styles and premium surplus clothing by weight.</p>
-                        </div>
-                    </div>
-                    <!-- ImageGrid adapted to be Category Cards -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8 p-4">
-                        <!-- Category Card 1 -->
-                        <div
-                            class="group flex flex-col bg-white dark:bg-background-dark border border-gray-200 dark:border-white/10 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 ease-in-out overflow-hidden">
-                            <div class="relative aspect-[4/3] w-full overflow-hidden">
-                                <div class="bg-cover bg-center h-full w-full group-hover:scale-105 transition-transform duration-300"
-                                    data-alt="Stylish outerwear collection"
-                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDjcWULz_siwe25AilDXi-8M1jdR7l6ZMRnlhDQN9rtKnF3rkehwksnAczGbiU-Rv8Y4nH8GAhkHWbUOUKWIxC3sb-lNaVXNdocM-HAZSicto4qqGFxXSh1MGSFm-tcaplWGFhX_73zXpKVOaJbTWuQpsXwlbnXf_B8FtdgJMG9VTQYGLzW6G69hFccL4f6_y1Kbqc3UZ61qEzMqERzo3R4tITSEGWc1sD17ng6Ms9dD2t0JzAh5ARxmcd38bFPwUT95sz_x_ti8rE");'>
-                                </div>
-                            </div>
-                            <div class="p-5 flex flex-col justify-between flex-1">
-                                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-3">Outerwear</h3>
-                                <button
-                                    class="mt-auto w-full flex items-center justify-center rounded-lg bg-primary text-white text-sm font-bold h-10 px-4 shadow-md hover:bg-primary/90 transition-colors duration-200">View
-                                    Products</button>
-                            </div>
-                        </div>
-                        <!-- Category Card 2 -->
-                        <div
-                            class="group flex flex-col bg-white dark:bg-background-dark border border-gray-200 dark:border-white/10 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 ease-in-out overflow-hidden">
-                            <div class="relative aspect-[4/3] w-full overflow-hidden">
-                                <div class="bg-cover bg-center h-full w-full group-hover:scale-105 transition-transform duration-300"
-                                    data-alt="Cozy sweaters stacked on a shelf"
-                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDyxYnVArzdxH1DV-_wkKliyxZ62Kw7Rfg9TXuxAkjMWuw1oymy_OZk5UQK80OS8tJzINDKjxX8Y_x1B1V5sWKR5mLRcT1G2mCFMXACOZidPVl77Yr8mP6cCDi6jRhiAQmxgE-03O8Fbcvi1usDjpNU9VdUotqoZTVQsXkJko7xeUtHaxrwrUmUMJ2FqKlfySvAT3q2ypkAbg8HhZ2GvCOGhbexU_W1e8mkwZIYIwE6DIH7U2aVD8XbkZ-m3xn72gjFQWGXkJHeqNU");'>
-                                </div>
-                            </div>
-                            <div class="p-5 flex flex-col justify-between flex-1">
-                                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-3">Sweaters</h3>
-                                <button
-                                    class="mt-auto w-full flex items-center justify-center rounded-lg bg-primary text-white text-sm font-bold h-10 px-4 shadow-md hover:bg-primary/90 transition-colors duration-200">View
-                                    Products</button>
-                            </div>
-                        </div>
-                        <!-- Category Card 3 -->
-                        <div
-                            class="group flex flex-col bg-white dark:bg-background-dark border border-gray-200 dark:border-white/10 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 ease-in-out overflow-hidden">
-                            <div class="relative aspect-[4/3] w-full overflow-hidden">
-                                <div class="bg-cover bg-center h-full w-full group-hover:scale-105 transition-transform duration-300"
-                                    data-alt="Different styles of denim jeans"
-                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuClPJTvdCIZigHy7ocPNOeK42mMAvunuG8u8zcuGwx2E28YuEdtegJd-YD0QnIxv_shbVCIMv4DL59WS4tyDiNyyaYQUjaag_EiPQ22fHSSW_6aFdygZVJjFDnJMeyGesHzZP062AkRk5WYx-SB-5TaduMJzn4lG5gxXSIhyj2oC1VRev-vOgm6tEhoB-kNOTWCxt-WbVtbTaHwO0qQD6wxxpel9GgHSa9WzM8dp_86XlkgaoHM_icRmRRtnV637RQ5LHQxJJzMjaw");'>
-                                </div>
-                            </div>
-                            <div class="p-5 flex flex-col justify-between flex-1">
-                                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-3">Denim</h3>
-                                <button
-                                    class="mt-auto w-full flex items-center justify-center rounded-lg bg-primary text-white text-sm font-bold h-10 px-4 shadow-md hover:bg-primary/90 transition-colors duration-200">View
-                                    Products</button>
-                            </div>
-                        </div>
-                        <!-- Category Card 4 -->
-                        <div
-                            class="group flex flex-col bg-white dark:bg-background-dark border border-gray-200 dark:border-white/10 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 ease-in-out overflow-hidden">
-                            <div class="relative aspect-[4/3] w-full overflow-hidden">
-                                <div class="bg-cover bg-center h-full w-full group-hover:scale-105 transition-transform duration-300"
-                                    data-alt="Basic essential clothing items"
-                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAMaiYxS3ZKkyK8TJHhRd0T-ey-MrWdp1SDl_ztz0PrO_E7vXP-6s3qmbGhVwHCb7lXOoa_BfOz-nfmuTngjw5BixZehHfrFcca48qhGKJbkASRKEOiv1U-M_wlNkZJUXsfk-1NgWD3JmW2c4fMoK76Bt756wcX22zkD3SKvu682CBxiJR7BLM4ZLS4ZPYCNCqqEoIa0g3hPlw9Z9C50_oOwhPDSsBiCMKxtCnaz5tIeSG-buAe0hlwGwDyO5dQ6MoBQL7tVzZZWeU");'>
-                                </div>
-                            </div>
-                            <div class="p-5 flex flex-col justify-between flex-1">
-                                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-3">Essentials</h3>
-                                <button
-                                    class="mt-auto w-full flex items-center justify-center rounded-lg bg-primary text-white text-sm font-bold h-10 px-4 shadow-md hover:bg-primary/90 transition-colors duration-200">View
-                                    Products</button>
-                            </div>
-                        </div>
-                        <!-- Category Card 5 -->
-                        <div
-                            class="group flex flex-col bg-white dark:bg-background-dark border border-gray-200 dark:border-white/10 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 ease-in-out overflow-hidden">
-                            <div class="relative aspect-[4/3] w-full overflow-hidden">
-                                <div class="bg-cover bg-center h-full w-full group-hover:scale-105 transition-transform duration-300"
-                                    data-alt="Variety of colored t-shirts"
-                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDd-8FgyA9uKy1DmS3BkxbNBKEmhbP3REJp3u-h7NcXThqITBhC-FHyKGVn0Uqtq9y8mWHAguxU5CnXrXagzWV51npC9xAcXpROuQPTsbyOMvUU5u5YVCaxRViICaUfoU8YbAe8xo5h2wzGG68-Y5RbOUuYPy5-o3D7MA0FwTQBuTHxeenepFGa64XI4DjnwQ6-OXtD4mV2ItAKtiNGhvGTHYbyYcuOG5Gb2pP-d7X-cd8DZm2E6pCKIzx6MY0hZ7BOQSEnv0UwElY");'>
-                                </div>
-                            </div>
-                            <div class="p-5 flex flex-col justify-between flex-1">
-                                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-3">T-Shirts</h3>
-                                <button
-                                    class="mt-auto w-full flex items-center justify-center rounded-lg bg-primary text-white text-sm font-bold h-10 px-4 shadow-md hover:bg-primary/90 transition-colors duration-200">View
-                                    Products</button>
-                            </div>
-                        </div>
-                        <!-- Category Card 6 -->
-                        <div
-                            class="group flex flex-col bg-white dark:bg-background-dark border border-gray-200 dark:border-white/10 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 ease-in-out overflow-hidden">
-                            <div class="relative aspect-[4/3] w-full overflow-hidden">
-                                <div class="bg-cover bg-center h-full w-full group-hover:scale-105 transition-transform duration-300"
-                                    data-alt="Elegant dresses on hangers"
-                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAh9lUk6eYdf-7W6SWRXUoF38aDQGHhIbAMzUcxmCQoKv1w5Cc6lJevlcziXf8D7QZ-J7AAvD5NeapNk7CeZcM3SC8ktrK9hk5bq3F41MYtqkwBezidEe3hSuQh601piOt5EvlOgSvY_RS_gO7yakSiTN5DoNxmdgkpZSSX5xw_ou04gukAALOIC1V-4lpKE6ejxXI4_8Ekli3MfLMQJixAyfkOPQ4izxCJyKDDMbUYbS7cZC-n7Qd_wEKo3y1efRxw5zDUZL6cNsc");'>
-                                </div>
-                            </div>
-                            <div class="p-5 flex flex-col justify-between flex-1">
-                                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-3">Dresses</h3>
-                                <button
-                                    class="mt-auto w-full flex items-center justify-center rounded-lg bg-primary text-white text-sm font-bold h-10 px-4 shadow-md hover:bg-primary/90 transition-colors duration-200">View
-                                    Products</button>
-                            </div>
-                        </div>
-                        <!-- Category Card 7 -->
-                        <div
-                            class="group flex flex-col bg-white dark:bg-background-dark border border-gray-200 dark:border-white/10 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 ease-in-out overflow-hidden">
-                            <div class="relative aspect-[4/3] w-full overflow-hidden">
-                                <div class="bg-cover bg-center h-full w-full group-hover:scale-105 transition-transform duration-300"
-                                    data-alt="Fashion accessories like hats and bags"
-                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuArz6M-CvR07XEHiUDaEzz2v5p502cCO3UgUeqdCPif63W5ls7hRD2rENqKSIrpEbUFBcUVHqqke88QVWfCP7QNhLlDobDTmjgz9ixZwx6UPkwidMNlAthrll0YetFpLDauVTV3yAnVa4dUwXtbqvJ5k2maBQ5U9dxaXmczc8RSv0lreiIQ0RniYbPFyYfel662C2ZdkqNo5qzoPtDOyBvz_JhRZtulYcSFcRCiguaFWw3pDdkTgDSfppDy_R-wCaKSUUil3u1c15Q");'>
-                                </div>
-                            </div>
-                            <div class="p-5 flex flex-col justify-between flex-1">
-                                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-3">Accessories</h3>
-                                <button
-                                    class="mt-auto w-full flex items-center justify-center rounded-lg bg-primary text-white text-sm font-bold h-10 px-4 shadow-md hover:bg-primary/90 transition-colors duration-200">View
-                                    Products</button>
-                            </div>
-                        </div>
-                        <!-- Category Card 8 -->
-                        <div
-                            class="group flex flex-col bg-white dark:bg-background-dark border border-gray-200 dark:border-white/10 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 ease-in-out overflow-hidden">
-                            <div class="relative aspect-[4/3] w-full overflow-hidden">
-                                <div class="bg-cover bg-center h-full w-full group-hover:scale-105 transition-transform duration-300"
-                                    data-alt="Collection of modern footwear"
-                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBP04efgqlTVywbkaqRjO1gK2PDaYwDl5smbflRVcWD4zqBFrWBJvVX1emplUGSXOaKMQZckDZLmBi-B8DPu99v7-kqVgW15gUChZttlypP6qAvIDi45mNtFYSZ0XLaTORQHU3GQ9jYdZXFPE8n3IxUIDLeLxPIRzSLQn1j8bJ-iVpgN-XQtAjNxbvsk8lUvKDoBSLSucio47sR9d5mNO92opQ32JuGdoXSQjHVzjSmbvqtTNk89DhmwPGOuwwP3p7TUKtfx_lbYmw");'>
-                                </div>
-                            </div>
-                            <div class="p-5 flex flex-col justify-between flex-1">
-                                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-3">Footwear</h3>
-                                <button
-                                    class="mt-auto w-full flex items-center justify-center rounded-lg bg-primary text-white text-sm font-bold h-10 px-4 shadow-md hover:bg-primary/90 transition-colors duration-200">View
-                                    Products</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
-            <!-- Footer -->
-            <footer
-                class="flex flex-col gap-8 px-5 py-10 text-center border-t border-gray-200 dark:border-white/10 mt-12">
-                <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
-                    <a class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal"
-                        href="#">About</a>
-                    <a class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal"
-                        href="#">Contact</a>
-                    <a class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal"
-                        href="#">FAQ</a>
-                    <a class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal"
-                        href="#">Shipping &amp; Returns</a>
-                    <a class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal"
-                        href="#">Privacy Policy</a>
-                </div>
-                <div class="flex flex-wrap justify-center gap-6">
-                    <a class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary" href="#">
-                        <svg aria-hidden="true" class="h-6 w-6" fill="currentColor" viewbox="0 0 24 24">
-                            <path clip-rule="evenodd"
-                                d="M12.315 2c-4.022 0-7.235 3.213-7.235 7.235 0 2.214 1.01 4.225 2.655 5.595A6.236 6.236 0 0112 21.75a6.236 6.236 0 014.265-6.92 7.213 7.213 0 002.655-5.595C19.55 5.213 16.337 2 12.315 2zM12 15.75c-1.933 0-3.5-1.567-3.5-3.5s1.567-3.5 3.5-3.5 3.5 1.567 3.5 3.5-1.567 3.5-3.5 3.5z"
-                                fill-rule="evenodd"></path>
-                        </svg>
-                    </a>
-                    <a class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary" href="#">
-                        <svg aria-hidden="true" class="h-6 w-6" fill="currentColor" viewbox="0 0 24 24">
-                            <path clip-rule="evenodd"
-                                d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
-                                fill-rule="evenodd"></path>
-                        </svg>
-                    </a>
-                    <a class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary" href="#">
-                        <svg aria-hidden="true" class="h-6 w-6" fill="currentColor" viewbox="0 0 24 24">
-                            <path
-                                d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.71v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84">
-                            </path>
-                        </svg>
-                    </a>
-                </div>
-                <p class="text-gray-500 dark:text-gray-400 text-sm font-normal leading-normal">© 2024 Surplus. All
-                    rights reserved.</p>
-            </footer>
+                    </li>
+                </ul>
+            </div>
         </div>
+    </nav>
+
+    <!-- Mobile Search -->
+    <div class="container d-lg-none mt-3 pb-3">
+        <form method="get" action="#" class="search-container d-flex w-100">
+            <span class="input-group-text bg-transparent border-0 search-icon">
+                <span class="material-symbols-outlined">search</span>
+            </span>
+            <input type="text" name="q" class="form-control search-input" placeholder="SEARCH..."
+                value="{{ request.GET.q|default:'' }}">
+        </form>
     </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="container py-4">
+        <!-- Header -->
+        <div class="row mb-5 align-items-end el-fade">
+            <div class="col-md-8">
+                <p class="text-accent display-font mb-2" style="letter-spacing:0.25em; font-size:0.9rem;">
+                    INVENTORY INDEX
+                </p>
+                <h1 class="display-3 text-white mb-0">
+                    EXPLORE <span class="text-accent">CATEGORIES</span>
+                </h1>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <p class="text-muted mb-0 font-monospace small">
+                    // SURPLUS_DB v2.4<br>
+                    SELECT * FROM CATEGORIES
+                </p>
+            </div>
+        </div>
+
+        <!-- Category Grid -->
+        <div class="row g-4">
+            {% for category in categories %}
+            <div class="col-sm-6 col-lg-4 col-xl-3">
+                <div class="cat-card el-card">
+                    <div class="cat-img-wrap">
+                        {% if category.image %} {# prevents .url crash if no file attached #} <!-- [web:31][web:40] -->
+                        <div class="cat-bg" style="background-image: url('{{ category.image.url }}');"></div>
+                        {% else %}
+                        <div class="cat-bg"
+                            style="background-image: url('https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=800&q=80');">
+                        </div>
+                        {% endif %}
+
+                        <div class="cat-overlay">
+                            <div class="cat-title-block">
+                                <h3 class="text-white mb-0">{{ category.name }}</h3>
+                                <small class="text-accent font-monospace">
+                                    ID: CAT_{{ forloop.counter|stringformat:"02d" }}
+                                </small>
+                            </div>
+                            <div class="d-flex flex-column align-items-end gap-2">
+                                <div class="cat-meta-pill">
+                                    <span class="material-symbols-outlined" style="font-size:1rem;">inventory_2</span>
+                                    <span>By&nbsp;Weight</span>
+                                </div>
+                                <!-- keep your logic; just style as button; replace # with real URL when ready -->
+                                <a href="{% url 'catalog:subcategory_list' category.slug %}" class="cat-btn">
+
+                                    <span class="material-symbols-outlined">arrow_forward</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <div class="p-5 empty-state">
+                    <span class="material-symbols-outlined text-muted display-1 mb-3">inventory_2</span>
+                    <h3 class="text-white h4">NO CATEGORIES FOUND</h3>
+                    <p class="text-muted">Try adjusting your search query.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <div class="row align-items-center mb-4">
+                <div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
+                    <div class="footer-brand">SURPLUS<span class="text-accent">STORE</span></div>
+                    <div class="text-muted small mt-1">
+                        Premium surplus clothing by weight.
+                    </div>
+                </div>
+                <div class="col-md-4 text-center mb-3 mb-md-0">
+                    <a href="#" class="footer-link">ABOUT</a>
+                    <a href="#" class="footer-link">CONTACT</a>
+                    <a href="#" class="footer-link">FAQ</a>
+                    <a href="#" class="footer-link">SHIPPING</a>
+                    <a href="#" class="footer-link">PRIVACY</a>
+                </div>
+                <div class="col-md-4 text-center text-md-end">
+                    <div class="d-inline-flex gap-2">
+                        <a href="#" class="footer-social">
+                            <span class="material-symbols-outlined">public</span>
+                        </a>
+                        <a href="#" class="footer-social">
+                            <span class="material-symbols-outlined">alternate_email</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom text-center">
+                <div class="footer-copy">
+                    © 2026 SURPLUS. ALL RIGHTS RESERVED.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- [web:24] -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            anime({
+                targets: '.el-fade',
+                opacity: [0, 1],
+                translateY: [20, 0],
+                duration: 900,
+                easing: 'easeOutQuad'
+            });
+
+            anime({
+                targets: '.el-card',
+                opacity: [0, 1],
+                scale: [0.96, 1],
+                delay: anime.stagger(120, { start: 150 }),
+                duration: 700,
+                easing: 'easeOutExpo'
+            });
+        });
+    </script>
 </body>
 
 </html>

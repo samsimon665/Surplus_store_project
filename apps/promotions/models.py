@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.db import models
 
+from django.utils import timezone
+
 
 class TimeStampedModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -57,6 +59,27 @@ class PromoCode(TimeStampedModel):
 
     def __str__(self):
         return self.code
+    
+    def get_status(self):
+        """
+        Returns one of:
+        - inactive
+        - upcoming
+        - expired
+        - active
+        """
+        now = timezone.now()  # ALWAYS UTC, correct with USE_TZ=True
+
+        if not self.is_active:
+            return "inactive"
+
+        if self.valid_from and now < self.valid_from:
+            return "upcoming"
+
+        if self.valid_to and now > self.valid_to:
+            return "expired"
+
+        return "active"
 
 
 # class PromoUsage(TimeStampedModel):

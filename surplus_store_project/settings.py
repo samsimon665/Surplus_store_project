@@ -36,7 +36,10 @@ SECRET_KEY = env("SECRET_KEY")
 DEBUG = True
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "*",
+    # "192.168.0.148",
+]
 
 
 # Application definition

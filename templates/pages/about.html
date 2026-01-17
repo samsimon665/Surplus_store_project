@@ -1,231 +1,679 @@
 <!DOCTYPE html>
-<html class="dark" lang="en">
+<html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>About Us – Surplus Store</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | Surplus Clothing Store</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;700;800;900&display=swap"
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1"
         rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        neon: "#13ecb6",
-                        blackPure: "#030405",
-                        glass: "rgba(255,255,255,0.08)",
-                    },
-                    fontFamily: {
-                        display: ["Manrope", "sans-serif"]
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Anime.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 
     <style>
+        :root {
+            --color-bg: #000000;
+            --color-accent: #F2E700;
+            --color-text: #EEEEEE;
+            --color-text-muted: #888888;
+            --color-surface: #111111;
+            --font-display: 'Bebas Neue', sans-serif;
+            --font-body: 'Montserrat', sans-serif;
+        }
+
         body {
-            font-family: Manrope, sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            font-family: var(--font-body);
+            overflow-x: hidden;
         }
 
-        .glass {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(18px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        .display-font,
+        .btn,
+        .nav-link,
+        .navbar-brand {
+            font-family: var(--font-display);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .neon-glow {
-            box-shadow: 0 0 25px rgba(19, 236, 182, 0.35),
-                0 0 60px rgba(19, 236, 182, 0.15);
+        .text-accent {
+            color: var(--color-accent) !important;
         }
 
-        @keyframes float {
+        .bg-accent {
+            background-color: var(--color-accent) !important;
+            color: #000;
+        }
 
-            0%,
-            100% {
-                transform: translateY(0);
+        /* BUTTONS */
+        .btn-primary {
+            background-color: var(--color-accent);
+            border-color: var(--color-accent);
+            color: #000;
+            font-size: 1.1rem;
+            border-radius: 0;
+            padding: 12px 36px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #d4ca00;
+            border-color: #d4ca00;
+            color: #000;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(242, 231, 0, 0.2);
+        }
+
+        /* CUSTOM UTILITIES */
+        .b-grid {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .b-grid-top {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .b-grid-bottom {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* HEADER */
+        .navbar {
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem;
+            color: #fff !important;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.7) !important;
+            font-size: 1.1rem;
+            letter-spacing: 1.5px;
+            margin-left: 1rem;
+            position: relative;
+        }
+
+        .nav-link.active,
+        .nav-link:hover {
+            color: var(--color-accent) !important;
+        }
+
+        /* HERO SECTION */
+        .page-hero {
+            position: relative;
+            padding: 140px 0 100px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-bg-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(90deg,
+                    transparent,
+                    transparent 100px,
+                    rgba(255, 255, 255, 0.03) 100px,
+                    rgba(255, 255, 255, 0.03) 101px);
+            z-index: 0;
+        }
+
+        .hero-title {
+            font-size: clamp(3.5rem, 7vw, 6rem);
+            line-height: 0.95;
+            color: #fff;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Hero Card Styles (curved) */
+        .hero-card {
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+
+        .hero-card:hover {
+            border-color: var(--color-accent);
+        }
+
+        .hero-floating-img {
+            max-width: 100%;
+            height: auto;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+        }
+
+        /* BLUEPRINT CARDS (Mission/Vision) curved */
+        .blueprint-card {
+            background: #0a0a0a;
+            padding: 50px 40px;
+            position: relative;
+            height: 100%;
+            overflow: hidden;
+            border-radius: 24px;
+        }
+
+        /* Animated Borders */
+        .border-line {
+            position: absolute;
+            background: var(--color-accent);
+            opacity: 0.3;
+            transition: opacity 0.3s;
+        }
+
+        .border-top {
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+        }
+
+        .border-right {
+            top: 0;
+            right: 0;
+            width: 1px;
+            height: 0;
+        }
+
+        .border-bottom {
+            bottom: 0;
+            right: 0;
+            width: 0;
+            height: 1px;
+        }
+
+        .border-left {
+            bottom: 0;
+            left: 0;
+            width: 1px;
+            height: 0;
+        }
+
+        .blueprint-card:hover .border-line {
+            opacity: 1;
+        }
+
+        .blueprint-icon {
+            font-size: 3rem;
+            color: var(--color-accent);
+            margin-bottom: 1.5rem;
+        }
+
+        /* FEATURE DECK (Why Surplus) curved */
+        .feature-deck-item {
+            text-align: center;
+            padding: 40px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0) 100%);
+            transition: transform 0.3s, border-color 0.3s;
+            border-radius: 24px;
+        }
+
+        .feature-deck-item:hover {
+            transform: translateY(-10px);
+            border-color: rgba(242, 231, 0, 0.3);
+        }
+
+        /* STATS CONSOLES curved */
+        .stat-console {
+            text-align: center;
+            padding: 30px;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+        }
+
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1;
+            font-family: var(--font-display);
+        }
+
+        /* CTA BANNER curved */
+        .cta-banner {
+            background: var(--color-accent);
+            color: #000;
+            padding: 80px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border-radius: 32px;
+            margin: 40px auto;
+            max-width: 1200px;
+        }
+
+        .cta-bg-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 15vw;
+            font-weight: 900;
+            opacity: 0.05;
+            white-space: nowrap;
+            font-family: var(--font-display);
+            pointer-events: none;
+        }
+
+        /* FOOTER */
+        footer {
+            background: #050505;
+            padding: 80px 0 40px;
+            border-top: 1px solid #1a1a1a;
+        }
+
+        .footer-list a {
+            color: #666;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+            transition: color 0.2s;
+        }
+
+        .footer-list a:hover {
+            color: var(--color-accent);
+        }
+
+        @media (max-width: 991px) {
+            .stat-console {
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             }
 
-            50% {
-                transform: translateY(-8px);
+            .hero-title {
+                font-size: 3rem;
             }
-        }
 
-        .float {
-            animation: float 6s ease-in-out infinite;
+            .cta-banner {
+                border-radius: 24px;
+                margin: 20px;
+            }
         }
     </style>
 </head>
 
-<body class="bg-blackPure text-white min-h-screen">
+<body>
 
     <!-- NAVBAR -->
-    <header class="sticky top-0 z-40 glass px-8 py-4 flex justify-between items-center">
-        <div class="flex items-center gap-3">
-            <span class="material-symbols-outlined text-neon text-3xl">shopping_bag</span>
-            <h1 class="text-xl font-black tracking-wide">SURPLUS STORE</h1>
-        </div>
-
-        <nav class="hidden md:flex gap-8 text-sm font-bold text-white/70">
-            <a href="#" class="hover:text-neon">Home</a>
-            <a href="#" class="text-neon">About</a>
-            <a href="#" class="hover:text-neon">Profile</a>
-            <a href="#" class="hover:text-neon">Orders</a>
-        </nav>
-
-        <div class="flex items-center gap-4">
-            <button class="glass w-10 h-10 rounded-xl flex items-center justify-center">
-                <span class="material-symbols-outlined">shopping_cart</span>
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container px-4">
+            <a class="navbar-brand" href="{% url 'pages:landing' %}">
+                <span class="material-symbols-outlined text-accent" style="font-size: 2rem;">shopping_bag</span>
+                SURPLUS<span class="text-accent">STORE</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+                <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
             </button>
-            <div class="flex items-center gap-2 glass px-3 py-2 rounded-xl">
-                <img src="https://i.pravatar.cc/40" class="w-7 h-7 rounded-full" />
-                <span class="text-sm font-semibold">Sam</span>
+            <div class="collapse navbar-collapse justify-content-end" id="navContent">
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'pages:landing' %}">Home</a>
+                    </li>
+
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'pages:landing' %}#Categories">Categories</a>
+                    </li>
+
+                    <li class="nav-item"><a class="nav-link" href="#">Profile</a></li>
+
             </div>
         </div>
-    </header>
+    </nav>
 
-    <!-- HERO -->
-    <section class="relative h-[70vh] flex items-center justify-center overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-black via-blackPure to-black"></div>
+    <!-- HERO SECTION -->
+    <section class="page-hero">
+        <div class="hero-bg-lines"></div>
+        <div class="container position-relative z-1">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <p class="text-accent display-font mb-3 ls-2 el-fade">ESTABLISHED 2026</p>
+                    <h1 class="hero-title scramble-text">
+                        ABOUT <br><span class="text-accent">SURPLUS STORE.</span>
+                    </h1>
+                    <div class="mt-4 el-fade" style="max-width: 600px;">
+                        <p class="lead text-white-50">
+                            Redefining fashion through sustainability, affordability, and innovation.
+                        </p>
+                    </div>
+                </div>
 
-        <div class="relative z-10 text-center px-6 max-w-4xl">
-            <h1 class="text-5xl md:text-7xl font-black mb-6">
-                About <span class="text-neon">Surplus Store</span>
-            </h1>
-            <p class="text-white/70 text-xl leading-relaxed">
-                Redefining fashion through sustainability, affordability, and innovation.
-            </p>
+                <!-- HERO CARD WITH HIGH-RES FLOATING IMAGE -->
+                <div class="col-lg-5 offset-lg-1 d-none d-lg-block text-end position-relative">
+                    <div class="card hero-card p-2 el-fade">
+                        <div class="card-body p-0 position-relative overflow-hidden bg-black"
+                            style="min-height: 400px; display: flex; align-items: center; justify-content: center;">
+                            <div
+                                style="position:absolute; inset:0; background: radial-gradient(circle at 50% 50%, rgba(50,50,50,0.3) 0%, transparent 70%);">
+                            </div>
+
+                            <!-- HIGH-CLARITY IMAGE -->
+                            <img src="https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1400&q=90"
+                                class="hero-floating-img d-block w-100" alt="Surplus Leather Jacket"
+                                style="transform-origin:center center; max-height:400px; object-fit:contain;">
+
+                            <!-- UI Overlay Details -->
+                            <div class="position-absolute bottom-0 start-0 w-100 p-3 d-flex justify-content-between align-items-end"
+                                style="background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);">
+                                <div class="text-start">
+                                    <span class="badge bg-accent text-dark rounded-0 mb-1">PREMIUM STOCK</span>
+                                    <h5 class="text-white mb-0" style="font-size: 1rem;">VINTAGE LEATHER</h5>
+                                </div>
+                                <div class="text-end text-white-50 small font-monospace">
+                                    ID: #8821<br>WT: 1.2KG
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </section>
 
-    <!-- MISSION / VISION -->
-    <section class="max-w-7xl mx-auto px-8 py-24 grid md:grid-cols-2 gap-16">
+    <!-- MISSION & VISION -->
+    <section class="py-5 bg-darker">
+        <div class="container py-5">
+            <div class="row g-0">
+                <!-- MISSION -->
+                <div class="col-lg-6">
+                    <div class="blueprint-card">
+                        <div class="border-line border-top draw-line-h"></div>
+                        <div class="border-line border-right draw-line-v"></div>
+                        <div class="border-line border-bottom draw-line-h"></div>
+                        <div class="border-line border-left draw-line-v"></div>
 
-        <div class="glass rounded-[2rem] p-12 neon-glow">
-            <h2 class="text-3xl font-black mb-6 text-neon">Our Mission</h2>
-            <p class="text-white/70 text-lg leading-relaxed">
-                Our mission is to make **premium surplus fashion affordable for everyone**
-                while reducing textile waste. We connect unused export-quality garments
-                directly to customers at **₹150/kg**, eliminating middlemen and inflated prices.
-            </p>
+                        <span class="material-symbols-outlined blueprint-icon">flag</span>
+                        <h2 class="display-4 text-white mb-4">OUR MISSION</h2>
+                        <p class="text-muted lead fs-5 lh-lg mb-0 text-white-50">
+                            Our mission is to make <strong class="text-white">premium surplus fashion affordable for
+                                everyone</strong>
+                            while reducing textile waste. We connect unused export-quality garments
+                            directly to customers at <strong class="text-accent">₹150/kg</strong>, eliminating middlemen
+                            and inflated prices.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- VISION -->
+                <div class="col-lg-6">
+                    <div class="blueprint-card" style="border-left: 1px solid rgba(255,255,255,0.05);">
+                        <div class="border-line border-top draw-line-h"></div>
+                        <div class="border-line border-right draw-line-v"></div>
+                        <div class="border-line border-bottom draw-line-h"></div>
+
+                        <span class="material-symbols-outlined blueprint-icon">visibility</span>
+                        <h2 class="display-4 text-white mb-4">OUR VISION</h2>
+                        <p class="text-muted lead fs-5 lh-lg mb-0 text-white-50">
+                            To become <strong class="text-white">India’s largest surplus fashion marketplace</strong>,
+                            enabling smart shopping,
+                            sustainable living, and transparent pricing across all fashion categories.
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div class="glass rounded-[2rem] p-12">
-            <h2 class="text-3xl font-black mb-6 text-neon">Our Vision</h2>
-            <p class="text-white/70 text-lg leading-relaxed">
-                To become **India’s largest surplus fashion marketplace**, enabling smart shopping,
-                sustainable living, and transparent pricing across all fashion categories.
-            </p>
-        </div>
-
     </section>
 
     <!-- WHY SURPLUS -->
-    <section class="max-w-7xl mx-auto px-8 pb-24">
-        <h2 class="text-4xl font-black text-center mb-16">Why <span class="text-neon">Surplus Store</span>?</h2>
-
-        <div class="grid md:grid-cols-3 gap-12">
-
-            <div class="glass rounded-[2rem] p-10 text-center float">
-                <span class="material-symbols-outlined text-neon text-5xl mb-4 block">eco</span>
-                <h3 class="text-xl font-black mb-3">Sustainable Fashion</h3>
-                <p class="text-white/60">
-                    Every purchase saves garments from landfills and supports eco-friendly fashion.
-                </p>
+    <section class="py-5 position-relative">
+        <div class="container py-5">
+            <div class="row mb-5 text-center">
+                <div class="col-12 el-fade">
+                    <h2 class="display-3 text-white">WHY <span class="text-accent">SURPLUS STORE?</span></h2>
+                    <div class="d-inline-block bg-accent mt-3" style="width: 60px; height: 3px;"></div>
+                </div>
             </div>
 
-            <div class="glass rounded-[2rem] p-10 text-center float">
-                <span class="material-symbols-outlined text-neon text-5xl mb-4 block">payments</span>
-                <h3 class="text-xl font-black mb-3">Unbeatable Pricing</h3>
-                <p class="text-white/60">
-                    Pay only by weight — no brand tax, no artificial inflation.
-                </p>
+            <div class="row g-4">
+                <!-- Sustainable -->
+                <div class="col-md-4">
+                    <div class="feature-deck-item slide-up">
+                        <span class="material-symbols-outlined text-accent display-1 mb-3">eco</span>
+                        <h3 class="h2 mb-3">SUSTAINABLE FASHION</h3>
+                        <p class="text-muted">Every purchase saves garments from landfills and supports eco-friendly
+                            fashion.</p>
+                    </div>
+                </div>
+                <!-- Pricing -->
+                <div class="col-md-4">
+                    <div class="feature-deck-item slide-up">
+                        <span class="material-symbols-outlined text-accent display-1 mb-3">payments</span>
+                        <h3 class="h2 mb-3">UNBEATABLE PRICING</h3>
+                        <p class="text-muted">Pay only by weight — no brand tax, no artificial inflation.</p>
+                    </div>
+                </div>
+                <!-- Quality -->
+                <div class="col-md-4">
+                    <div class="feature-deck-item slide-up">
+                        <span class="material-symbols-outlined text-accent display-1 mb-3">verified</span>
+                        <h3 class="h2 mb-3">QUALITY ASSURED</h3>
+                        <p class="text-muted">Every item is curated and inspected before it reaches you.</p>
+                    </div>
+                </div>
             </div>
-
-            <div class="glass rounded-[2rem] p-10 text-center float">
-                <span class="material-symbols-outlined text-neon text-5xl mb-4 block">verified</span>
-                <h3 class="text-xl font-black mb-3">Quality Assured</h3>
-                <p class="text-white/60">
-                    Every item is curated and inspected before it reaches you.
-                </p>
-            </div>
-
         </div>
     </section>
 
     <!-- STATS -->
-    <section class="max-w-7xl mx-auto px-8 pb-24">
-        <div class="grid md:grid-cols-4 gap-10 text-center">
-
-            <div class="glass rounded-2xl p-8">
-                <h3 class="text-4xl font-black text-neon counter" data-target="12000">0</h3>
-                <p class="text-white/60 mt-2">Happy Customers</p>
+    <section class="py-5 b-grid-top b-grid-bottom bg-black">
+        <div class="container">
+            <div class="row g-3">
+                <div class="col-md-6 col-lg-3">
+                    <div class="stat-console">
+                        <div class="stat-number odometer" data-val="12000">0</div>
+                        <div class="text-accent small mt-2 letter-spacing-2">HAPPY CUSTOMERS</div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="stat-console">
+                        <div class="stat-number odometer" data-val="35000">0</div>
+                        <div class="text-accent small mt-2 letter-spacing-2">KG SOLD</div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="stat-console">
+                        <div class="stat-number odometer" data-val="48000">0</div>
+                        <div class="text-accent small mt-2 letter-spacing-2">₹ SAVED ('00s)</div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="stat-console" style="border-right: none;">
+                        <div class="stat-number odometer" data-val="28">0</div>
+                        <div class="text-accent small mt-2 letter-spacing-2">CITIES SERVED</div>
+                    </div>
+                </div>
             </div>
-
-            <div class="glass rounded-2xl p-8">
-                <h3 class="text-4xl font-black text-neon counter" data-target="35000">0</h3>
-                <p class="text-white/60 mt-2">KG Sold</p>
-            </div>
-
-            <div class="glass rounded-2xl p-8">
-                <h3 class="text-4xl font-black text-neon counter" data-target="4800000">0</h3>
-                <p class="text-white/60 mt-2">₹ Saved</p>
-            </div>
-
-            <div class="glass rounded-2xl p-8">
-                <h3 class="text-4xl font-black text-neon counter" data-target="28">0</h3>
-                <p class="text-white/60 mt-2">Cities Served</p>
-            </div>
-
         </div>
     </section>
 
-    <!-- CTA -->
-    <section class="max-w-7xl mx-auto px-8 pb-32 text-center">
-        <div class="glass rounded-[3rem] p-16 neon-glow">
-            <h2 class="text-4xl font-black mb-6">Join the <span class="text-neon">Surplus Revolution</span></h2>
-            <p class="text-white/70 mb-10 text-lg">
+    <!-- CTA BANNER -->
+    <section class="cta-banner">
+        <div class="cta-bg-text">REVOLUTION</div>
+        <div class="container position-relative z-2">
+            <h2 class="display-3 mb-4">JOIN THE <span class="fw-bold">SURPLUS REVOLUTION</span></h2>
+            <p class="lead mb-5" style="max-width: 600px; margin: 0 auto; opacity: 0.8;">
                 Shop smart. Save money. Save the planet.
             </p>
-
-            <a href="home.html"
-                class="inline-block bg-neon text-black px-12 py-4 rounded-2xl font-black text-lg hover:scale-105 transition">
-                Start Shopping
+            <a href="home.html" class="btn btn-dark btn-lg px-5 py-3 rounded-pill fw-bold"
+                style="font-family: var(--font-display);">
+                START SHOPPING <span class="material-symbols-outlined align-middle ms-2">arrow_forward</span>
             </a>
         </div>
     </section>
 
     <!-- FOOTER -->
-    <footer class="glass border-t border-white/10 px-8 py-10 text-center text-white/50">
-        <p>© 2025 Surplus Store. All Rights Reserved.</p>
-        <p class="mt-2">Premium surplus fashion by weight.</p>
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-5 mb-lg-0">
+                    <h3 class="text-white mb-3">SURPLUS<span class="text-accent">STORE</span></h3>
+                    <p class="text-muted">Weight‑based surplus shopping that combines value, style and environmental
+                        responsibility.</p>
+                    <p class="text-white-50 small mt-4">© 2025 Surplus Store. All Rights Reserved.</p>
+                </div>
+                <div class="col-6 col-lg-2 offset-lg-2">
+                    <h5 class="text-white mb-4 small">SHOPPING</h5>
+                    <div class="footer-list">
+                        <a href="#">Men's Apparel</a>
+                        <a href="#">Women's Wear</a>
+                        <a href="#">Kids Collection</a>
+                        <a href="#">Accessories</a>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <h5 class="text-white mb-4 small">COMPANY</h5>
+                    <div class="footer-list">
+                        <a href="#">About Us</a>
+                        <a href="#">Careers</a>
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms of Service</a>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <h5 class="text-white mb-4 small">CONNECT</h5>
+                    <div class="footer-list">
+                        <a href="#">Instagram</a>
+                        <a href="#">Twitter</a>
+                        <a href="#">Facebook</a>
+                        <a href="#">Support</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </footer>
 
-    <!-- COUNTER ANIMATION -->
-    <script>
-        const counters = document.querySelectorAll('.counter');
-        counters.forEach(counter => {
-            const target = +counter.dataset.target;
-            let current = 0;
-            const speed = target / 80;
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-            function update() {
-                current += speed;
-                if (current < target) {
-                    counter.textContent = Math.floor(current).toLocaleString();
-                    requestAnimationFrame(update);
-                } else {
-                    counter.textContent = target.toLocaleString();
-                }
-            }
-            update();
+    <!-- Animations -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            anime({
+                targets: '.scramble-text',
+                opacity: [0, 1],
+                translateX: [-30, 0],
+                duration: 1200,
+                easing: 'easeOutExpo',
+                delay: 200
+            });
+
+            anime({
+                targets: '.el-fade',
+                opacity: [0, 1],
+                translateY: [20, 0],
+                delay: anime.stagger(150),
+                duration: 1000,
+                easing: 'easeOutQuad'
+            });
+
+            anime({
+                targets: '.hero-floating-img',
+                translateY: [-10, 10],
+                rotate: [-2, 2],
+                scale: [1, 1.05],
+                duration: 4000,
+                direction: 'alternate',
+                loop: true,
+                easing: 'easeInOutSine'
+            });
+
+            const blueprintObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        anime({
+                            targets: '.draw-line-h',
+                            width: [0, '100%'],
+                            duration: 1500,
+                            easing: 'easeInOutExpo'
+                        });
+                        anime({
+                            targets: '.draw-line-v',
+                            height: [0, '100%'],
+                            duration: 1500,
+                            easing: 'easeInOutExpo',
+                            delay: 200
+                        });
+                        blueprintObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.4 });
+
+            document.querySelectorAll('.blueprint-card').forEach(card => blueprintObserver.observe(card));
+
+            const featureObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        anime({
+                            targets: '.slide-up',
+                            translateY: [50, 0],
+                            opacity: [0, 1],
+                            delay: anime.stagger(200),
+                            duration: 1000,
+                            easing: 'easeOutQuad'
+                        });
+                        featureObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.2 });
+
+            const featureSection = document.querySelector('.feature-deck-item')?.closest('section');
+            if (featureSection) featureObserver.observe(featureSection);
+
+            const statsObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const target = entry.target;
+                        const val = parseInt(target.getAttribute('data-val'));
+                        anime({
+                            targets: target,
+                            innerHTML: [0, val],
+                            round: 1,
+                            easing: 'easeOutExpo',
+                            duration: 3000
+                        });
+                        statsObserver.unobserve(target);
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            document.querySelectorAll('.odometer').forEach(el => statsObserver.observe(el));
         });
     </script>
 

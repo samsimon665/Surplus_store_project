@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>View Subcategories</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1173d4",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings:
+                'FILL' 0,
+                'wght' 400,
+                'GRAD' 0,
+                'opsz' 24
+        }
+    </style>
+</head>
+
+<body class="font-display bg-background-light dark:bg-background-dark">
+    <div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+        <div class="layout-container flex h-full grow flex-col">
+            <!-- TopNavBar Component -->
+            <header
+                class="flex items-center justify-between whitespace-nowrap border-b border-gray-200 dark:border-gray-800/50 px-4 sm:px-6 md:px-10 py-3 bg-white dark:bg-background-dark/50 backdrop-blur-sm sticky top-0 z-50">
+                <div class="flex items-center gap-8">
+                    <div class="flex items-center gap-3 text-gray-900 dark:text-white">
+                        <div class="size-6 text-primary">
+                            <svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M13.8261 17.4264C16.7203 18.1174 20.2244 18.5217 24 18.5217C27.7756 18.5217 31.2797 18.1174 34.1739 17.4264C36.9144 16.7722 39.9967 15.2331 41.3563 14.1648L24.8486 40.6391C24.4571 41.267 23.5429 41.267 23.1514 40.6391L6.64374 14.1648C8.00331 15.2331 11.0856 16.7722 13.8261 17.4264Z"
+                                    fill="currentColor"></path>
+                                <path clip-rule="evenodd"
+                                    d="M39.998 12.236C39.9944 12.2537 39.9875 12.2845 39.9748 12.3294C39.9436 12.4399 39.8949 12.5741 39.8346 12.7175C39.8168 12.7597 39.7989 12.8007 39.7813 12.8398C38.5103 13.7113 35.9788 14.9393 33.7095 15.4811C30.9875 16.131 27.6413 16.5217 24 16.5217C20.3587 16.5217 17.0125 16.131 14.2905 15.4811C12.0012 14.9346 9.44505 13.6897 8.18538 12.8168C8.17384 12.7925 8.16216 12.767 8.15052 12.7408C8.09919 12.6249 8.05721 12.5114 8.02977 12.411C8.00356 12.3152 8.00039 12.2667 8.00004 12.2612C8.00004 12.261 8 12.2607 8.00004 12.2612C8.00004 12.2359 8.0104 11.9233 8.68485 11.3686C9.34546 10.8254 10.4222 10.2469 11.9291 9.72276C14.9242 8.68098 19.1919 8 24 8C28.8081 8 33.0758 8.68098 36.0709 9.72276C37.5778 10.2469 38.6545 10.8254 39.3151 11.3686C39.9006 11.8501 39.9857 12.1489 39.998 12.236ZM4.95178 15.2312L21.4543 41.6973C22.6288 43.5809 25.3712 43.5809 26.5457 41.6973L43.0534 15.223C43.0709 15.1948 43.0878 15.1662 43.104 15.1371L41.3563 14.1648C43.104 15.1371 43.1038 15.1374 43.104 15.1371L43.1051 15.135L43.1065 15.1325L43.1101 15.1261L43.1199 15.1082C43.1276 15.094 43.1377 15.0754 43.1497 15.0527C43.1738 15.0075 43.2062 14.9455 43.244 14.8701C43.319 14.7208 43.4196 14.511 43.5217 14.2683C43.6901 13.8679 44 13.0689 44 12.2609C44 10.5573 43.003 9.22254 41.8558 8.2791C40.6947 7.32427 39.1354 6.55361 37.385 5.94477C33.8654 4.72057 29.133 4 24 4C18.867 4 14.1346 4.72057 10.615 5.94478C8.86463 6.55361 7.30529 7.32428 6.14419 8.27911C4.99695 9.22255 3.99999 10.5573 3.99999 12.2609C3.99999 13.1275 4.29264 13.9078 4.49321 14.3607C4.60375 14.6102 4.71348 14.8196 4.79687 14.9689C4.83898 15.0444 4.87547 15.1065 4.9035 15.1529C4.91754 15.1762 4.92954 15.1957 4.93916 15.2111L4.94662 15.223L4.95178 15.2312ZM35.9868 18.996L24 38.22L12.0131 18.996C12.4661 19.1391 12.9179 19.2658 13.3617 19.3718C16.4281 20.1039 20.0901 20.5217 24 20.5217C27.9099 20.5217 31.5719 20.1039 34.6383 19.3718C35.082 19.2658 35.5339 19.1391 35.9868 18.996Z"
+                                    fill="currentColor" fill-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">Surplus</h2>
+                    </div>
+                </div>
+                <div class="hidden lg:flex flex-1 justify-center gap-8">
+                    <div class="flex items-center gap-9">
+                        <a class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal"
+                            href="#">New Arrivals</a>
+                        <a class="text-gray-900 dark:text-white text-sm font-medium leading-normal" href="#">Men</a>
+                        <a class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal"
+                            href="#">Women</a>
+                        <a class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal"
+                            href="#">Accessories</a>
+                        <a class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal"
+                            href="#">Sale</a>
+                    </div>
+                </div>
+                <div class="flex flex-1 justify-end gap-2">
+                    <button
+                        class="hidden sm:flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-transparent text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
+                        <span class="material-symbols-outlined text-xl">search</span>
+                    </button>
+                    <button
+                        class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-transparent text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
+                        <span class="material-symbols-outlined text-xl">favorite</span>
+                    </button>
+                    <button
+                        class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-transparent text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
+                        <span class="material-symbols-outlined text-xl">shopping_bag</span>
+                    </button>
+                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+                        data-alt="User profile picture"
+                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDyBjY0WGOgr3RAcf3FixdrYwgBWnQniXInl5JUbdK3eqoFtupTQ5kxDM5eIkqpRloJ5dPRQpl5VVOTDKQ07Yq0pSa6ZeyI6zDwWNDhjgoYiLESzxtMMdLK9qlPpKruvv4Y3KnM2PRf2KNNN9w8klf6gVKZAmGYOL2L_z45zKBgpWBb8eWcEKOCyzmH7_nj_JNnoAPEgI3qtNWoMd1GFRQAaw_8DIE9Xux40aB9u99oMiSvzVi2tdGxO7wzuLkClky2bFtPZUGCSjQ");'>
+                    </div>
+                </div>
+            </header>
+            <main class="flex-1 px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+                <div class="max-w-7xl mx-auto">
+
+                    <!-- Breadcrumbs -->
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <a class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal"
+                            href="{% url 'catalog:home' %}">
+                            Home
+                        </a>
+
+                        <span class="text-gray-500 dark:text-gray-400 text-sm font-medium leading-normal">/</span>
+
+                        {% if category %}
+                        <a class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal"
+                            href="{% url 'catalog:category_list' %}">
+                            Categories
+                        </a>
+
+                        <span class="text-gray-500 dark:text-gray-400 text-sm font-medium leading-normal">/</span>
+
+                        <span class="text-gray-900 dark:text-white text-sm font-medium leading-normal">
+                            {{ category.name }}
+                        </span>
+                        {% else %}
+                        <span class="text-gray-900 dark:text-white text-sm font-medium leading-normal">
+                            All Subcategories
+                        </span>
+                        {% endif %}
+                    </div>
+
+
+
+                    <!-- PageHeading -->
+                    <div class="flex flex-wrap justify-between gap-3 mb-8 md:mb-12">
+                        <h1
+                            class="text-gray-900 dark:text-white text-4xl lg:text-5xl font-black leading-tight tracking-[-0.033em] min-w-72">
+                            {% if category %}
+                            {{ category.name }} -> Subcategories
+                            {% else %}
+                            All Subcategories
+                            {% endif %}
+                        </h1>
+                    </div>
+
+
+                    <!-- Modified ImageGrid as Subcategory Cards -->
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+
+                        {% for subcategory in subcategories %}
+
+
+                        <div
+                            class="group relative flex flex-col bg-white dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 ease-in-out hover:-translate-y-1">
+
+                            <div class="bg-cover bg-center aspect-[4/3]" {% if subcategory.image %}
+                                style='background-image: url("{{ subcategory.image.url }}");' {% else %}
+                                style='background-image: url("https://images.unsplash.com/photo-1512436991641-6745cdb1723f");'
+                                {% endif %}>
+                            </div>
+
+                            <div class="p-6 flex-grow flex flex-col">
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                                    {{ subcategory.name }}
+                                </h3>
+
+                                <a href="#"
+                                    class="mt-auto inline-flex items-center justify-center text-center px-6 py-3 rounded-lg bg-primary text-white text-sm font-bold shadow-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-background-dark transition-colors">
+                                    Browse Items
+                                </a>
+                            </div>
+                        </div>
+
+                        {% empty %}
+                        <div class="col-span-full text-center py-12 text-gray-500 dark:text-gray-400">
+                            No subcategories available.
+                        </div>
+                        {% endfor %}
+
+
+
+
+                    </div>
+                </div>
+            </main>
+            <!-- Footer -->
+            <footer class="flex flex-col gap-6 px-5 py-10 text-center border-t border-gray-200 dark:border-gray-800/50">
+                <div class="flex flex-wrap items-center justify-center gap-6">
+                    <a class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary text-base font-normal leading-normal"
+                        href="#">Contact</a>
+                    <a class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary text-base font-normal leading-normal"
+                        href="#">FAQ</a>
+                    <a class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary text-base font-normal leading-normal"
+                        href="#">Shipping</a>
+                    <a class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary text-base font-normal leading-normal"
+                        href="#">Returns</a>
+                    <a class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary text-base font-normal leading-normal"
+                        href="#">Privacy Policy</a>
+                </div>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <a class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary" href="#">
+                        <svg aria-hidden="true" class="w-6 h-6" fill="currentColor" viewbox="0 0 24 24">
+                            <path clip-rule="evenodd"
+                                d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
+                                fill-rule="evenodd"></path>
+                        </svg>
+                    </a>
+                    <a class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary" href="#">
+                        <svg aria-hidden="true" class="w-6 h-6" fill="currentColor" viewbox="0 0 24 24">
+                            <path clip-rule="evenodd"
+                                d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.024.06 1.378.06 3.808s-.012 2.784-.06 3.808c-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.024.048-1.378.06-3.808.06s-2.784-.012-3.808-.06c-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.048-1.024-.06-1.378-.06-3.808s.012-2.784.06-3.808c.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 016.08 2.525c.636-.247 1.363-.416 2.427-.465C9.53 2.013 9.884 2 12.315 2zM12 7a5 5 0 100 10 5 5 0 000-10zm0 8a3 3 0 110-6 3 3 0 010 6zm6.406-11.845a1.25 1.25 0 100 2.5 1.25 1.25 0 000-2.5z"
+                                fill-rule="evenodd"></path>
+                        </svg>
+                    </a>
+                    <a class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary" href="#">
+                        <svg aria-hidden="true" class="w-6 h-6" fill="currentColor" viewbox="0 0 24 24">
+                            <path
+                                d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.71v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84">
+                            </path>
+                        </svg>
+                    </a>
+                </div>
+                <p class="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal">© 2024 Surplus. All
+                    rights reserved.</p>
+            </footer>
+        </div>
+    </div>
+</body>
+
+</html>
