@@ -99,6 +99,7 @@ class ProductAdmin(admin.ModelAdmin):
         "is_active",
         "created_at",
         "image_preview",   # new column
+        "uuid",   # new column
     )
 
     list_filter = (

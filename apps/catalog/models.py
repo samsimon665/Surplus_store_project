@@ -1,3 +1,4 @@
+import uuid
 from django.db.models import UniqueConstraint
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -76,6 +77,13 @@ class SubCategory(TimeStampedModel):
 
 
 class Product(TimeStampedModel):
+    uuid = models.UUIDField(
+        default=uuid.uuid4,
+        editable=False,
+        unique=True,
+        db_index=True
+    )
+
     subcategory = models.ForeignKey(
         SubCategory,
         on_delete=models.CASCADE,
@@ -86,12 +94,10 @@ class Product(TimeStampedModel):
     slug = models.SlugField(max_length=160, blank=True)
     description = models.TextField(blank=True)
 
-    # ✅ MAIN PRODUCT IMAGE (CATALOG IMAGE)
     main_image = models.ImageField(
         upload_to="products/main/",
         blank=True,
-        null=True,
-        help_text="Main product image used in listings & search"
+        null=True
     )
 
     is_active = models.BooleanField(default=True)
@@ -102,6 +108,7 @@ class Product(TimeStampedModel):
             ("subcategory", "name"),
             ("subcategory", "slug"),
         )
+
 
     def save(self, *args, **kwargs):
         if not self.slug:

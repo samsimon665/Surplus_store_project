@@ -1,0 +1,60 @@
+<!-- NAVBAR ONLY -->
+<nav class="navbar navbar-expand-lg fixed-top" aria-label="Main navigation">
+    <div class="container-fluid px-lg-5">
+        <div class="d-flex align-items-center gap-2">
+            <span class="material-symbols-outlined text-accent" style="font-size: 2.1rem;"
+                aria-hidden="true">shopping_bag</span>
+            <a class="navbar-brand text-white m-0" href="{% url 'catalog:home' %}">
+                SURPLUS<span class="text-accent">STORE</span>
+            </a>
+        </div>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent"
+            aria-label="Toggle navigation" aria-expanded="false" aria-controls="navContent">
+            <span class="navbar-toggler-icon" aria-hidden="true"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="navContent">
+            <ul class="navbar-nav align-items-center mt-3 mt-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.namespace == 'catalog' and request.resolver_match.url_name == 'home' %}active text-accent{% endif %}"
+                        href="{% url 'catalog:home' %}">HOME</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {% if navbar_show == 'categories' %}active text-accent{% endif %}"
+                        href="{% url 'catalog:category_list' %}">
+                        CATEGORIES
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {% if navbar_show == 'subcategories' %}active text-accent{% endif %}"
+                        href="{% url 'catalog:all_subcategory_list' %}">
+                        SUBCATEGORIES
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {% if navbar_show == 'subcategories' %}active text-accent{% endif %}"
+                        href="{% url 'catalog:product_list' %}">
+                        PRODUCTS
+                    </a>
+                </li>
+
+
+
+
+
+
+                <li class="nav-item me-3"><a class="nav-link" href="#">ABOUT</a></li>
+                <li class="nav-item d-none d-lg-block">
+                    <div class="border border-secondary rounded-circle bg-cover"
+                        style="width: 40px; height: 40px; background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCfCgd-QQXmRDKqUUDsPupUioHFzi8qIomUGsCu9TZ5Cx6anbnLndsZlfTFcoYmP18e4ELBRcBe-0_1FXSRiSysEERar4f3xo5yZBGVPwjgi8H11Mjrl1cnQXCIiNxRb0d_GdC-rS0Jy0wTbPudu6SOTiYwwZEIf2WvZCpWLsXP2o5xd3ZLN02z4rgHwu9lgkS9ECaUvN9TspQ-87aZgBpIPe5bFx5YdWy9mgpGgI-_VbCPF7sih6-Gbcfnhlc23D7OdSgNHzCBn6I'); background-size: cover;"
+                        role="img" aria-label="User profile">
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

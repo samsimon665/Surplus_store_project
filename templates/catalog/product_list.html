@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    {% if search_query %}
+    <title>Search Results | Surplus</title>
+    {% elif subcategory %}
+    <title>{{ subcategory.name }} | Surplus</title>
+    {% else %}
+    <title>Products | Surplus</title>
+    {% endif %}
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1"
+        rel="stylesheet" />
+
+    <!-- Anime.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+    <style>
+        :root {
+            --color-bg: #000000;
+            --color-accent: #F2E700;
+            --color-surface: #111111;
+            --color-surface-soft: #141414;
+            --color-text: #EEEEEE;
+            --color-text-muted: #888888;
+            --font-display: 'Bebas Neue', sans-serif;
+            --font-body: 'Montserrat', sans-serif;
+            --radius-pill: 999px;
+        }
+
+        /* GLOBAL */
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            padding-top: 76px;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        .display-font,
+        .navbar-brand,
+        .nav-link,
+        .btn,
+        .breadcrumb-item {
+            font-family: var(--font-display);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .text-accent {
+            color: var(--color-accent) !important;
+        }
+
+        /* NAVBAR (Copied from Subcategory) */
+        .navbar {
+            background: rgba(0, 0, 0, 0.96);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.9rem 0;
+            backdrop-filter: blur(12px);
+        }
+
+        .navbar-brand {
+            font-size: 1.9rem;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.72) !important;
+            font-size: 1.05rem;
+            margin-left: 1rem;
+            padding-top: 0.35rem;
+            padding-bottom: 0.35rem;
+            transition: color 0.25s ease, opacity 0.25s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--color-accent) !important;
+            opacity: 1;
+        }
+
+        .navbar-toggler {
+            border-radius: var(--radius-pill);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .navbar-toggler-icon {
+            filter: invert(1);
+        }
+
+        /* BREADCRUMBS */
+        .breadcrumb {
+            margin-bottom: 0;
+        }
+
+        .breadcrumb-item a {
+            color: var(--color-text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .breadcrumb-item a:hover {
+            color: var(--color-accent);
+        }
+
+        .breadcrumb-item.active {
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb-item+.breadcrumb-item::before {
+            color: #444;
+        }
+
+        /* SEARCH BAR (Centered below header) */
+        .search-area {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-container {
+            position: relative;
+            border-radius: var(--radius-pill);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: linear-gradient(135deg, #050505, #101010);
+            transition: border-color 0.3s, box-shadow 0.3s;
+            overflow: hidden;
+        }
+
+        .search-container:focus-within {
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 1px rgba(242, 231, 0, 0.35);
+        }
+
+        .search-input {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-family: 'Montserrat', monospace;
+            box-shadow: none !important;
+            padding: 0.8rem 1rem 0.8rem 3rem;
+            font-size: 1rem;
+        }
+
+        .search-input::placeholder {
+            color: #555;
+        }
+
+        .search-icon-inside {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--color-text-muted);
+        }
+
+        /* BODY SEARCH (New Style) */
+        .body-search {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .body-search .input-group {
+            border-radius: var(--radius-pill);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: linear-gradient(135deg, #050505, #101010);
+            overflow: hidden;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .body-search .input-group:focus-within {
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 1px rgba(242, 231, 0, 0.35);
+        }
+
+        .body-search-icon {
+            border: none;
+            color: var(--color-text-muted);
+            padding-left: 1.2rem;
+            padding-right: 0.5rem;
+        }
+
+        .body-search-input {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-family: 'Montserrat', monospace;
+            box-shadow: none !important;
+            padding-top: 0.8rem;
+            padding-bottom: 0.8rem;
+            font-size: 1rem;
+            border-left: none;
+        }
+
+        .body-search-input::placeholder {
+            color: #555;
+        }
+
+        /* PRODUCT CARD */
+        .prod-card {
+            background: transparent;
+            border: none;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            transition: transform 0.3s ease;
+        }
+
+        .prod-img-wrap {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 3/4;
+            /* Tall fashion style */
+            overflow: hidden;
+            background: #0a0a0a;
+            margin-bottom: 1rem;
+        }
+
+        .prod-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(80%);
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transform: scale(1);
+        }
+
+        .prod-card:hover .prod-img {
+            filter: grayscale(0%);
+            transform: scale(1.05);
+            /* Subtle zoom */
+        }
+
+        .prod-meta-pill {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 4px 10px;
+            font-size: 0.7rem;
+            font-family: var(--font-display);
+            letter-spacing: 1px;
+            backdrop-filter: blur(4px);
+        }
+
+        .prod-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            flex-grow: 1;
+        }
+
+        .prod-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #fff;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .prod-brand {
+            color: #666;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .prod-price {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            color: var(--color-accent);
+            margin-top: 0.5rem;
+        }
+
+        .btn-view {
+            margin-top: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            background: transparent;
+            font-family: var(--font-display);
+            font-size: 0.95rem;
+            padding: 0.6rem 1rem;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+        }
+
+        .btn-view:hover {
+            border-color: var(--color-accent);
+            background: var(--color-accent);
+            color: #000;
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            padding: 5rem 0;
+            text-align: center;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        /* ANIMATIONS */
+        .el-fade {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        /* FOOTER (Copied from Home/Subcat) */
+        footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            background: #050505;
+            padding: 52px 0 30px;
+            margin-top: 80px;
+        }
+
+        .footer-brand {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            letter-spacing: 0.18em;
+            color: #fff;
+        }
+
+        .footer-link {
+            color: #777;
+            text-decoration: none;
+            margin: 0 14px;
+            font-size: 0.85rem;
+            letter-spacing: 0.08em;
+        }
+
+        .footer-link:hover {
+            color: var(--color-accent);
+        }
+
+        .footer-social {
+            width: 40px;
+            height: 40px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #777;
+            transition: all 0.25s ease;
+        }
+
+        .footer-social:hover {
+            color: #000;
+            background: var(--color-accent);
+            border-color: var(--color-accent);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            margin-top: 25px;
+            padding-top: 16px;
+        }
+
+        .footer-copy {
+            font-size: 0.8rem;
+            color: #666;
+            letter-spacing: 0.12em;
+        }
+
+        /* FILTERS */
+        .filters-section {
+            margin-bottom: 2rem;
+        }
+
+        .filter-pills-row {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+            scrollbar-width: none;
+        }
+
+        .filter-pills-row::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-pill {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ccc;
+            padding: 8px 20px;
+            border-radius: var(--radius-pill);
+            white-space: nowrap;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .filter-pill:hover,
+        .filter-pill.active {
+            background: var(--color-accent);
+            color: #000;
+            border-color: var(--color-accent);
+        }
+
+        .filter-actions-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            background: #0a0a0a;
+            padding: 1rem;
+            border-radius: 4px;
+            align-items: center;
+        }
+
+        .filter-dropdown {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+
+        .filter-dropdown:hover {
+            color: var(--color-accent);
+        }
+
+        /* WISHLIST BUTTON */
+        .btn-wishlist {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 10;
+        }
+
+        .btn-wishlist:hover {
+            background: #fff;
+            color: #ef233c;
+            /* Red heart color */
+            transform: scale(1.1);
+        }
+
+        .btn-wishlist.active {
+            background: #fff;
+            color: #ef233c;
+        }
+
+        .btn-wishlist .material-symbols-outlined {
+            font-size: 20px;
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            transition: all 0.3s;
+        }
+
+        .btn-wishlist:hover .material-symbols-outlined,
+        .btn-wishlist.active .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* FIX FILTER DROPDOWN OVERLAP */
+        .filters-section {
+            position: relative;
+            z-index: 20;
+        }
+
+        .dropdown-menu {
+            z-index: 1055;
+        }
+
+        .prod-card {
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ✅ NAVBAR WITH CORRECT CONTEXT -->
+    {% include 'catalog/navbar.html' %}
+
+    <!-- CONTENT -->
+    <main class="container py-5">
+
+        <!-- BREADCRUMBS -->
+        <nav aria-label="breadcrumb" class="mb-4 el-fade">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'catalog:home' %}">HOME</a></li>
+
+                {% if search_query %}
+                <li class="breadcrumb-item active" aria-current="page">SEARCH</li>
+                {% else %}
+                <li class="breadcrumb-item"><a href="#">CATEGORIES</a></li>
+                {% if subcategory.category %}
+                <li class="breadcrumb-item"><a href="#">{{ subcategory.category.name }}</a></li>
+                {% endif %}
+                <li class="breadcrumb-item active" aria-current="page">{{ subcategory.name }}</li>
+                {% endif %}
+            </ol>
+        </nav>
+
+        <!-- HEADER -->
+        <div class="row align-items-end mb-4 el-fade">
+            <div class="col-12 text-center text-md-start">
+                {% if search_query %}
+                <h1 class="display-4 text-white mb-2" style="font-weight: 700;">
+                    SEARCH <span class="text-accent">RESULTS</span>
+                </h1>
+                <p class="text-muted small">Showing results for "{{ search_query }}"</p>
+                {% else %}
+                <h1 class="display-4 text-white mb-2" style="font-weight: 700;">
+                    {{ subcategory.name }} <span class="text-accent">PRODUCTS</span>
+                </h1>
+                <p class="text-muted small" style="text-transform: uppercase; letter-spacing: 2px;">
+                    PRICED BY WEIGHT · EXPORT SURPLUS
+                </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- SEARCH BAR -->
+        <div class="row mb-5 el-fade">
+            <div class="col-12">
+                <label for="product-search" class="visually-hidden">Search products</label>
+
+                <form method="get" action="{% url 'catalog:product_list' %}" class="body-search el-fade" role="search">
+
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent body-search-icon" aria-hidden="true">
+                            <span class="material-symbols-outlined">search</span>
+                        </span>
+
+                        <input type="search" name="q" id="product-search" class="form-control body-search-input"
+                            placeholder="Search products by name…" value="{{ search_query|default:'' }}"
+                            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                            aria-label="Search products">
+                    </div>
+
+                    <button type="submit" class="visually-hidden">Search</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- FILTERS -->
+        <div class="filters-section el-fade">
+            <!-- Row 1: Quick Pills -->
+            <div class="filter-pills-row">
+                <a href="#" class="filter-pill active">VIEW ALL</a>
+                <a href="#" class="filter-pill">NEW IN</a>
+                <a href="#" class="filter-pill">CLOTHING</a>
+                <a href="#" class="filter-pill">SHOES</a>
+                <a href="#" class="filter-pill">ACCESSORIES</a>
+                <a href="#" class="filter-pill">SPORTSWEAR</a>
+                <a href="#" class="filter-pill">BRANDED</a>
+                <a href="#" class="filter-pill">OUTLET</a>
+            </div>
+
+            <!-- Row 2: Dropdowns -->
+            <div class="filter-actions-row">
+                <div class="dropdown">
+                    <button class="filter-dropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        SORT <span class="material-symbols-outlined" style="font-size: 1.2em;">expand_more</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item" href="#">Price: Low to High</a></li>
+                        <li><a class="dropdown-item" href="#">Price: High to Low</a></li>
+                        <li><a class="dropdown-item" href="#">Newest First</a></li>
+                    </ul>
+                </div>
+                <div class="vr bg-secondary opacity-25 mx-2"></div>
+
+                <div class="dropdown">
+                    <button class="filter-dropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        CATEGORY <span class="material-symbols-outlined" style="font-size: 1.2em;">expand_more</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item" href="#">T-Shirts</a></li>
+                        <li><a class="dropdown-item" href="#">Jackets</a></li>
+                        <li><a class="dropdown-item" href="#">Pants</a></li>
+                    </ul>
+                </div>
+
+                <div class="dropdown">
+                    <button class="filter-dropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        SIZE <span class="material-symbols-outlined" style="font-size: 1.2em;">expand_more</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item" href="#">S</a></li>
+                        <li><a class="dropdown-item" href="#">M</a></li>
+                        <li><a class="dropdown-item" href="#">L</a></li>
+                        <li><a class="dropdown-item" href="#">XL</a></li>
+                    </ul>
+                </div>
+
+                <div class="dropdown">
+                    <button class="filter-dropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        PRICE RANGE <span class="material-symbols-outlined" style="font-size: 1.2em;">expand_more</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item" href="#">Under ₹500</a></li>
+                        <li><a class="dropdown-item" href="#">₹500 - ₹1000</a></li>
+                        <li><a class="dropdown-item" href="#">Over ₹1000</a></li>
+                    </ul>
+                </div>
+
+                <div class="ms-auto text-muted small d-none d-md-block">
+                    {{ products.count }}
+                </div>
+            </div>
+        </div>
+
+        <!-- PRODUCT GRID -->
+        <div class="row g-4">
+            {% for product in products %}
+            <!-- Desktop: 4, Tablet: 2, Mobile: 1 -->
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="prod-card el-fade">
+                    <a href="{% url 'catalog:product_detail' product.uuid %}" class="text-decoration-none">
+
+                        <div class="prod-img-wrap">
+                            <div class="prod-meta-pill">BY WEIGHT</div>
+
+                            {% if product.main_image %}
+                            <img src="{{ product.main_image.url }}" class="prod-img" alt="{{ product.name }}">
+                            {% else %}
+                            <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=600&q=80"
+                                class="prod-img" alt="Product Image">
+                            {% endif %}
+
+
+
+                            <!-- Wishlist Button -->
+                            <button class="btn-wishlist" aria-label="Add to Wishlist">
+                                <span class="material-symbols-outlined">favorite</span>
+                            </button>
+                        </div>
+                    </a>
+                    <div class="prod-info">
+                        <h3 class="prod-title">{{ product.name|upper }}</h3>
+                        <div class="prod-brand">EXPORT SURPLUS</div>
+
+
+                        <div class="prod-price">
+                            ₹ {{ product.subcategory.price_per_kg }} / KG
+                        </div>
+
+
+                        <a href="{% url 'catalog:product_detail' product.uuid %}" class="btn-view">
+                            VIEW PRODUCT &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <!-- EMPTY STATE -->
+            <div class="col-12">
+                <div class="empty-state el-fade">
+                    <span class="material-symbols-outlined empty-state-icon">search_off</span>
+                    <h3 class="text-white h4 mb-2">NO PRODUCTS FOUND</h3>
+                    <p class="text-muted">Try adjusting your search or browse other categories.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <div class="row align-items-center mb-4">
+                <div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
+                    <div class="footer-brand">SURPLUS<span class="text-accent">STORE</span></div>
+                    <div class="text-muted small mt-1">
+                        Premium surplus clothing by weight.
+                    </div>
+                </div>
+                <div class="col-md-4 text-center mb-3 mb-md-0">
+                    <a href="#" class="footer-link">CONTACT</a>
+                    <a href="#" class="footer-link">FAQ</a>
+                    <a href="#" class="footer-link">SHIPPING</a>
+                    <a href="#" class="footer-link">RETURNS</a>
+                    <a href="#" class="footer-link">PRIVACY POLICY</a>
+                </div>
+                <div class="col-md-4 text-center text-md-end">
+                    <div class="d-inline-flex gap-2">
+                        <a href="#" class="footer-social">
+                            <span class="material-symbols-outlined">public</span>
+                        </a>
+                        <a href="#" class="footer-social">
+                            <span class="material-symbols-outlined">alternate_email</span>
+                        </a>
+                        <a href="#" class="footer-social">
+                            <span class="material-symbols-outlined">local_shipping</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom text-center">
+                <div class="footer-copy">
+                    © 2024 SURPLUS. ALL RIGHTS RESERVED.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animate items on load
+            anime({
+                targets: '.el-fade',
+                opacity: [0, 1],
+                translateY: [20, 0],
+                duration: 900,
+                easing: 'easeOutQuad',
+                delay: anime.stagger(100)
+            });
+        });
+    </script>
+</body>
+
+</html>
