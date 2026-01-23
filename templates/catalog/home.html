@@ -308,45 +308,8 @@
 
 <body>
     <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg fixed-top">
-        <div class="container-fluid px-lg-5">
-            <div class="d-flex align-items-center gap-2">
-                <span class="material-symbols-outlined text-accent" style="font-size: 2.1rem;">shopping_bag</span>
-                <a class="navbar-brand text-white m-0" href="#home">
-                    SURPLUS<span class="text-accent">STORE</span>
-                </a>
-            </div>
-            <button class="navbar-toggler filter-invert" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navContent" style="filter: invert(1);">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navContent">
-                <ul class="navbar-nav align-items-center mt-3 mt-lg-0">
-                    <li class="nav-item"><a class="nav-link active" href="#home">HOME</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#categories">CATEGORIES</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#arrivals">NEW ARRIVALS</a></li>
-                    <li class="nav-item"><a class="nav-link text-accent" href="#sale">SALE</a></li>
-                    {% if user.is_authenticated %}
-                    <li class="nav-item ms-lg-4">
-                        <form method="post" action="{% url 'accounts:logout' %}" class="d-inline">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-light btn-sm ms-2">
-                                LOGOUT
-                            </button>
-                        </form>
-                    </li>
-                    {% else %}
-                    <li class="nav-item ms-lg-4">
-                        <a href="{% url 'accounts:login' %}" class="btn btn-outline-light btn-sm ms-2">
-                            LOGIN
-                        </a>
-                    </li>
-                    {% endif %}
-
-                </ul>
-            </div>
-        </div>
-    </nav>
+    
+    {% include 'catalog/navbar.html' %}
 
     <!-- BOOTSTRAP CAROUSEL HERO -->
     <section id="heroCarousel" class="carousel slide premium-carousel carousel-fade" data-bs-ride="carousel"

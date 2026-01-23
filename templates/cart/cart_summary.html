@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Your Cart | Surplus</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1"
+        rel="stylesheet" />
+
+    <!-- Anime.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+    <style>
+        /* --- BRAND THEME VARIABLES (From subcategory.html) --- */
+        :root {
+            --color-bg: #000000;
+            --color-accent: #F2E700;
+            /* Yellow/Gold */
+            --color-surface: #111111;
+            --color-surface-soft: #141414;
+            --color-text: #EEEEEE;
+            --color-text-muted: #888888;
+            --font-display: 'Bebas Neue', sans-serif;
+            --font-body: 'Montserrat', sans-serif;
+            --radius-lg: 18px;
+            --radius-pill: 999px;
+
+            /* Status Colors */
+            --color-danger: #ff4d4d;
+            --color-warning: #ffd700;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            padding-top: 76px;
+            /* Space for fixed navbar */
+        }
+
+        /* --- TYPOGRAPHY --- */
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        .display-font,
+        .navbar-brand,
+        .nav-link,
+        .btn-display {
+            font-family: var(--font-display);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .text-accent {
+            color: var(--color-accent) !important;
+        }
+
+        .text-muted-soft {
+            color: var(--color-text-muted) !important;
+        }
+
+        /* --- NAVBAR (Identical to subcategory.html) --- */
+        .navbar {
+            background: rgba(0, 0, 0, 0.96);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.9rem 0;
+            backdrop-filter: blur(12px);
+        }
+
+        .navbar-brand {
+            font-size: 1.9rem;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.72) !important;
+            font-size: 1.05rem;
+            margin-left: 1rem;
+            padding: 0.35rem 0;
+            transition: color 0.25s ease, opacity 0.25s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--color-accent) !important;
+            opacity: 1;
+        }
+
+        .navbar-toggler {
+            border-radius: var(--radius-pill);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .navbar-toggler-icon {
+            filter: invert(1);
+        }
+
+        /* Search Container */
+        .search-container {
+            position: relative;
+            border-radius: var(--radius-pill);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: linear-gradient(135deg, #050505, #101010);
+            transition: border-color 0.3s, box-shadow 0.3s;
+            overflow: hidden;
+        }
+
+        .search-container:focus-within {
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 1px rgba(242, 231, 0, 0.35);
+        }
+
+        .search-input {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-family: 'Montserrat', monospace;
+            box-shadow: none !important;
+            padding: 0.6rem 0;
+        }
+
+        .search-icon {
+            color: var(--color-text-muted);
+        }
+
+
+        /* --- CART PAGE SPECIFIC STYLES --- */
+
+        /* Layout Grid */
+        .cart-grid {
+            /* Bootstrap row handles this, but custom spacing here */
+            --bs-gutter-x: 2rem;
+        }
+
+        /* Cart Item Card */
+        .cart-item-card {
+            background: radial-gradient(circle at top left, #1b1b1b, var(--color-surface-soft));
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .cart-item-card:hover {
+            border-color: rgba(242, 231, 0, 0.5);
+            /* Yellow border on hover */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+            transform: translateY(-2px);
+        }
+
+        /* Product Thumbnail */
+        .cart-thumb {
+            width: 120px;
+            height: 120px;
+            border-radius: 12px;
+            object-fit: cover;
+            background-color: #050505;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Quantity Controls */
+        .qty-wrapper {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-pill);
+            padding: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .qty-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .qty-btn:not(:disabled):hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--color-accent);
+        }
+
+        .qty-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .qty-val {
+            min-width: 40px;
+            text-align: center;
+            font-weight: 600;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        /* Action Buttons (Save/Remove) */
+        .action-icon-btn {
+            background: none;
+            border: none;
+            color: var(--color-text-muted);
+            padding: 0;
+            margin-right: 1rem;
+            transition: all 0.2s;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+        }
+
+        .action-icon-btn span {
+            font-size: 1.25rem;
+            transition: transform 0.2s;
+        }
+
+        .action-icon-btn:hover {
+            color: var(--color-accent);
+            transform: scale(1.05);
+        }
+
+        .action-icon-btn:hover span {
+            transform: scale(1.15);
+        }
+
+        /* Item Status Messages */
+        .cart-status-msg {
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+        }
+
+        .status-danger {
+            color: var(--color-danger);
+        }
+
+        .status-warning {
+            color: var(--color-warning);
+        }
+
+        /* Order Summary (Sticky) */
+        .summary-card {
+            background: #141414;
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 2rem;
+            position: sticky;
+            top: 100px;
+            /* Offset for navbar */
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            color: #ccc;
+            font-size: 0.95rem;
+        }
+
+        .summary-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 1.5rem 0;
+        }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fcfcfc;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Checkout Button */
+        .btn-checkout {
+            display: flex;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            background: #000;
+            color: var(--color-accent);
+            border: 2px solid var(--color-accent);
+            border-radius: 12px;
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-checkout:not(:disabled):hover {
+            background: var(--color-accent);
+            color: #000;
+            box-shadow: 0 0 20px rgba(242, 231, 0, 0.4);
+        }
+
+        .btn-checkout:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border-color: #666;
+            color: #888;
+        }
+
+        /* Promo Input */
+        .promo-group {
+            position: relative;
+            margin-top: 1.5rem;
+        }
+
+        .promo-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px 0;
+            color: #fff;
+            border-radius: 0;
+            outline: none;
+        }
+
+        .promo-input:focus {
+            border-bottom-color: var(--color-accent);
+            box-shadow: none;
+        }
+
+        .promo-input::placeholder {
+            color: #555;
+            font-style: italic;
+        }
+
+        /* FOOTER (Same as subcategory) */
+        footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            background: #050505;
+            padding: 52px 0 30px;
+            margin-top: 80px;
+        }
+
+        .footer-brand {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            letter-spacing: 0.18em;
+            color: #fff;
+        }
+
+        .footer-link {
+            color: #777;
+            text-decoration: none;
+            margin: 0 14px;
+            font-size: 0.85rem;
+            letter-spacing: 0.08em;
+        }
+
+        .footer-link:hover {
+            color: var(--color-accent);
+        }
+
+        .footer-social {
+            width: 40px;
+            height: 40px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #777;
+            transition: all 0.25s ease;
+        }
+
+        .footer-social:hover {
+            color: #000;
+            background: var(--color-accent);
+            border-color: var(--color-accent);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            margin-top: 25px;
+            padding-top: 16px;
+        }
+
+        .footer-copy {
+            font-size: 0.8rem;
+            color: #666;
+            letter-spacing: 0.12em;
+        }
+
+        /* Custom Anim */
+        .el-fade {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- NAVBAR -->
+    
+    {% include "catalog/navbar.html" %}
+
+    <!-- MAIN CONTENT -->
+    <main class="container py-5">
+
+        <!-- BREADCRUMBS -->
+        <nav aria-label="breadcrumb" class="mb-4 el-fade">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'catalog:home' %}"
+                        style="text-decoration:none; color:#ffffff;">HOME</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">SHOPPING CART</li>
+            </ol>
+        </nav>
+
+        <!-- TITLE -->
+        <h1 class="display-4 text-white mb-5 el-fade" style="font-weight: 700;">
+            YOUR <span class="text-accent">CART</span>
+        </h1>
+
+        <div class="row cart-grid">
+
+            <!-- LEFT COLUMN: ITEMS -->
+            <div class="col-lg-8">
+
+                <!-- CART LOOP -->
+                {% for row in cart_items %}
+                
+                <div class="cart-item-card el-fade">
+                    <div class="d-flex flex-column flex-md-row gap-4 align-items-start align-items-md-center">
+                
+                        <!-- 1. PRODUCT IMAGE -->
+                        {% if row.item.variant.image %}
+                        <img src="{{ row.item.variant.image.url }}" alt="{{ row.item.product_name }}" class="cart-thumb">
+                        {% else %}
+                        <div class="cart-thumb d-flex align-items-center justify-content-center text-muted">
+                            <span class="material-symbols-outlined">image</span>
+                        </div>
+                        {% endif %}
+                
+                        <!-- 2. DETAILS & CONTROLS -->
+                        <div class="flex-grow-1 w-100">
+                
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h4 class="h5 mb-1 text-white">
+                                        {{ row.item.product_name }}
+                                    </h4>
+                
+                                    <!-- Variant details -->
+                                    <div class="text-muted small font-monospace">
+                                        SIZE: {{ row.item.size }} | COLOR: {{ row.item.color }}
+                                    </div>
+                
+                                    <div class="mt-1 badge bg-secondary text-light opacity-50 font-monospace"
+                                        style="font-weight:400; font-size:0.7em;">
+                                        VARIANT ITEM
+                                    </div>
+                                </div>
+                
+                                <div class="text-end">
+                                    <div class="h5 mb-0 text-white font-monospace fw-bold">
+                                        {{ row.item.unit_price }}
+                                    </div>
+                                </div>
+                            </div>
+                
+                            <hr style="border-color: rgba(255,255,255,0.1); margin:12px 0;">
+                
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                
+                                <!-- QUANTITY CONTROLS -->
+                                <form action="{% url 'cart:cart_update' %}" method="POST" class="d-flex align-items-center">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="item_id" value="{{ row.item.id }}">
+                
+                                    <div class="qty-wrapper {% if row.status == 'out_of_stock' %}opacity-50{% endif %}">
+                
+                                        <!-- DECREASE -->
+                                        <button type="submit" name="action" value="decrease" class="qty-btn" {% if row.status == 'out_of_stock' %} disabled {% endif %}>
+
+                                            <span class="material-symbols-outlined" style="font-size:1rem;">remove</span>
+                                        </button>
+                
+                                        <span class="qty-val">
+                                            {{ row.item.quantity }}
+                                        </span>
+                
+                                        <!-- INCREASE -->
+                                        <button type="submit" name="action" value="increase" class="qty-btn" {% if row.status == 'out_of_stock' %}disabled{% endif %}>
+                                            <span class="material-symbols-outlined" style="font-size:1rem;">add</span>
+                                        </button>
+                                    </div>
+                                </form>
+                
+                                <!-- ITEM ACTIONS -->
+                                <div class="d-flex gap-3">
+                
+                                    {# Save for later – enable later when wishlist is wired #}
+                                    {#
+                                    <form method="POST">
+                                        {% csrf_token %}
+                                        <button class="action-icon-btn">
+                                            <span class="material-symbols-outlined">favorite</span>
+                                            Save
+                                        </button>
+                                    </form>
+                                    #}
+                
+                                    <!-- REMOVE -->
+                                    <form action="{% url 'cart:cart_remove' %}" method="POST" style="display:inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="item_id" value="{{ row.item.id }}">
+                
+                                        <button class="action-icon-btn hover-danger" title="Remove Item">
+                                            <span class="material-symbols-outlined">delete</span>
+                                            <span class="d-none d-sm-inline">Remove</span>
+                                        </button>
+                                    </form>
+                
+                                </div>
+                            </div>
+                
+                            <!-- STATUS MESSAGES -->
+                            {% if row.status == 'out_of_stock' %}
+                            <div class="cart-status-msg status-danger">
+                                <span class="material-symbols-outlined">error</span>
+                                This item is currently out of stock
+                            </div>
+                
+                            {% elif row.status == 'insufficient_stock' %}
+                            <div class="cart-status-msg status-warning">
+                                <span class="material-symbols-outlined">warning</span>
+                                Only {{ row.item.variant.stock }} pieces available. Please update quantity.
+                            </div>
+                
+                            {% elif row.status == 'disabled' %}
+                            <div class="cart-status-msg status-danger">
+                                <span class="material-symbols-outlined">block</span>
+                                This item is no longer available
+                            </div>
+                            {% endif %}
+                
+                        </div>
+                    </div>
+                </div>
+                
+                {% empty %}
+                <!-- EMPTY STATE -->
+                <div class="text-center py-5 el-fade">
+                    <span class="material-symbols-outlined display-1 text-muted mb-3">
+                        shopping_cart_off
+                    </span>
+                    <h3 class="text-white">YOUR CART IS EMPTY</h3>
+                    <p class="text-muted">Looks like you haven't added anything yet.</p>
+                    <a href="{% url 'catalog:home' %}" class="btn btn-outline-light mt-3 rounded-pill px-4">
+                        Start Shopping
+                    </a>
+                </div>
+                
+                {% endfor %}
+
+
+            </div>
+
+            
+
+            <!-- RIGHT COLUMN: SUMMARY -->
+            <div class="col-lg-4">
+                <div class="summary-card el-fade">
+                    <h3 class="h4 text-white mb-4">ORDER SUMMARY</h3>
+
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span class="font-monospace">{{ cart_subtotal }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Estimated Delivery</span>
+                        <span class="font-monospace text-muted">{{ shipping_cost }}</span>
+                    </div>
+                    {% if discount_amount %}
+                    <div class="summary-row text-accent">
+                        <span>Discount</span>
+                        <span class="font-monospace">- {{ discount_amount }}</span>
+                    </div>
+                    {% endif %}
+
+                    <div class="summary-divider"></div>
+
+                    <div class="summary-total">
+                        <span>TOTAL</span>
+                        <span>{{ cart_total }}</span>
+                    </div>
+
+                    <!-- CHECKOUT BUTTON -->
+                    {% if checkout_allowed %}
+                    <a href="#" class="btn-checkout">
+                        CHECKOUT NOW
+                    </a>
+                    {% else %}
+                    <button class="btn-checkout" disabled>
+                        FIX CART ISSUES
+                    </button>
+                    <p class="text-danger text-center small mt-2">
+                        Please remove out-of-stock items to proceed.
+                    </p>
+                    {% endif %}
+
+                    <!-- PROMO CODE -->
+                    <div class="promo-group">
+                        <label class="small text-muted mb-1">PROMO CODE</label>
+                        <form action="#" method="POST" class="d-flex gap-2">
+                            {% csrf_token %}
+                            <input type="text" name="code" class="promo-input" placeholder="Use a promo code">
+                            <button type="submit"
+                                class="btn text-white p-0 material-symbols-outlined">arrow_forward</button>
+                        </form>
+                    </div>
+
+                    <!-- SECURITY BADGES (Visual Trust) -->
+                    <div
+                        class="mt-4 pt-3 border-top border-secondary border-opacity-25 d-flex gap-3 justify-content-center opacity-50 grayscale">
+                        <span class="material-symbols-outlined">lock</span>
+                        <small class="text-muted">Secure Checkout</small>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <div class="row align-items-center mb-4">
+                <div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
+                    <div class="footer-brand">SURPLUS<span class="text-accent">STORE</span></div>
+                    <div class="text-muted small mt-1">Premium surplus clothing by weight.</div>
+                </div>
+                <div class="col-md-4 text-center mb-3 mb-md-0">
+                    <a href="#" class="footer-link">CONTACT</a>
+                    <a href="#" class="footer-link">FAQ</a>
+                    <a href="#" class="footer-link">SHIPPING</a>
+                    <a href="#" class="footer-link">RETURNS</a>
+                </div>
+                <div class="col-md-4 text-center text-md-end">
+                    <div class="d-inline-flex gap-2">
+                        <a href="#" class="footer-social"><span class="material-symbols-outlined">public</span></a>
+                        <a href="#" class="footer-social"><span
+                                class="material-symbols-outlined">alternate_email</span></a>
+                        <a href="#" class="footer-social"><span
+                                class="material-symbols-outlined">local_shipping</span></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom text-center">
+                <div class="footer-copy">© 2024 SURPLUS. ALL RIGHTS RESERVED.</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Init Anime.js animations
+        document.addEventListener('DOMContentLoaded', () => {
+            anime({
+                targets: '.el-fade',
+                opacity: [0, 1],
+                translateY: [20, 0],
+                duration: 800,
+                easing: 'easeOutQuad',
+                delay: anime.stagger(100)
+            });
+        });
+    </script>
+</body>
+
+</html>

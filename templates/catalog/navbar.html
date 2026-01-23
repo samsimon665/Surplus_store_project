@@ -1,26 +1,55 @@
-<!-- NAVBAR ONLY -->
-<nav class="navbar navbar-expand-lg fixed-top" aria-label="Main navigation">
+<nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-black">
     <div class="container-fluid px-lg-5">
+
+        <!-- LEFT: BRAND -->
         <div class="d-flex align-items-center gap-2">
-            <span class="material-symbols-outlined text-accent" style="font-size: 2.1rem;"
-                aria-hidden="true">shopping_bag</span>
+            <span class="material-symbols-outlined text-accent" style="font-size: 2.1rem;">
+                shopping_bag
+            </span>
+
+            {% if navbar_mode == "home" %}
+            <a class="navbar-brand text-white m-0" href="#home">
+                SURPLUS<span class="text-accent">STORE</span>
+            </a>
+            {% else %}
             <a class="navbar-brand text-white m-0" href="{% url 'catalog:home' %}">
                 SURPLUS<span class="text-accent">STORE</span>
             </a>
+            {% endif %}
         </div>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent"
-            aria-label="Toggle navigation" aria-expanded="false" aria-controls="navContent">
-            <span class="navbar-toggler-icon" aria-hidden="true"></span>
+        <!-- TOGGLER -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+            <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse justify-content-end" id="navContent">
-            <ul class="navbar-nav align-items-center mt-3 mt-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link {% if request.resolver_match.namespace == 'catalog' and request.resolver_match.url_name == 'home' %}active text-accent{% endif %}"
-                        href="{% url 'catalog:home' %}">HOME</a>
-                </li>
+        <!-- CENTER + RIGHT -->
+        <div class="collapse navbar-collapse" id="navContent">
 
+            <div class="d-none d-lg-flex mx-auto search-container" style="max-width: 440px;">
+                <span class="input-group-text bg-transparent border-0 search-icon">
+                    <span class="material-symbols-outlined">search</span>
+                </span>
+                <input type="text" class="form-control search-input" placeholder="SEARCH..." readonly>
+            </div>
+
+            <!-- CENTER: NAV LINKS -->
+            <ul class="navbar-nav mx-auto align-items-center gap-lg-2">
+
+                {% if navbar_mode == "home" %}
+                <li class="nav-item"><a class="nav-link active" href="#home">HOME</a></li>
+                <li class="nav-item"><a class="nav-link" href="#categories">CATEGORIES</a></li>
+                <li class="nav-item"><a class="nav-link" href="#arrivals">NEW ARRIVALS</a></li>
+                <li class="nav-item">
+                    <a class="nav-link text-accent fw-semibold" href="#sale">SALE</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link {% if navbar_show == 'categories' %}active text-accent{% endif %}"
+                        href="{% url 'catalog:home' %}">
+                        HOME
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link {% if navbar_show == 'categories' %}active text-accent{% endif %}"
                         href="{% url 'catalog:category_list' %}">
@@ -36,24 +65,72 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link {% if navbar_show == 'subcategories' %}active text-accent{% endif %}"
+                    <a class="nav-link {% if navbar_show == 'products' %}active text-accent{% endif %}"
                         href="{% url 'catalog:product_list' %}">
                         PRODUCTS
                     </a>
                 </li>
 
+    
+                {% endif %}
+            </ul>
 
+            <!-- RIGHT: ICON ACTIONS -->
+            <ul class="navbar-nav ms-auto align-items-center gap-3">
 
-
-
-
-                <li class="nav-item me-3"><a class="nav-link" href="#">ABOUT</a></li>
-                <li class="nav-item d-none d-lg-block">
-                    <div class="border border-secondary rounded-circle bg-cover"
-                        style="width: 40px; height: 40px; background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCfCgd-QQXmRDKqUUDsPupUioHFzi8qIomUGsCu9TZ5Cx6anbnLndsZlfTFcoYmP18e4ELBRcBe-0_1FXSRiSysEERar4f3xo5yZBGVPwjgi8H11Mjrl1cnQXCIiNxRb0d_GdC-rS0Jy0wTbPudu6SOTiYwwZEIf2WvZCpWLsXP2o5xd3ZLN02z4rgHwu9lgkS9ECaUvN9TspQ-87aZgBpIPe5bFx5YdWy9mgpGgI-_VbCPF7sih6-Gbcfnhlc23D7OdSgNHzCBn6I'); background-size: cover;"
-                        role="img" aria-label="User profile">
-                    </div>
+                <!-- WISHLIST -->
+                <li class="nav-item">
+                    <a href="#" class="nav-link position-relative">
+                        <span class="material-symbols-outlined fs-5">favorite</span>
+                        {% if wishlist_count %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            {{ wishlist_count }}
+                        </span>
+                        {% endif %}
+                    </a>
                 </li>
+
+                <!-- CART -->
+                <li class="nav-item">
+                    <a href="{% url 'cart:cart' %}" class="nav-link position-relative">
+                        <span class="material-symbols-outlined fs-5">shopping_cart</span>
+                        {% if cart_count %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-accent">
+                            {{ cart_count }}
+                        </span>
+                        {% endif %}
+                    </a>
+                </li>
+
+                <!-- PROFILE -->
+                {% if user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center gap-1" href="#" role="button"
+                        data-bs-toggle="dropdown">
+                        <span class="material-symbols-outlined fs-5">account_circle</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#">My Profile</a></li>
+                        <li><a class="dropdown-item" href="#">Orders</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                            </hr>
+                        <li>
+                            <form method="post" action="{% url 'accounts:logout' %}">
+                                {% csrf_token %}
+                                <button class="dropdown-item text-danger">Logout</button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a href="{% url 'accounts:login' %}" class="btn btn-outline-light btn-sm">
+                        LOGIN
+                    </a>
+                </li>
+                {% endif %}
+
             </ul>
         </div>
     </div>

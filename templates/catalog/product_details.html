@@ -1,47 +1,39 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Heavyweight Cotton Oversized Hoodie | Surplus</title>
+    <meta charset="UTF-8">
+    <title>{{ product.name }} | SURPLUS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Bootstrap 5 CSS -->
+
+    <!-- BOOTSTRAP FIRST -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Swiper CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <!-- YOUR GLOBAL CSS AFTER -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- GOOGLE FONTS -->
     <link
         href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 
-    <!-- Material Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1"
-        rel="stylesheet" />
-
-    <!-- Anime.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <!-- ICONS -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
 
     <style>
         :root {
             --color-bg: #000000;
             --color-accent: #F2E700;
             --color-surface: #111111;
+            --color-surface-soft: #141414;
             --color-text: #EEEEEE;
             --color-text-muted: #888888;
             --font-display: 'Bebas Neue', sans-serif;
             --font-body: 'Montserrat', sans-serif;
+            --radius-lg: 18px;
             --radius-pill: 999px;
-        }
-
-        /* GLOBAL */
-        html,
-        body {
-            height: 100%;
         }
 
         body {
@@ -49,29 +41,352 @@
             color: var(--color-text);
             font-family: var(--font-body);
             overflow-x: hidden;
-            padding-top: 76px;
+            margin-top: 80px;
         }
 
         h1,
         h2,
         h3,
-        h4,
-        h5,
-        .font-display,
-        .navbar-brand,
-        .nav-link,
-        .btn,
-        .badge-text {
+        .btn-add-cart {
             font-family: var(--font-display);
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
-        .text-accent {
-            color: var(--color-accent) !important;
+        /* LAYOUT */
+        .product-container {
+            max-width: 1200px;
+            padding: 2rem 1rem;
+
         }
 
-        /* NAVBAR */
+        .product-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        @media (max-width: 992px) {
+            .product-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+
+        /* GALLERY */
+        .gallery-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 600px;
+        }
+
+        .main-image-frame {
+            aspect-ratio: 4/5;
+            background: #0a0a0a;
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .main-image-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .thumbs-row {
+            display: flex;
+            justify-content: center;
+            /* centers thumbnails */
+            gap: 12px;
+            margin-top: 5px;
+            /* moves thumbnails lower */
+            padding-bottom: 6px;
+        }
+
+
+        .thumb-frame {
+            width: 70px;
+            aspect-ratio: 4/5;
+            border-radius: 8px;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .thumb-frame:hover {
+            opacity: 0.8;
+        }
+
+        .thumb-frame.active {
+            opacity: 1;
+            border-color: var(--color-accent);
+            transform: translateY(-2px);
+        }
+
+        .thumb-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+
+        }
+
+        /* PRODUCT INFO */
+        .product-title {
+            font-size: 3.5rem;
+            line-height: 0.9;
+            margin-bottom: 1rem;
+            font-weight: 400;
+        }
+
+        .product-price {
+            font-size: 1.8rem;
+            color: var(--color-accent);
+            font-family: var(--font-display);
+            margin-bottom: 0.5rem;
+        }
+
+        .product-desc-short {
+            color: var(--color-text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            max-width: 90%;
+        }
+
+        /* VARIANTS */
+        .variant-group {
+            margin-bottom: 2rem;
+        }
+
+        .variant-label {
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        /* COLORS */
+        .color-option input,
+        .size-option input {
+            display: none;
+        }
+
+        .color-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .color-swatch {
+            padding: 8px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-pill);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            color: #fff;
+        }
+
+        .color-option input:checked+.color-swatch {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+            font-weight: 600;
+        }
+
+        /* SIZES */
+        .size-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+        }
+
+        .size-box {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            height: 55px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: transparent;
+        }
+
+        .size-box:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .size-option input:checked+.size-box {
+            background: var(--color-accent);
+            border-color: var(--color-accent);
+            color: #000;
+        }
+
+        .size-option input:disabled+.size-box {
+            opacity: 0.3;
+            cursor: not-allowed;
+            border-style: dashed;
+        }
+
+        .size-name {
+            font-weight: 600;
+            line-height: 1;
+            margin-bottom: 2px;
+        }
+
+        .size-weight {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        /* ACTIONS */
+        .btn-add-cart {
+            width: 100%;
+            padding: 18px;
+            background: var(--color-accent);
+            color: #000;
+            border: none;
+            font-size: 1.4rem;
+            font-weight: 400;
+            border-radius: 8px;
+            margin-top: 1rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .btn-add-cart:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(242, 231, 0, 0.15);
+        }
+
+        /* DETAILS COLLAPSIBLE */
+        .detail-group {
+            margin-top: 3rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .detail-section {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .detail-header {
+            padding: 20px 0;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            color: #fff;
+            transition: color 0.3s;
+        }
+
+        .detail-header:hover {
+            color: var(--color-accent);
+        }
+
+        .detail-content {
+            display: none;
+            color: var(--color-text-muted);
+            line-height: 1.6;
+            padding-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .detail-section.active .detail-content {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* RECS */
+        .rec-section {
+            margin-top: 6rem;
+            padding-top: 4rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .rec-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .rec-card {
+            background: transparent;
+            transition: transform 0.3s;
+        }
+
+        .rec-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .rec-img-frame {
+            aspect-ratio: 3/4;
+            background: #111;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+
+        .rec-img-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(100%);
+            transition: filter 0.3s;
+        }
+
+        .rec-card:hover img {
+            filter: grayscale(0%);
+        }
+
+        .rec-title {
+            font-size: 1rem;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .rec-price {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* NAVBAR (LOCKED – SAME AS PRODUCT LIST) */
         .navbar {
             background: rgba(0, 0, 0, 0.96);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -87,7 +402,8 @@
             color: rgba(255, 255, 255, 0.72) !important;
             font-size: 1.05rem;
             margin-left: 1rem;
-            transition: color 0.25s ease;
+            padding-top: 0.35rem;
+            padding-bottom: 0.35rem;
         }
 
         .nav-link:hover,
@@ -95,521 +411,194 @@
             color: var(--color-accent) !important;
         }
 
-        /* BREADCRUMBS */
-        .breadcrumb-item a {
-            color: var(--color-text-muted);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.2s;
+
+        /* CONTROL MAIN IMAGE SIZE */
+        .main-image-frame {
+            max-width: 420px;
+            /* adjust if needed */
+            margin: 0 auto;
         }
 
-        .breadcrumb-item a:hover {
-            color: var(--color-accent);
+        /* THUMB CONTAINER */
+        .custom-thumbs {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 18px;
         }
 
-        .breadcrumb-item.active {
-            color: #fff;
-            font-size: 0.9rem;
-        }
-
-        .breadcrumb-item+.breadcrumb-item::before {
-            color: #444;
-        }
-
-        /* PRODUCT GALLERY (Swiper) */
-        .gallery-container {
-            position: sticky;
-            top: 100px;
-        }
-
-        .main-gallery-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 520px;
-            /* Desktop Max */
-            aspect-ratio: 4/5;
-            max-height: 640px;
-            background: #050505;
+        /* THUMB */
+        .custom-thumbs .thumb-frame {
+            width: 72px;
+            height: 90px;
+            padding: 0;
             border-radius: 8px;
             overflow: hidden;
-            margin-bottom: 1rem;
-        }
-
-        @media (max-width: 992px) {
-            .main-gallery-wrapper {
-                max-width: 420px;
-                /* Tablet Max */
-            }
-        }
-
-        @media (max-width: 768px) {
-            .main-gallery-wrapper {
-                max-width: 100%;
-                /* Mobile Max */
-            }
-        }
-
-        .swiper-container-main {
-            width: 100%;
-            height: 100%;
-        }
-
-        .swiper-slide {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .swiper-slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            /* Grayscale to Color transition handled by CSS class or logic if desired, 
-               but typically carousels just show the image. 
-               User asked for "transition to full color" on hover/active. */
-            filter: grayscale(100%);
-            transition: all 0.5s ease;
-        }
-
-        .swiper-slide-active img {
-            filter: grayscale(0%);
-        }
-
-
-        /* Custom Swiper Navigation */
-        .swiper-button-next,
-        .swiper-button-prev {
-            color: var(--color-accent);
-            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-            transition: transform 0.2s;
-        }
-
-        .swiper-button-next:active {
-            transform: translateX(2px);
-        }
-
-        .swiper-button-prev:active {
-            transform: translateX(-2px);
-        }
-
-        /* Thumbnails */
-        .thumb-strip-container {
-            /* Scrollable wrapper */
-            width: 100%;
-            max-width: 520px;
-            overflow-x: auto;
-            scrollbar-width: none;
-            /* Hide scrollbar Firefox */
-        }
-
-        .thumb-strip-container {
-            max-width: 520px;
-        }
-
-        @media (max-width: 992px) {
-            .thumb-strip-container {
-                max-width: 420px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .thumb-strip-container {
-                max-width: 100%;
-            }
-        }
-
-
-        .thumb-strip {
-            display: flex;
-            gap: 10px;
-            /* No wrap by default for horizontal scroll */
-            flex-wrap: nowrap;
-        }
-
-        .thumb-btn {
-            width: 80px;
-            height: 80px;
-            background: #050505;
             border: 2px solid transparent;
-            padding: 0;
-            flex-shrink: 0;
+            background: #111;
+            opacity: 0.45;
             cursor: pointer;
-            transition: all 0.2s;
-            border-radius: 4px;
-            overflow: hidden;
+            transition: all 0.25s ease;
         }
 
-        @media (max-width: 768px) {
-            .thumb-btn {
-                width: 64px;
-                height: 64px;
-            }
-        }
-
-        .thumb-btn img {
+        /* IMAGE MUST FILL */
+        .custom-thumbs .thumb-frame img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            filter: grayscale(100%);
-            transition: filter 0.2s;
+            display: block;
         }
 
-        .thumb-btn:hover img,
-        .thumb-btn.active img {
-            filter: grayscale(0%);
-        }
-
-        .thumb-btn.active {
+        /* ACTIVE */
+        .custom-thumbs .thumb-frame.active {
+            opacity: 1;
             border-color: var(--color-accent);
         }
 
-        /* PRODUCT INFO */
-        .product-info-wrapper {
-            padding-left: 1rem;
+        .carousel-control-prev,
+        .carousel-control-next {
+            width: 48px;
+            opacity: 1;
+            z-index: 5;
         }
 
-        @media (max-width: 991px) {
-            .product-info-wrapper {
-                padding-left: 0;
-            }
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            background-color: rgba(0, 0, 0, 0.75);
+            border-radius: 50%;
+            background-size: 60% 60%;
         }
 
-        .product-badge {
-            font-size: 0.85rem;
-            letter-spacing: 2px;
-            color: var(--color-text-muted);
+        .carousel-control-prev {
+            left: 10px;
         }
 
-        .product-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            line-height: 1.1;
+        .carousel-control-next {
+            right: 10px;
+        }
+
+
+        .carousel-control-prev:hover,
+        .carousel-control-next:hover {
+            opacity: 1;
+        }
+
+
+
+        /* FOOTER */
+        .site-footer {
+            margin-top: 6rem;
+            background: #000;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-container {
+            padding: 3rem 1rem 2rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .footer-logo {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
             margin-bottom: 0.5rem;
         }
 
-        @media (max-width: 768px) {
-            .product-title {
-                font-size: 2.2rem;
-            }
+        .footer-text {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+            max-width: 260px;
         }
 
-        .product-cat {
-            font-family: var(--font-body);
-            font-size: 1rem;
-            color: #666;
-            font-weight: 500;
-            margin-bottom: 1.5rem;
-        }
-
-        .price-block {
-            margin-bottom: 2rem;
-        }
-
-        .price-display {
-            font-family: var(--font-display);
-            font-size: 2rem;
-            color: var(--color-accent);
-        }
-
-        .price-unit {
-            font-size: 1.2rem;
-            color: #fff;
-        }
-
-        .price-helper {
-            font-size: 0.8rem;
-            color: #888;
-            margin-top: 5px;
-        }
-
-        /* SELECTORS */
-        .selector-label {
-            font-size: 0.85rem;
-            text-transform: uppercase;
+        .footer-title {
+            font-size: 0.9rem;
             letter-spacing: 1px;
-            color: #888;
-            margin-bottom: 0.8rem;
-            display: block;
+            margin-bottom: 0.75rem;
         }
 
-        .color-group {
-            margin-bottom: 16px;
-            /* Explicit Spacing */
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
         }
 
-        .color-options {
-            display: flex;
-            gap: 15px;
+        .footer-links li {
+            margin-bottom: 0.4rem;
         }
 
-        .color-radio {
-            display: none;
-        }
-
-        .color-label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 8px 16px;
-            border-radius: var(--radius-pill);
-            transition: all 0.3s;
-        }
-
-        .color-swatch {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .color-radio:checked+.color-label {
-            border-color: var(--color-accent);
-            background: rgba(242, 231, 0, 0.1);
-            color: #fff;
-        }
-
-        .size-group {
-            margin-bottom: 12px;
-            /* Explicit Spacing */
-        }
-
-        .size-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-        }
-
-        .size-radio {
-            display: none;
-        }
-
-        .size-label {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 45px;
-            /* Explicit Height */
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #aaa;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: var(--font-display);
-            font-size: 1.1rem;
-        }
-
-        .size-label:hover {
-            border-color: #fff;
-            color: #fff;
-        }
-
-        .size-radio:checked+.size-label {
-            background: var(--color-accent);
-            border-color: var(--color-accent);
-            color: #000;
-        }
-
-        .size-radio:disabled+.size-label {
-            opacity: 0.3;
-            cursor: not-allowed;
-            text-decoration: line-through;
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .weight-group {
-            margin-top: 20px;
-            /* Explicit Spacing */
-            margin-bottom: 2rem;
-            padding-top: 0.5rem;
-            border-top: 1px dashed rgba(255, 255, 255, 0.1);
-            display: flex;
-            justify-content: space-between;
-            font-family: var(--font-display);
-            font-size: 1.2rem;
-            color: #fff;
-        }
-
-        /* BUTTONS */
-        .action-buttons {
-            display: grid;
-            gap: 1rem;
-        }
-
-        .btn-xl {
-            height: 52px;
-            /* Explicit Height */
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn-primary-custom {
-            background: var(--color-accent);
-            color: #000;
-            border: none;
-            width: 100%;
-            transition: transform 0.2s;
-        }
-
-        .btn-primary-custom:hover {
-            background: #fff;
-            transform: translateY(-2px);
-        }
-
-        .btn-primary-custom:disabled {
-            background: #333;
-            color: #666;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-outline-custom {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: #fff;
-            width: 100%;
-            transition: all 0.2s;
-        }
-
-        .btn-outline-custom:hover {
-            border-color: var(--color-accent);
-            color: var(--color-accent);
-        }
-
-        /* TABS */
-        .nav-tabs {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .nav-tabs .nav-link {
-            border: none;
-            border-bottom: 2px solid transparent;
-            color: #888 !important;
-            margin: 0 1rem 0 0;
-            padding: 1rem 0;
-        }
-
-        .nav-tabs .nav-link:hover {
-            color: #fff !important;
-        }
-
-        .nav-tabs .nav-link.active {
-            background: transparent;
-            color: var(--color-accent) !important;
-            border-bottom-color: var(--color-accent);
-        }
-
-        .tab-content {
-            padding: 2rem 0;
-            color: #ccc;
-            line-height: 1.6;
-        }
-
-        /* ANIMATION UTILS */
-        .el-fade {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        /* FOOTER */
-        footer {
-            border-top: 1px solid rgba(255, 255, 255, 0.12);
-            background: #050505;
-            padding: 52px 0 30px;
-            margin-top: 80px;
-        }
-
-        .footer-brand {
-            font-family: var(--font-display);
-            font-size: 1.3rem;
-            letter-spacing: 0.18em;
-            color: #fff;
-        }
-
-        .footer-link {
-            color: #777;
+        .footer-links a {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
             text-decoration: none;
-            margin: 0 14px;
-            font-size: 0.85rem;
-            letter-spacing: 0.08em;
-            transition: color 0.2s;
         }
 
-        .footer-link:hover {
+        .footer-links a:hover {
             color: var(--color-accent);
         }
 
-        .gallery-container {
-            position: sticky;
-            top: 100px;
-            align-self: flex-start;
-            z-index: 1100;
-            /* Ensure gallery is on top for its overlay children */
-            /* Ensure this column has a stacking context */
+        .footer-bottom {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
         }
 
-        /* HOVER ZOOM (FLOATING OVERLAY) */
-        .zoom-lens {
-            position: absolute;
-            width: 140px;
-            height: 140px;
-            background: rgba(255, 255, 255, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            cursor: none;
-            pointer-events: none;
-            z-index: 10;
-            display: none;
-            backdrop-filter: blur(2px);
-        }
+        /* MOBILE */
+        @media (max-width: 768px) {
+            .footer-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
 
-        .zoom-preview {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            max-height: 85vh;
-            background: transparent;
-            border-radius: 8px;
-            overflow: hidden;
-
-            /* 🔑 CRITICAL FIX */
-            display: block;
-            /* always mounted */
-            opacity: 0;
-            /* visually hidden */
-            pointer-events: none;
-
-            will-change: opacity;
-            /* GPU hint */
-
-            z-index: 2000;
-            left: calc(100% + 24px);
-            top: 0;
-
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.9);
-        }
-
-
-        .zoom-result {
-            width: 100%;
-            height: 100%;
-            background-repeat: no-repeat;
-        }
-
-        @media (max-width: 991px) {
-
-            .zoom-lens,
-            .zoom-preview {
-                display: none !important;
+            .footer-text {
+                margin: 0 auto;
             }
         }
 
-        /* ZOOM MASKING: Hide right details when zoomed */
-        .row:has(#zoomArea:hover) .product-info-wrapper {
-            visibility: hidden;
-            pointer-events: none;
+
+        .product-actions {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 2rem;
+        }
+
+        .btn-wishlist,
+        .btn-share {
+            flex: 1;
+            padding: 14px;
+            background: transparent;
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 8px;
+            font-family: var(--font-display);
+            font-size: 1rem;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .btn-wishlist:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--color-accent);
+        }
+
+        .btn-share:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-wishlist .material-symbols-outlined,
+        .btn-share .material-symbols-outlined {
+            font-size: 20px;
         }
     </style>
 </head>
@@ -619,509 +608,292 @@
     <!-- ✅ NAVBAR WITH CORRECT CONTEXT -->
     {% include 'catalog/navbar.html' %}
 
-    <main class="container py-5">
-        <!-- BREADCRUMBS -->
-        <nav aria-label="breadcrumb" class="mb-5 el-fade">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="home.html">HOME</a></li>
-                <li class="breadcrumb-item"><a href="#">MEN</a></li>
-                <li class="breadcrumb-item"><a href="products.html">HOODIES</a></li>
-                <li class="breadcrumb-item active" aria-current="page">HEAVYWEIGHT OVERSIZED HOODIE</li>
-            </ol>
-        </nav>
+    <main class="product-page">
+        <div class="container product-container">
 
-        <div class="row g-5">
-            <!-- LEFT COLUMN: IMAGES -->
-            <div class="col-lg-7 el-fade">
-                <div class="gallery-container">
+            <div class="product-grid">
 
-                    <!-- Swiper Main Container -->
-                    <div class="main-gallery-wrapper" id="zoomArea">
-                        <div class="zoom-lens" id="zoomLens"></div>
-                        <div class="swiper main-swiper">
-                            <div class="swiper-wrapper" id="swiperWrapper">
-                                <!-- Slides injected by JS -->
+                <!-- LEFT: IMAGE GALLERY -->
+                <div>
+                    {% for color, data in variants.items %}
+                    <div id="gallery-{{ color|slugify }}"
+                        class="gallery-wrapper {% if not forloop.first %}d-none{% endif %}">
+
+                        <!-- MAIN IMAGE CAROUSEL -->
+                        <div id="carousel-{{ color|slugify }}" class="carousel slide main-image-frame">
+                            <div class="carousel-inner">
+                                {% for img in data.images %}
+                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                    <img src="{{ img }}" class="d-block w-100">
+                                </div>
+                                {% endfor %}
                             </div>
-                            <!-- Swiper Nav -->
-                            <div class="swiper-button-next"></div>
-                            <div class="swiper-button-prev"></div>
+
+                            <button class="carousel-control-prev" type="button"
+                                data-bs-target="#carousel-{{ color|slugify }}" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon"></span>
+                            </button>
+
+                            <button class="carousel-control-next" type="button"
+                                data-bs-target="#carousel-{{ color|slugify }}" data-bs-slide="next">
+                                <span class="carousel-control-next-icon"></span>
+                            </button>
                         </div>
+
+
+                        <!-- THUMBNAILS AS INDICATORS -->
+                        <div class="thumbs-row custom-thumbs">
+
+                            {% for img in data.images %}
+                            <button type="button" class="thumb-frame {% if forloop.first %}active{% endif %}"
+                                data-carousel="carousel-{{ color|slugify }}" data-index="{{ forloop.counter0 }}"
+                                onclick="handleThumbClick(this)">
+                                <img src="{{ img }}">
+                            </button>
+
+
+                            {% endfor %}
+                        </div>
+
+                    </div>
+                    {% endfor %}
+                </div>
+
+
+                <!-- RIGHT: PRODUCT INFO -->
+                <div>
+                    <h1 class="product-title">{{ product.name }}</h1>
+                    <div class="product-price">₹ {{ price_per_kg }} / KG</div>
+
+                    <p class="product-desc-short">
+                        Authentic surplus inventory. Hand-checked for quality and condition.
+                        Sustainable fashion at a fraction of the cost.
+                    </p>
+
+
+                    <div class="product-actions">
+                        <button type="button" class="btn-wishlist">
+                            <span class="material-symbols-outlined">favorite_border</span>
+                            ADD TO WISHLIST
+                        </button>
+
+                        <button type="button" class="btn-share">
+                            <span class="material-symbols-outlined">share</span>
+                            SHARE
+                        </button>
                     </div>
 
-                    <!-- Floating Zoom Preview (Outside clipped area, relative to container) -->
-                    <div id="zoomPreview" class="zoom-preview">
-                        <div id="zoomResult" class="zoom-result"></div>
-                    </div>
 
-                    <!-- Thumbnails -->
-                    <div class="thumb-strip-container">
-                        <div class="thumb-strip" id="thumbnailStrip">
-                            <!-- Thumbnails injected by JS -->
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- COLOR SELECTION -->
+                        <div class="variant-group">
+                            <span class="variant-label">Select Color</span>
+                            <div class="color-row">
+                                {% for color, data in variants.items %}
+                                <label class="color-option">
+                                    <input type="radio" name="color" value="{{ color }}" data-slug="{{ color|slugify }}"
+                                        onchange="handleColorChange(this.dataset.slug)" {% if forloop.first %} checked
+                                        {% endif %}>
+                                    <div class="color-swatch">{{ color }}</div>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- SIZE SELECTION (PER COLOR) -->
+                        <div class="variant-group">
+                            <span class="variant-label">Select Size & Weight</span>
+
+                            {% for color, data in variants.items %}
+                            <div id="size-group-{{ color|slugify }}"
+                                class="{% if not forloop.first %}d-none{% endif %}">
+
+                                <div class="size-grid">
+                                    {% for s in data.sizes %}
+                                    <label class="size-option">
+                                        <input type="radio" name="variant_id" value="{{ s.variant_id }}" {% if not s.stock %} disabled {% endif %}>
+
+                                        <div class="size-box">
+                                            <div class="size-name">{{ s.size }}</div>
+                                            <div class="size-weight">{{ s.weight_kg }} kg</div>
+                                        </div>
+                                    </label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <button class="btn-add-cart">ADD TO CART</button>
+                    </form>
+
+
+
+                    <!-- DETAILS COLLAPSIBLE (Static) -->
+                    <div class="detail-group">
+                        <div class="detail-section" onclick="toggleDetail(this)">
+                            <div class="detail-header">
+                                DESCRIPTION
+                                <span class="material-symbols-outlined">add</span>
+                            </div>
+                            <div class="detail-content">
+                                <p>{{ product.description }}</p>
+                                <ul>
+                                    <li>Material: Cotton/Pol Blend</li>
+                                    <li>Fit: Regular</li>
+                                    <li>Condition: Brand New with Tags</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="detail-section" onclick="toggleDetail(this)">
+                            <div class="detail-header">
+                                SHIPPING & RETURNS
+                                <span class="material-symbols-outlined">add</span>
+                            </div>
+                            <div class="detail-content">
+                                <p>Standard shipping: 3-5 business days. Returns accepted within 14 days of delivery if
+                                    item
+                                    is in original condition.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- RIGHT COLUMN: DETAILS -->
-            <div class="col-lg-5 el-fade" style="animation-delay: 100ms;">
-                <div class="product-info-wrapper">
-                    <span class="product-badge badge-text">EXPORT SURPLUS · SOLD BY WEIGHT</span>
-                    <h1 class="product-title">HEAVYWEIGHT COTTON OVERSIZED HOODIE</h1>
-                    <div class="product-cat">Category: Streetwear / Winter</div>
-
-                    <!-- PRICING SECTION -->
-                    <div class="price-block">
-                        <div class="d-flex align-items-baseline gap-2">
-                            <span class="price-display">₹ 650</span>
-                            <span class="price-unit">/ KG</span>
+            {% if recommended_products %}
+            <!-- RECOMMENDED PRODUCTS -->
+            <div class="rec-section">
+                <h2 class="section-title">YOU MIGHT ALSO LIKE</h2>
+            
+                <div class="rec-grid">
+                    {% for p in recommended_products %}
+                    <a href="{{ p.get_absolute_url }}" class="rec-card text-decoration-none">
+            
+                        <!-- IMAGE -->
+                        <div class="rec-img-frame">
+                            {% if p.variants.all %}
+                            {% with v=p.variants.all.0 %}
+                            {% if v.images.all %}
+                            <img src="{{ v.images.all.0.image.url }}" alt="{{ p.name }}">
+                            {% else %}
+                            <img src="https://via.placeholder.com/400x550?text=No+Image">
+                            {% endif %}
+                            {% endwith %}
+                            {% else %}
+                            <img src="https://via.placeholder.com/400x550?text=No+Image">
+                            {% endif %}
                         </div>
-                        <div class="price-helper">Final price depends on selected size weight</div>
-                    </div>
-
-                    <!-- COLOR SELECTION -->
-                    <div class="color-group">
-                        <span class="selector-label">Select Color: <span id="selectedColorName"
-                                class="text-white"></span></span>
-                        <div class="color-options" id="colorContainer">
-                            <!-- Injected by JS -->
+            
+                        <!-- TITLE -->
+                        <div class="rec-title">{{ p.name }}</div>
+            
+                        <!-- PRICE -->
+                        <div class="rec-price">
+                            ₹ {{ p.subcategory.price_per_kg }} / KG
                         </div>
-                    </div>
-
-                    <!-- SIZE SELECTION -->
-                    <div class="size-group">
-                        <span class="selector-label">Select Size</span>
-                        <div class="size-grid" id="sizeContainer">
-                            <!-- Injected by JS -->
-                        </div>
-                    </div>
-
-                    <!-- WEIGHT DISPLAY -->
-                    <div class="weight-group">
-                        <span>WEIGHT FOR SELECTED SIZE:</span>
-                        <span id="weightValue" class="text-accent">-- g</span>
-                    </div>
-
-                    <!-- ACTIONS -->
-                    <div class="action-buttons">
-                        <button class="btn btn-xl btn-primary-custom" id="btnAddToCart" disabled>SELECT SIZE</button>
-                        <button class="btn btn-xl btn-outline-custom">ADD TO WISHLIST</button>
-                    </div>
-
+            
+                    </a>
+                    {% endfor %}
                 </div>
             </div>
+            {% endif %}
+
+
+            
         </div>
-
-        <!-- TABS SECTION -->
-        <div class="row mt-5 pt-5 el-fade" style="animation-delay: 200ms;">
-            <div class="col-12">
-                <ul class="nav nav-tabs" id="productTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="desc-tab" data-bs-toggle="tab" data-bs-target="#desc"
-                            type="button" role="tab">DESCRIPTION</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="details-tab" data-bs-toggle="tab" data-bs-target="#details"
-                            type="button" role="tab">DETAILS</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping"
-                            type="button" role="tab">SHIPPING</button>
-                    </li>
-                </ul>
-                <div class="tab-content" id="myTabContent">
-                    <div class="tab-pane fade show active" id="desc" role="tabpanel">
-                        <p>Constructed from premium heavyweight cotton, this oversized hoodie offers superior comfort
-                            and durability. The surplus nature ensures you're getting export-quality fabric at a
-                            fraction of the cost. Perfect for layering in colder months or making a statement on its
-                            own.</p>
-                        <p>Note: As this is a surplus item, branding labels may be cut or marked in accordance with
-                            resale policies.</p>
-                    </div>
-                    <div class="tab-pane fade" id="details" role="tabpanel">
-                        <ul>
-                            <li>Material: 100% Cotton Fleece</li>
-                            <li>Fit: Oversized / Boxy</li>
-                            <li>GSM: 350-400</li>
-                            <li>Origin: Export Surplus (Bangladesh/Vietnam)</li>
-                            <li>Care: Machine wash cold, do not tumble dry</li>
-                        </ul>
-                    </div>
-                    <div class="tab-pane fade" id="shipping" role="tabpanel">
-                        <p>Orders are processed within 24-48 hours. Shipping cost is calculated based on total weight of
-                            the cart.</p>
-                        <p>Returns accepted within 7 days for sizing issues. Return shipping is borne by the customer.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
     </main>
 
-    <!-- FOOTER -->
-    <footer>
-        <div class="container">
-            <div class="row align-items-center mb-4">
-                <div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
-                    <div class="footer-brand">SURPLUS<span class="text-accent">STORE</span></div>
-                    <div class="text-muted small mt-1">Premium surplus clothing by weight.</div>
+    <footer class="site-footer">
+        <div class="container footer-container">
+
+            <div class="footer-grid">
+                <!-- BRAND -->
+                <div class="footer-col">
+                    <h3 class="footer-logo">SURPLUSSTORE</h3>
+                    <p class="footer-text">
+                        Sustainable surplus fashion.
+                        Weight-based pricing. No brand bias.
+                    </p>
                 </div>
-                <div class="col-md-4 text-center mb-3 mb-md-0">
-                    <a href="#" class="footer-link">CONTACT</a>
-                    <a href="#" class="footer-link">FAQ</a>
-                    <a href="#" class="footer-link">RETURNS</a>
+
+                <!-- LINKS -->
+                <div class="footer-col">
+                    <h4 class="footer-title">Shop</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Men</a></li>
+                        <li><a href="#">Women</a></li>
+                        <li><a href="#">Categories</a></li>
+                    </ul>
                 </div>
-                <div class="col-md-4 text-center text-md-end">
-                    <div class="d-inline-flex gap-2">
-                        <span class="material-symbols-outlined text-muted">public</span>
-                        <span class="material-symbols-outlined text-muted">local_shipping</span>
-                    </div>
+
+                <!-- INFO -->
+                <div class="footer-col">
+                    <h4 class="footer-title">Company</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Shipping</a></li>
+                        <li><a href="#">Returns</a></li>
+                    </ul>
                 </div>
             </div>
-            <div class="text-center text-muted small mt-4">
-                © 2024 SURPLUS. ALL RIGHTS RESERVED.
+
+            <div class="footer-bottom">
+                © {{ now|date:"Y" }} SURPLUSSTORE. All rights reserved.
             </div>
+
         </div>
     </footer>
 
-    <!-- Bootstrap JS -->
+
+
+    <!-- JS -->
+    <script>
+        function handleColorChange(slug) {
+            document.querySelectorAll('.gallery-wrapper').forEach(g => g.classList.add('d-none'));
+            document.getElementById('gallery-' + slug)?.classList.remove('d-none');
+        }
+
+        function toggleDetail(el) {
+            el.classList.toggle('active');
+        }
+
+        /* ✅ SINGLE SOURCE OF TRUTH */
+        function handleThumbClick(btn) {
+            const carouselId = btn.dataset.carousel;
+            const index = Number(btn.dataset.index);
+
+            const carouselEl = document.getElementById(carouselId);
+            if (!carouselEl) return;
+
+            const carousel = bootstrap.Carousel.getOrCreateInstance(carouselEl);
+            carousel.to(index);
+        }
+
+        /* ✅ Sync thumbs when carousel slides */
+        document.querySelectorAll('.carousel').forEach(carouselEl => {
+            carouselEl.addEventListener('slid.bs.carousel', e => {
+                const wrapper = carouselEl.closest('.gallery-wrapper');
+                if (!wrapper) return;
+
+                wrapper.querySelectorAll('.thumb-frame')
+                    .forEach(t => t.classList.remove('active'));
+
+                const thumbs = wrapper.querySelectorAll('.thumb-frame');
+                if (thumbs[e.to]) thumbs[e.to].classList.add('active');
+            });
+        });
+    </script>
+
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Swiper JS -->
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
-    <!-- LOGIC -->
-    <script>
-        // MOCK DATA
-        const PRODUCT_DATA = {
-            id: "p123",
-            pricePerKg: 650,
-            colors: {
-                "Black": {
-                    hex: "#111111",
-                    images: [
-                        "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=800&q=80",
-                        "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?auto=format&fit=crop&w=800&q=80",
-                        "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=800&q=80",
-                        "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=800&q=80"
-                    ],
-                    sizes: [
-                        { label: "S", weight: 650, available: true },
-                        { label: "M", weight: 700, available: true },
-                        { label: "L", weight: 750, available: true },
-                        { label: "XL", weight: 820, available: false }
-                    ]
-                },
-                "Heather Grey": {
-                    hex: "#888888",
-                    images: [
-                        "https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?auto=format&fit=crop&w=800&q=80",
-                        "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=800&q=80"
-                    ],
-                    sizes: [
-                        { label: "S", weight: 640, available: true },
-                        { label: "M", weight: 690, available: true },
-                        { label: "L", weight: 740, available: false },
-                        { label: "XL", weight: 810, available: true }
-                    ]
-                }
-            }
-        };
-
-        // STATE
-        let state = {
-            color: Object.keys(PRODUCT_DATA.colors)[0], // Default first color
-            size: null,
-            swiperInstance: null
-        };
-
-        // DOM ELEMENTS
-        const els = {
-            swiperWrapper: document.getElementById('swiperWrapper'),
-            thumbnailStrip: document.getElementById('thumbnailStrip'),
-            selectedColorName: document.getElementById('selectedColorName'),
-            colorContainer: document.getElementById('colorContainer'),
-            sizeContainer: document.getElementById('sizeContainer'),
-            weightValue: document.getElementById('weightValue'),
-            btnAddToCart: document.getElementById('btnAddToCart')
-        };
-
-        // INIT
-        function init() {
-            renderColorOptions();
-            updateState(state.color, null);
-
-            // Page Animation
-            anime({
-                targets: '.el-fade',
-                opacity: [0, 1],
-                translateY: [20, 0],
-                duration: 900,
-                easing: 'easeOutQuad',
-                delay: anime.stagger(100)
-            });
-        }
-
-        // SWIPER SETUP
-        function initSwiper() {
-            if (state.swiperInstance) {
-                state.swiperInstance.destroy(true, true);
-            }
-
-            state.swiperInstance = new Swiper('.main-swiper', {
-                loop: true,
-                speed: 600,
-                navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev',
-                },
-                keyboard: {
-                    enabled: true,
-                },
-                on: {
-                    slideChange: function () {
-                        updateActiveThumbnail(this.realIndex);
-                        if (typeof zoom !== 'undefined') zoom.updateImage();
-                    }
-                }
-            });
-        }
-
-        function updateActiveThumbnail(index) {
-            const thumbs = document.querySelectorAll('.thumb-btn');
-            thumbs.forEach(t => t.classList.remove('active'));
-            if (thumbs[index]) thumbs[index].classList.add('active');
-
-            // Scroll thumbnail into view
-            if (thumbs[index]) {
-                thumbs[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-            }
-        }
-
-        // RENDER COLORS
-        function renderColorOptions() {
-            els.colorContainer.innerHTML = '';
-            Object.keys(PRODUCT_DATA.colors).forEach(colorKey => {
-                const colorData = PRODUCT_DATA.colors[colorKey];
-
-                const wrapper = document.createElement('div');
-                const radio = document.createElement('input');
-                radio.type = 'radio';
-                radio.name = 'color';
-                radio.className = 'color-radio';
-                radio.id = `c_${colorKey}`;
-                radio.value = colorKey;
-                radio.checked = colorKey === state.color;
-
-                radio.addEventListener('change', () => updateState(colorKey, null));
-
-                const label = document.createElement('label');
-                label.className = 'color-label';
-                label.htmlFor = `c_${colorKey}`;
-                label.innerHTML = `<div class="color-swatch" style="background: ${colorData.hex}"></div> ${colorKey}`;
-
-                wrapper.appendChild(radio);
-                wrapper.appendChild(label);
-                els.colorContainer.appendChild(wrapper);
-            });
-        }
-
-        // UPDATE STATE
-        function updateState(newColor, newSize) {
-            const colorChanged = newColor !== state.color;
-            state.color = newColor;
-            state.size = newSize;
-
-            els.selectedColorName.textContent = state.color;
-
-            if (colorChanged || !state.swiperInstance) {
-                renderImages();
-            }
-
-            if (typeof zoom !== 'undefined' && zoom.hide) zoom.hide();
-
-            renderSizes();
-            updateWeightDisplay();
-        }
-
-        // RENDER IMAGES
-        function renderImages() {
-            const images = PRODUCT_DATA.colors[state.color].images;
-
-            // 1. Populate Swiper Slides
-            els.swiperWrapper.innerHTML = '';
-            images.forEach(imgSrc => {
-                const slide = document.createElement('div');
-                slide.className = 'swiper-slide';
-                slide.innerHTML = `<img src="${imgSrc}" alt="Product Image">`;
-                els.swiperWrapper.appendChild(slide);
-            });
-
-            // 2. Populate Thumbnails
-            els.thumbnailStrip.innerHTML = '';
-            images.forEach((imgSrc, idx) => {
-                const btn = document.createElement('button');
-                btn.className = `thumb-btn ${idx === 0 ? 'active' : ''}`;
-                btn.innerHTML = `<img src="${imgSrc}" alt="thumb">`;
-
-                btn.onclick = () => {
-                    state.swiperInstance.slideToLoop(idx);
-                };
-
-                els.thumbnailStrip.appendChild(btn);
-            });
-
-            // 3. Init/Re-init Swiper
-            initSwiper();
-        }
-
-        // RENDER SIZES
-        function renderSizes() {
-            const sizes = PRODUCT_DATA.colors[state.color].sizes;
-            els.sizeContainer.innerHTML = '';
-
-            sizes.forEach(s => {
-                const wrapper = document.createElement('div');
-
-                const radio = document.createElement('input');
-                radio.type = 'radio';
-                radio.name = 'size';
-                radio.className = 'size-radio';
-                radio.id = `s_${s.label}`;
-                radio.value = s.label;
-                radio.disabled = !s.available; // Visibly disabled
-                radio.checked = s.label === state.size;
-
-                if (s.available) {
-                    radio.addEventListener('change', () => updateState(state.color, s.label));
-                }
-
-                const label = document.createElement('label');
-                label.className = 'size-label';
-                label.htmlFor = `s_${s.label}`;
-                label.textContent = s.label;
-
-                wrapper.appendChild(radio);
-                wrapper.appendChild(label);
-                els.sizeContainer.appendChild(wrapper);
-            });
-        }
-
-        // UPDATE WEIGHT logic
-        function updateWeightDisplay() {
-            if (!state.size) {
-                els.weightValue.textContent = '-- g';
-                els.btnAddToCart.disabled = true;
-                els.btnAddToCart.textContent = "SELECT SIZE";
-                return;
-            }
-
-            const sizeObj = PRODUCT_DATA.colors[state.color].sizes.find(s => s.label === state.size);
-            if (sizeObj) {
-                els.weightValue.textContent = sizeObj.weight + ' g';
-                els.btnAddToCart.disabled = false;
-                els.btnAddToCart.textContent = "ADD TO CART";
-            }
-        }
-
-        // ZOOM LOGIC (Vanilla JS)
-        const zoom = {
-            area: document.getElementById('zoomArea'),
-            lens: document.getElementById('zoomLens'),
-            preview: document.getElementById('zoomPreview'),
-            result: document.getElementById('zoomResult'),
-            scale: 2.5,
-
-            init() {
-                if (!this.area || !this.lens || window.innerWidth < 992) return;
-
-                this.area.addEventListener('mousemove', (e) => this.move(e));
-                this.area.addEventListener('mouseenter', () => this.show());
-                this.area.addEventListener('mouseleave', () => this.hide());
-            },
-
-            show() {
-                if (window.innerWidth < 992) return;
-
-                const activeSlide = document.querySelector('.main-swiper .swiper-slide-active img');
-                if (!activeSlide) return;
-
-                const img = new Image();
-                img.src = activeSlide.src;
-
-                img.decode().then(() => {
-                    this.result.style.backgroundImage = `url('${img.src}')`;
-
-                    this.naturalWidth = img.naturalWidth;
-                    this.naturalHeight = img.naturalHeight;
-
-                    this.result.style.backgroundSize =
-                        `${this.naturalWidth * this.scale}px ${this.naturalHeight * this.scale}px`;
-
-                    this.lens.style.display = 'block';
-
-                    // 🔑 ONLY opacity, NEVER display
-                    this.preview.style.opacity = '1';
-                });
-            },
 
 
-            hide() {
-                if (this.lens) this.lens.style.display = 'none';
-                if (this.preview) this.preview.style.opacity = '0';
 
-            },
-
-            updateImage() {
-                const activeSlide = document.querySelector('.main-swiper .swiper-slide-active img');
-                if (activeSlide && this.result) {
-                    this.result.style.backgroundImage = `url('${activeSlide.src}')`;
-
-                    // Use natural image dimensions for scaling
-                    this.naturalWidth = activeSlide.naturalWidth;
-                    this.naturalHeight = activeSlide.naturalHeight;
-
-                    this.result.style.backgroundSize = `${this.naturalWidth * this.scale}px ${this.naturalHeight * this.scale}px`;
-                }
-            },
-
-            move(e) {
-                if (!this.naturalWidth) return;
-
-                const rect = this.area.getBoundingClientRect();
-                let x = e.clientX - rect.left;
-                let y = e.clientY - rect.top;
-
-                // Center lens on cursor
-                let posX = x - (this.lens.offsetWidth / 2);
-                let posY = y - (this.lens.offsetHeight / 2);
-
-                // Constrain lens to image bounds
-                if (posX < 0) posX = 0;
-                if (posX > this.area.offsetWidth - this.lens.offsetWidth) posX = this.area.offsetWidth - this.lens.offsetWidth;
-                if (posY < 0) posY = 0;
-                if (posY > this.area.offsetHeight - this.lens.offsetHeight) posY = this.area.offsetHeight - this.lens.offsetHeight;
-
-                this.lens.style.left = posX + "px";
-                this.lens.style.top = posY + "px";
-
-                // Move background in result using correct ratio
-                const ratioX = this.naturalWidth / this.area.offsetWidth;
-                const ratioY = this.naturalHeight / this.area.offsetHeight;
-
-                if (this.result) {
-                    this.result.style.backgroundPosition = `-${posX * ratioX * this.scale}px -${posY * ratioY * this.scale}px`;
-                }
-            }
-        };
-
-        // Start
-        document.addEventListener('DOMContentLoaded', () => {
-            init();
-            zoom.init();
-        });
-
-    </script>
 </body>
 
 </html>

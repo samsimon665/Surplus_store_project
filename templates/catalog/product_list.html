@@ -513,6 +513,8 @@
             position: relative;
             z-index: 1;
         }
+
+        
     </style>
 </head>
 
@@ -650,13 +652,15 @@
             </div>
         </div>
 
+
         <!-- PRODUCT GRID -->
         <div class="row g-4">
             {% for product in products %}
-            <!-- Desktop: 4, Tablet: 2, Mobile: 1 -->
+
             <div class="col-12 col-md-6 col-lg-3">
                 <div class="prod-card el-fade">
-                    <a href="{% url 'catalog:product_detail' product.uuid %}" class="text-decoration-none">
+
+                    <a href="{{ product.get_absolute_url }}" class="text-decoration-none">
 
                         <div class="prod-img-wrap">
                             <div class="prod-meta-pill">BY WEIGHT</div>
@@ -668,32 +672,29 @@
                                 class="prod-img" alt="Product Image">
                             {% endif %}
 
-
-
-                            <!-- Wishlist Button -->
                             <button class="btn-wishlist" aria-label="Add to Wishlist">
                                 <span class="material-symbols-outlined">favorite</span>
                             </button>
                         </div>
                     </a>
+
                     <div class="prod-info">
                         <h3 class="prod-title">{{ product.name|upper }}</h3>
                         <div class="prod-brand">EXPORT SURPLUS</div>
-
 
                         <div class="prod-price">
                             ₹ {{ product.subcategory.price_per_kg }} / KG
                         </div>
 
-
-                        <a href="{% url 'catalog:product_detail' product.uuid %}" class="btn-view">
-                            VIEW PRODUCT &rarr;
+                        <a href="{{ product.get_absolute_url }}" class="btn-view">
+                            VIEW PRODUCT →
                         </a>
                     </div>
+
                 </div>
             </div>
+
             {% empty %}
-            <!-- EMPTY STATE -->
             <div class="col-12">
                 <div class="empty-state el-fade">
                     <span class="material-symbols-outlined empty-state-icon">search_off</span>
@@ -703,6 +704,8 @@
             </div>
             {% endfor %}
         </div>
+
+
 
     </main>
 

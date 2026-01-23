@@ -2,6 +2,7 @@ import uuid
 from django.db.models import UniqueConstraint
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.urls import reverse
 
 from django.utils.text import slugify
 
@@ -129,6 +130,16 @@ class Product(TimeStampedModel):
 
     def __str__(self):
         return self.name
+    
+    def get_absolute_url(self):
+        return reverse(
+            "catalog:product_detail",
+            args=[
+                self.subcategory.category.slug,
+                self.subcategory.slug,
+                self.slug,
+            ],
+        )
 
 
 class ProductVariant(TimeStampedModel):
