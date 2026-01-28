@@ -1,15 +1,70 @@
-  
-from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
 from decimal import Decimal
-from django.contrib.auth.decorators import login_required
+
 from django.http import JsonResponse
 
 from .models import Cart, CartItem
-from apps.catalog.models import ProductVariant
+from apps.catalog.models import ProductVariant, ProductImage
+
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
 
 from .services import get_cart_item_status, CartItemStatus
+
+from django.db.models import Prefetch
+
+
+
+
+@login_required(login_url="accounts:login")
+def cart_view(request):
+    cart = Cart.objects.filter(user=request.user).first()
+
+    checkout_allowed = True
+    items = []
+
+    if cart:
+        for item in (
+            cart.items
+            .select_related("variant", "variant__product")
+        ):
+            status = get_cart_item_status(item)
+
+            item.status = status
+            item.is_out_of_stock = (status == CartItemStatus.OUT_OF_STOCK)
+
+            # ✅ CORRECT IMAGE RESOLUTION (color-based)
+            item.display_image = (
+                ProductImage.objects
+                .filter(
+                    variant__product=item.variant.product,
+                    variant__color=item.variant.color,
+                )
+                .order_by("-is_primary", "created_at")
+                .first()
+            )
+
+            if status != CartItemStatus.VALID:
+                checkout_allowed = False
+
+            items.append(item)
+
+
+
+    context = {
+        "cart": cart,
+        "cart_items": items,
+        "checkout_allowed": checkout_allowed,
+        "cart_subtotal": cart.subtotal if cart else Decimal("0.00"),
+        "cart_total": cart.total if cart else Decimal("0.00"),
+        "shipping_cost": "FREE",
+        "discount_amount": None,
+    }
+
+    return render(request, "cart/cart_summary.html", context)
+
+
 
 
 @login_required(login_url='accounts:login')
@@ -19,12 +74,10 @@ def add_to_cart(request):
 
     try:
         variant_id = int(request.POST.get("variant_id"))
-        requested_qty = int(request.POST.get("quantity"))
     except (TypeError, ValueError):
-        return JsonResponse({"error": "Invalid input"}, status=400)
+        return JsonResponse({"error": "Invalid variant"}, status=400)
 
-    if requested_qty <= 0:
-        return JsonResponse({"error": "Quantity must be at least 1"}, status=400)
+    requested_qty = 1  # ✅ DEFAULT
 
     variant = get_object_or_404(
         ProductVariant,
@@ -32,10 +85,9 @@ def add_to_cart(request):
         is_active=True
     )
 
-    # Stock check (first gate)
-    if requested_qty > variant.stock:
+    if variant.stock < 1:
         return JsonResponse(
-            {"error": f"Only {variant.stock} pieces available"},
+            {"error": "This item is out of stock"},
             status=409
         )
 
@@ -44,31 +96,30 @@ def add_to_cart(request):
     cart_item = CartItem.objects.filter(cart=cart, variant=variant).first()
 
     if cart_item:
-        new_qty = cart_item.quantity + requested_qty
-
-        # Stock check (merge gate)
-        if new_qty > variant.stock:
+        if cart_item.quantity + 1 > variant.stock:
             return JsonResponse(
                 {"error": f"Only {variant.stock} pieces available"},
                 status=409
             )
 
-        cart_item.quantity = new_qty
+        cart_item.quantity += 1
         cart_item.save(update_fields=["quantity"])
+
     else:
-        # ---- SNAPSHOT ON CREATE ----
         price_per_kg = variant.product.subcategory.price_per_kg
-        unit_price = (Decimal(variant.weight_grams) /
-                      Decimal(1000)) * price_per_kg
+
+        unit_price = Decimal(variant.weight_kg) * price_per_kg
 
         CartItem.objects.create(
             cart=cart,
             variant=variant,
             quantity=requested_qty,
+
             product_name=variant.product.name,
             color=variant.color,
             size=variant.size,
-            weight_grams=variant.weight_grams,
+
+            weight_kg=variant.weight_kg,   # ✅ MATCHES MODEL
             price_per_kg=price_per_kg,
             unit_price=unit_price,
         )
@@ -76,72 +127,43 @@ def add_to_cart(request):
     return JsonResponse({"success": True})
 
 
-@login_required
-def cart_view(request):
-    cart = Cart.objects.filter(user=request.user).first()
-
-    cart_items = []
-    checkout_allowed = True
-
-    if cart:
-        for item in cart.items.select_related("variant"):
-            status = get_cart_item_status(item)
-
-            # flags for template (DTL-safe)
-            item.is_out_of_stock = (status == CartItemStatus.OUT_OF_STOCK)
-            item.is_min_quantity = (item.quantity <= 1)
-            item.status = status  # expose status safely
-
-            if status != CartItemStatus.VALID:
-                checkout_allowed = False
-
-            cart_items.append(item)
-
-    context = {
-        "cart_items": cart_items,
-        "checkout_allowed": checkout_allowed,
-    }
-
-    return render(request, "cart/cart_summary.html", context)
-
-
-
-@login_required
+@login_required(login_url='accounts:login')
 def update_cart_item(request):
     if request.method != "POST":
         return JsonResponse({"error": "Invalid method"}, status=405)
 
-    try:
-        item_id = int(request.POST.get("item_id"))
-        new_qty = int(request.POST.get("quantity"))
-    except (TypeError, ValueError):
-        return JsonResponse({"error": "Invalid input"}, status=400)
+    item_id = request.POST.get("item_id")
+    action = request.POST.get("action")
 
-    if new_qty < 1:
-        return JsonResponse({"error": "Quantity must be at least 1"}, status=400)
+    if not item_id or action not in ("increase", "decrease"):
+        return JsonResponse({"error": "Invalid input"}, status=400)
 
     cart = get_object_or_404(Cart, user=request.user)
     item = get_object_or_404(CartItem, id=item_id, cart=cart)
 
-    variant = item.variant
+    if action == "decrease":
+        if item.quantity <= 1:
+            return JsonResponse({"error": "Minimum quantity is 1"}, status=400)
+        item.quantity -= 1
 
-    # Stock validation
-    if new_qty > variant.stock:
-        return JsonResponse(
-            {"error": f"Only {variant.stock} pieces available"},
-            status=409
-        )
+    elif action == "increase":
+        if item.quantity + 1 > item.variant.stock:
+            return JsonResponse(
+                {"error": f"Only {item.variant.stock} pieces available"},
+                status=409
+            )
+        item.quantity += 1
 
-    item.quantity = new_qty
     item.save(update_fields=["quantity"])
-
-    status = get_cart_item_status(item)
 
     return JsonResponse({
         "success": True,
-        "status": status,
-        "quantity": item.quantity
+        "quantity": item.quantity,
+        "status": get_cart_item_status(item),
+        "cart_subtotal": str(cart.subtotal),
+        "cart_total": str(cart.total),
     })
+
 
 
 @login_required

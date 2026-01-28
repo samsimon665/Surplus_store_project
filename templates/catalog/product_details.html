@@ -600,7 +600,172 @@
         .btn-share .material-symbols-outlined {
             font-size: 20px;
         }
+
+        .btn-add-cart {
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* text stays above animation */
+        .btn-add-cart .btn-text {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* sweep layer */
+        .btn-add-cart .btn-sweep {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 1;
+        }
+
+        /* ALERT OVERLAY */
+        #ui-alert-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+       
+
+        /* MESSAGE */
+        #ui-alert-message {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+
+        
+
+        /* POP ANIMATION */
+        @keyframes alertPop {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        .btn-add-cart.animating .btn-sweep {
+            animation: sweepLR 0.6s ease-out forwards;
+        }
+
+        @keyframes sweepLR {
+            from {
+                left: -100%;
+            }
+            to {
+                left: 100%;
+            }
+        }
+
+        .ui-alert-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 24px;
+        }
+
+
+
+        .ui-btn-primary {
+            background: var(--color-accent);
+            color: #000;
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-family: var(--font-display);
+            font-size: 1rem;
+            text-decoration: none;
+        }
+
+        .ui-btn-secondary {
+            background: transparent;
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.4);
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-family: var(--font-display);
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .ui-btn-secondary:hover {
+            border-color: var(--color-accent);
+            color: var(--color-accent);
+        }
+
+        #ui-alert-box {
+            background: #0f0f0f;
+            color: #ffffff;
+            width: 460px;
+            padding: 28px 32px;
+            border-radius: 16px;
+            border: 1px solid var(--color-accent);
+            font-family: Montserrat;
+            text-align: center;
+            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.75);
+            animation: alertPop 0.25s ease-out;
+        }
+
+        #ui-alert-ok,
+        #ui-alert-close,
+        #ui-alert-cart {
+            height: 40px;
+            min-width: 110px;
+            padding: 0 18px;
+            border-radius: 10px;
+            font-family: var(--font-display);
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        /* PRIMARY ACTION */
+        #ui-alert-cart {
+            background: var(--color-accent);
+            color: #000;
+            border: none;
+        }
+
+        #ui-alert-cart:hover {
+            box-shadow: 0 6px 20px rgba(242, 231, 0, 0.35);
+        }
+
+        /* SECONDARY ACTION */
+        #ui-alert-close,
+        #ui-alert-ok {
+            background: transparent;
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        #ui-alert-close:hover,
+        #ui-alert-ok:hover {
+            border-color: var(--color-accent);
+            color: var(--color-accent);
+        }
+
+
+
+
     </style>
+
 </head>
 
 <body>
@@ -684,7 +849,8 @@
                     </div>
 
 
-                    <form method="post">
+                    <form id="add-to-cart-form" method="POST" action="{% url 'cart:add_to_cart' %}">
+
                         {% csrf_token %}
 
                         <!-- COLOR SELECTION -->
@@ -694,15 +860,14 @@
                                 {% for color, data in variants.items %}
                                 <label class="color-option">
                                     <input type="radio" name="color" value="{{ color }}" data-slug="{{ color|slugify }}"
-                                        onchange="handleColorChange(this.dataset.slug)" {% if forloop.first %} checked
-                                        {% endif %}>
+                                        onchange="handleColorChange(this.dataset.slug)" {% if forloop.first %} checked {% endif %}>
                                     <div class="color-swatch">{{ color }}</div>
                                 </label>
                                 {% endfor %}
                             </div>
                         </div>
 
-                        <!-- SIZE SELECTION (PER COLOR) -->
+                        <!-- SIZE / VARIANT SELECTION -->
                         <div class="variant-group">
                             <span class="variant-label">Select Size & Weight</span>
 
@@ -714,7 +879,6 @@
                                     {% for s in data.sizes %}
                                     <label class="size-option">
                                         <input type="radio" name="variant_id" value="{{ s.variant_id }}" {% if not s.stock %} disabled {% endif %}>
-
                                         <div class="size-box">
                                             <div class="size-name">{{ s.size }}</div>
                                             <div class="size-weight">{{ s.weight_kg }} kg</div>
@@ -726,8 +890,19 @@
                             {% endfor %}
                         </div>
 
-                        <button class="btn-add-cart">ADD TO CART</button>
+                        <!-- SUBMIT -->
+                        <button type="submit" class="btn-add-cart" id="addToCartBtn">
+                            <span class="btn-text">ADD TO CART</span>
+                            <span class="btn-sweep"></span>
+                        </button>
+                        
+                        
+
+
+
                     </form>
+
+
 
 
 
@@ -767,11 +942,11 @@
             <!-- RECOMMENDED PRODUCTS -->
             <div class="rec-section">
                 <h2 class="section-title">YOU MIGHT ALSO LIKE</h2>
-            
+
                 <div class="rec-grid">
                     {% for p in recommended_products %}
                     <a href="{{ p.get_absolute_url }}" class="rec-card text-decoration-none">
-            
+
                         <!-- IMAGE -->
                         <div class="rec-img-frame">
                             {% if p.variants.all %}
@@ -786,15 +961,15 @@
                             <img src="https://via.placeholder.com/400x550?text=No+Image">
                             {% endif %}
                         </div>
-            
+
                         <!-- TITLE -->
                         <div class="rec-title">{{ p.name }}</div>
-            
+
                         <!-- PRICE -->
                         <div class="rec-price">
                             ₹ {{ p.subcategory.price_per_kg }} / KG
                         </div>
-            
+
                     </a>
                     {% endfor %}
                 </div>
@@ -802,7 +977,7 @@
             {% endif %}
 
 
-            
+
         </div>
     </main>
 
@@ -852,9 +1027,27 @@
     <!-- JS -->
     <script>
         function handleColorChange(slug) {
-            document.querySelectorAll('.gallery-wrapper').forEach(g => g.classList.add('d-none'));
-            document.getElementById('gallery-' + slug)?.classList.remove('d-none');
-        }
+
+                /* 1️⃣ Switch galleries */
+                document.querySelectorAll('.gallery-wrapper')
+                    .forEach(g => g.classList.add('d-none'));
+                document.getElementById('gallery-' + slug)
+                    ?.classList.remove('d-none');
+
+                /* 2️⃣ Switch size groups */
+                document.querySelectorAll('[id^="size-group-"]')
+                    .forEach(group => group.classList.add('d-none'));
+
+                const activeSizeGroup = document.getElementById('size-group-' + slug);
+                if (activeSizeGroup) {
+                    activeSizeGroup.classList.remove('d-none');
+                }
+
+                /* 3️⃣ CLEAR previously selected variant_id */
+                document.querySelectorAll('input[name="variant_id"]')
+                    .forEach(input => input.checked = false);
+            }
+
 
         function toggleDetail(el) {
             el.classList.toggle('active');
@@ -888,8 +1081,125 @@
     </script>
 
 
+<script>
+    function showUIAlert(message, type = "error") {
+        const overlay = document.getElementById("ui-alert-overlay");
+        const msgBox = document.getElementById("ui-alert-message");
+
+        const okBtn = document.getElementById("ui-alert-ok");
+        const closeBtn = document.getElementById("ui-alert-close");
+        const cartBtn = document.getElementById("ui-alert-cart");
+
+        if (!overlay || !msgBox) return;
+
+        msgBox.textContent = message;
+
+        // RESET (hide all)
+        okBtn.style.display = "none";
+        closeBtn.style.display = "none";
+        cartBtn.style.display = "none";
+
+        // ❌ ERROR (size not selected, stock issue)
+        if (type === "error") {
+            okBtn.style.display = "inline-block";
+        }
+
+        // ✅ SUCCESS (item added)
+        if (type === "success") {
+            closeBtn.style.display = "inline-block";
+            cartBtn.style.display = "inline-flex";
+        }
+
+        overlay.style.display = "flex";
+    }
+
+    function hideUIAlert() {
+        const overlay = document.getElementById("ui-alert-overlay");
+        if (overlay) overlay.style.display = "none";
+    }
+</script>
+    
+    
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("add-to-cart-form");
+        const btn = document.getElementById("addToCartBtn");
+
+        if (!form || !btn) return;
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            // 1️⃣ Validate size selection
+            const variant = form.querySelector("input[name='variant_id']:checked");
+            if (!variant) {
+                showUIAlert("Please select a size");
+                return;
+            }
+
+            // 2️⃣ Start animation
+            btn.disabled = true;
+            btn.classList.add("animating");
+
+            // 3️⃣ Send request
+            const response = await fetch(form.action, {
+                method: "POST",
+                body: new FormData(form),
+                headers: { "X-Requested-With": "XMLHttpRequest" }
+            });
+
+            const data = await response.json();
+
+            // ❌ Error from backend
+            if (!response.ok) {
+                btn.classList.remove("animating");
+                btn.disabled = false;
+                showUIAlert(data.error || "Something went wrong");
+                return;
+            }
+
+            // ✅ SUCCESS
+            showUIAlert("Item added successfully", "success");
+
+
+
+            // 4️⃣ Reset button
+            setTimeout(() => {
+                btn.classList.remove("animating");
+                btn.disabled = false;
+            }, 600);
+        });
+    });
+</script>
+    
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+    <div id="ui-alert-overlay">
+        <div id="ui-alert-box">
+    
+            <div id="ui-alert-message"></div>
+    
+            <div class="ui-alert-actions">
+                <!-- OK (errors only) -->
+                <button id="ui-alert-ok" onclick="hideUIAlert()">OK</button>
+    
+                <!-- CLOSE (success only) -->
+                <button id="ui-alert-close" onclick="hideUIAlert()">CLOSE</button>
+    
+                <!-- VIEW CART (success only) -->
+                <a id="ui-alert-cart" href="{% url 'cart:cart' %}" class="ui-alert-link">
+                    VIEW CART
+                </a>
+            </div>
+    
+        </div>
+    </div>
+    
 
 
 

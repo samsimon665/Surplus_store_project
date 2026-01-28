@@ -130,91 +130,7 @@ def product_list(request, subcategory_slug=None):
             "navbar_show": "products",
         }
     )
-
-
-@login_required(login_url='accounts:login')
-def product_detail(request, category_slug, subcategory_slug, product_slug):
-    product = get_object_or_404(
-        Product.objects.select_related(
-            "subcategory",
-            "subcategory__category"
-        ),
-        slug=product_slug,
-        subcategory__slug=subcategory_slug,
-        subcategory__category__slug=category_slug,
-        is_active=True,
-    )
-
-    variants = (
-        ProductVariant.objects
-        .filter(product=product, is_active=True)
-        .prefetch_related(
-            Prefetch(
-                "images",
-                queryset=ProductImage.objects.order_by(
-                    "-is_primary", "created_at"
-                )
-            )
-        )
-    )
-
-    variant_map = {}
-
-    for variant in variants:
-        color = variant.color
-
-        if color not in variant_map:
-            variant_map[color] = {
-                "color": color,
-                "sizes": [],
-                "images": []
-            }
-
-        variant_map[color]["sizes"].append({
-            "size": variant.size,
-            "weight_kg": variant.weight_kg,
-            "stock": variant.stock,
-            "variant_id": variant.id,
-            "variant_id": variant.id,
-
-        })
-
-        for img in variant.images.all():
-            if img.image.url not in variant_map[color]["images"]:
-                variant_map[color]["images"].append(img.image.url)
-
-    recommended_products = (
-        Product.objects.filter(
-            subcategory=product.subcategory,
-            is_active=True
-        )
-        .exclude(id=product.id)
-        .select_related("subcategory")
-        .prefetch_related(
-            Prefetch(
-                "variants",
-                queryset=ProductVariant.objects.filter(is_active=True).prefetch_related(
-                    Prefetch(
-                        "images",
-                        queryset=ProductImage.objects.order_by(
-                            "-is_primary", "created_at")
-                    )
-                )
-            )
-        )
-        .order_by("-created_at")[:4]
-    )
-
-    context = {
-        "product": product,
-        "subcategory": product.subcategory,
-        "price_per_kg": product.subcategory.price_per_kg,
-        "variants": variant_map,
-        "recommended_products": recommended_products,
-    }
-
-    return render(request, "catalog/product_details.html", context)
-
+ 
 
 @login_required(login_url='accounts:login')
 def product_detail(request, category_slug, subcategory_slug, product_slug):
@@ -223,7 +139,7 @@ def product_detail(request, category_slug, subcategory_slug, product_slug):
         Product.objects
         .filter(
             is_active=True,
-            variants__is_active=True,   # 🔒 CRITICAL FIX
+            variants__is_active=True,   # 🔒 MUST HAVE SELLABLE VARIANT
         )
         .select_related(
             "subcategory",
@@ -237,10 +153,7 @@ def product_detail(request, category_slug, subcategory_slug, product_slug):
 
     variants = (
         ProductVariant.objects
-        .filter(
-            product=product,
-            is_active=True
-        )
+        .filter(product=product, is_active=True)
         .prefetch_related(
             Prefetch(
                 "images",
@@ -275,14 +188,12 @@ def product_detail(request, category_slug, subcategory_slug, product_slug):
             if img.image.url not in variant_map[color]["images"]:
                 variant_map[color]["images"].append(img.image.url)
 
-
-    # 🔒 RECOMMENDED PRODUCTS — SAFE VERSION
     recommended_products = (
         Product.objects
         .filter(
             subcategory=product.subcategory,
             is_active=True,
-            variants__is_active=True,   # 🔒 CRITICAL FIX
+            variants__is_active=True,
         )
         .exclude(id=product.id)
         .distinct()
@@ -314,8 +225,4 @@ def product_detail(request, category_slug, subcategory_slug, product_slug):
         "recommended_products": recommended_products,
     }
 
-    return render(
-        request,
-        "catalog/product_details.html",
-        context
-    )
+    return render(request, "catalog/product_details.html", context)
