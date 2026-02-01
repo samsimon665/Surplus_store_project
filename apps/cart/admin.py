@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Cart, CartItem
+from .models import Cart, CartItem, Wishlist, WishlistItem
 
 # Register your models here.
 
@@ -38,3 +38,7 @@ class CartItemAdmin(admin.ModelAdmin):
     )
 
     ordering = ("-created_at",)
+
+
+admin.site.register(Wishlist)
+admin.site.register(WishlistItem)

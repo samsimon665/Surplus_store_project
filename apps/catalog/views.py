@@ -8,6 +8,9 @@ from django.db.models import Prefetch
 
 from django.contrib.auth.decorators import login_required
 
+from apps.cart.models import WishlistItem
+
+
 
 # Create your views here.
 
@@ -120,6 +123,16 @@ def product_list(request, subcategory_slug=None):
 
     products = products.order_by("name")
 
+    # ✅ 3️⃣ WISHLIST PREFILL (IMPORTANT)
+    wishlist_product_ids = set()
+
+    if request.user.is_authenticated:
+        wishlist_product_ids = set(
+            WishlistItem.objects.filter(
+                wishlist__user=request.user
+            ).values_list("product_id", flat=True)
+        )
+
     return render(
         request,
         "catalog/product_list.html",
@@ -128,9 +141,12 @@ def product_list(request, subcategory_slug=None):
             "subcategory": subcategory,
             "search_query": q,
             "navbar_show": "products",
+
+            # 👇 REQUIRED FOR ❤️ PREFILL
+            "wishlist_product_ids": wishlist_product_ids,
         }
     )
- 
+
 
 @login_required(login_url='accounts:login')
 def product_detail(request, category_slug, subcategory_slug, product_slug):
@@ -150,6 +166,15 @@ def product_detail(request, category_slug, subcategory_slug, product_slug):
         subcategory__slug=subcategory_slug,
         subcategory__category__slug=category_slug,
     )
+
+    # ✅ WISHLIST STATE (PRODUCT-BASED)
+
+    is_wishlisted = False
+    if request.user.is_authenticated:
+        is_wishlisted = WishlistItem.objects.filter(
+            wishlist__user=request.user,
+            product=product
+        ).exists()
 
     variants = (
         ProductVariant.objects
@@ -223,6 +248,9 @@ def product_detail(request, category_slug, subcategory_slug, product_slug):
         "price_per_kg": product.subcategory.price_per_kg,
         "variants": variant_map,
         "recommended_products": recommended_products,
+
+        # 👇 REQUIRED FOR ❤️ BUTTON
+        "is_wishlisted": is_wishlisted,
     }
 
     return render(request, "catalog/product_details.html", context)

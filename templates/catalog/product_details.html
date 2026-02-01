@@ -21,6 +21,10 @@
 
     <!-- ICONS -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
 
     <style>
         :root {
@@ -761,6 +765,28 @@
             color: var(--color-accent);
         }
 
+        /* ❤️ Wishlist Button – Premium */
+        .btn-wishlist {
+            transition: 
+                background 0.25s ease,
+                color 0.25s ease,
+                transform 0.18s ease;
+        }
+
+        .btn-wishlist .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400;
+            color: #e10600;
+            transition:
+                font-variation-settings 0.2s ease,
+                transform 0.18s ease,
+                color 0.2s ease;
+        }
+
+        /* ACTIVE (Wishlisted) */
+        .btn-wishlist.active {
+            background: #fff;
+            color: #e10600; /* premium red */
+        }
 
 
 
@@ -837,15 +863,26 @@
 
 
                     <div class="product-actions">
-                        <button type="button" class="btn-wishlist">
-                            <span class="material-symbols-outlined">favorite_border</span>
+
+                        <button type="button" id="wishlistBtn" class="btn-wishlist {% if is_wishlisted %}active{% endif %}"
+                            data-product-id="{{ product.id }}">
+                            <span class="material-symbols-outlined">
+                                favorite
+                            </span>
+                            {% if is_wishlisted %}
+                            REMOVE FROM WISHLIST
+                            {% else %}
                             ADD TO WISHLIST
+                            {% endif %}
                         </button>
+
+
 
                         <button type="button" class="btn-share">
                             <span class="material-symbols-outlined">share</span>
                             SHARE
                         </button>
+
                     </div>
 
 
@@ -1081,98 +1118,223 @@
     </script>
 
 
-<script>
-    function showUIAlert(message, type = "error") {
-        const overlay = document.getElementById("ui-alert-overlay");
-        const msgBox = document.getElementById("ui-alert-message");
+    <script>
+        function showUIAlert(message, type = "error") {
+            const overlay = document.getElementById("ui-alert-overlay");
+            const msgBox = document.getElementById("ui-alert-message");
 
-        const okBtn = document.getElementById("ui-alert-ok");
-        const closeBtn = document.getElementById("ui-alert-close");
-        const cartBtn = document.getElementById("ui-alert-cart");
+            const okBtn = document.getElementById("ui-alert-ok");
+            const closeBtn = document.getElementById("ui-alert-close");
+            const cartBtn = document.getElementById("ui-alert-cart");
 
-        if (!overlay || !msgBox) return;
+            if (!overlay || !msgBox) return;
 
-        msgBox.textContent = message;
+            msgBox.textContent = message;
 
-        // RESET (hide all)
-        okBtn.style.display = "none";
-        closeBtn.style.display = "none";
-        cartBtn.style.display = "none";
+            // RESET (hide all)
+            okBtn.style.display = "none";
+            closeBtn.style.display = "none";
+            cartBtn.style.display = "none";
 
-        // ❌ ERROR (size not selected, stock issue)
-        if (type === "error") {
-            okBtn.style.display = "inline-block";
-        }
-
-        // ✅ SUCCESS (item added)
-        if (type === "success") {
-            closeBtn.style.display = "inline-block";
-            cartBtn.style.display = "inline-flex";
-        }
-
-        overlay.style.display = "flex";
-    }
-
-    function hideUIAlert() {
-        const overlay = document.getElementById("ui-alert-overlay");
-        if (overlay) overlay.style.display = "none";
-    }
-</script>
-    
-    
-
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const form = document.getElementById("add-to-cart-form");
-        const btn = document.getElementById("addToCartBtn");
-
-        if (!form || !btn) return;
-
-        form.addEventListener("submit", async (e) => {
-            e.preventDefault();
-
-            // 1️⃣ Validate size selection
-            const variant = form.querySelector("input[name='variant_id']:checked");
-            if (!variant) {
-                showUIAlert("Please select a size");
-                return;
+            // ❌ ERROR (size not selected, stock issue)
+            if (type === "error") {
+                okBtn.style.display = "inline-block";
             }
 
-            // 2️⃣ Start animation
-            btn.disabled = true;
-            btn.classList.add("animating");
+            // ✅ SUCCESS (item added)
+            if (type === "success") {
+                closeBtn.style.display = "inline-block";
+                cartBtn.style.display = "inline-flex";
+            }
 
-            // 3️⃣ Send request
-            const response = await fetch(form.action, {
-                method: "POST",
-                body: new FormData(form),
-                headers: { "X-Requested-With": "XMLHttpRequest" }
+            overlay.style.display = "flex";
+        }
+
+        function hideUIAlert() {
+            const overlay = document.getElementById("ui-alert-overlay");
+            if (overlay) overlay.style.display = "none";
+        }
+    </script>
+        
+        
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = document.getElementById("add-to-cart-form");
+            const btn = document.getElementById("addToCartBtn");
+
+            if (!form || !btn) return;
+
+            form.addEventListener("submit", async (e) => {
+                e.preventDefault();
+
+                // 1️⃣ Validate size selection
+                const variant = form.querySelector("input[name='variant_id']:checked");
+                if (!variant) {
+                    showUIAlert("Please select a size");
+                    return;
+                }
+
+                // 2️⃣ Start animation
+                btn.disabled = true;
+                btn.classList.add("animating");
+
+                // 3️⃣ Send request
+                const response = await fetch(form.action, {
+                    method: "POST",
+                    body: new FormData(form),
+                    headers: { "X-Requested-With": "XMLHttpRequest" }
+                });
+
+                const data = await response.json();
+
+                // ❌ Error from backend
+                if (!response.ok) {
+                    btn.classList.remove("animating");
+                    btn.disabled = false;
+                    showUIAlert(data.error || "Something went wrong");
+                    return;
+                }
+
+                // ✅ SUCCESS
+                showUIAlert("Item added successfully", "success");
+
+
+
+                // 4️⃣ Reset button
+                setTimeout(() => {
+                    btn.classList.remove("animating");
+                    btn.disabled = false;
+                }, 600);
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const btn = document.getElementById("wishlistBtn");
+            if (!btn) return;
+
+            btn.addEventListener("click", async () => {
+                const productId = btn.dataset.productId;
+                const heartIcon = btn.querySelector('.material-symbols-outlined');
+                const textNode = btn.lastChild;
+
+                // Disable button during request
+                btn.style.pointerEvents = 'none';
+
+                try {
+                    const response = await fetch("{% url 'cart:toggle_wishlist' %}", {
+                        method: "POST",
+                        headers: {
+                            "X-CSRFToken": "{{ csrf_token }}",
+                            "Content-Type": "application/x-www-form-urlencoded"
+                        },
+                        body: new URLSearchParams({ product_id: productId })
+                    });
+
+                    const data = await response.json();
+
+                    if (!data.success) {
+                        btn.style.pointerEvents = 'auto';
+                        return;
+                    }
+
+                    // 🔥 PREMIUM ANIME.JS ANIMATION
+                    if (data.action === "added") {
+                        // ADD TO WISHLIST → HEARTBEAT + FLOATING HEARTS + FILL
+                        anime({
+                            targets: heartIcon,
+                            scale: [1, 1.4, 1.2, 1],
+                            rotate: [0, 360],
+                            duration: 800,
+                            easing: 'easeOutElastic(1, .8)',
+                            loop: false
+                        });
+
+                        // Create 5 floating hearts
+                        for (let i = 0; i < 5; i++) {
+                            createFloatingHeart(heartIcon);
+                        }
+
+                        // Button state change
+                        btn.classList.add("active");
+                        textNode.textContent = "REMOVE FROM WISHLIST";
+
+                        // Glow pulse
+                        anime({
+                            targets: btn,
+                            boxShadow: [
+                                '0 0 20px rgba(225, 6, 0, 0.3)',
+                                '0 0 40px rgba(225, 6, 0, 0.6)',
+                                '0 0 20px rgba(225, 6, 0, 0.3)'
+                            ],
+                            duration: 1000,
+                            easing: 'easeOutSine'
+                        });
+
+                    } else {
+                        // REMOVE FROM WISHLIST → SHRINK + UNFILL
+                        anime({
+                            targets: heartIcon,
+                            scale: [1, 1.3, 0.8, 1],
+                            duration: 600,
+                            easing: 'easeOutQuart'
+                        });
+
+                        // Button state change
+                        btn.classList.remove("active");
+                        textNode.textContent = "ADD TO WISHLIST";
+
+                        // Subtle shake
+                        anime({
+                            targets: btn,
+                            translateX: [-5, 5, -5, 0],
+                            duration: 400,
+                            easing: 'easeOutSine'
+                        });
+                    }
+
+                } catch (error) {
+                    console.error('Wishlist error:', error);
+                } finally {
+                    // Re-enable button after 800ms
+                    setTimeout(() => {
+                        btn.style.pointerEvents = 'auto';
+                    }, 800);
+                }
             });
 
-            const data = await response.json();
+            // Floating hearts helper function
+            function createFloatingHeart(parent) {
+                const heart = document.createElement('span');
+                heart.innerHTML = '💖';
+                heart.style.cssText = `
+                    position: fixed;
+                    font-size: 16px;
+                    pointer-events: none;
+                    z-index: 10000;
+                    left: ${parent.getBoundingClientRect().left + 20}px;
+                    top: ${parent.getBoundingClientRect().top + 20}px;
+                    opacity: 1;
+                `;
+                document.body.appendChild(heart);
 
-            // ❌ Error from backend
-            if (!response.ok) {
-                btn.classList.remove("animating");
-                btn.disabled = false;
-                showUIAlert(data.error || "Something went wrong");
-                return;
+                anime({
+                    targets: heart,
+                    translateX: anime.random(-50, 50),
+                    translateY: anime.random(-100, -150),
+                    scale: [1, 0],
+                    opacity: [1, 0],
+                    rotate: anime.random(-180, 180),
+                    duration: anime.random(1000, 1500),
+                    easing: 'easeOutSine',
+                    complete: () => heart.remove()
+                });
             }
-
-            // ✅ SUCCESS
-            showUIAlert("Item added successfully", "success");
-
-
-
-            // 4️⃣ Reset button
-            setTimeout(() => {
-                btn.classList.remove("animating");
-                btn.disabled = false;
-            }, 600);
         });
-    });
-</script>
-    
+    </script>
+
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

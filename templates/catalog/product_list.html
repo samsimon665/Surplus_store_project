@@ -523,6 +523,7 @@
     {% include 'catalog/navbar.html' %}
 
     <!-- CONTENT -->
+
     <main class="container py-5">
 
         <!-- BREADCRUMBS -->
@@ -659,39 +660,44 @@
 
             <div class="col-12 col-md-6 col-lg-3">
                 <div class="prod-card el-fade">
-
-                    <a href="{{ product.get_absolute_url }}" class="text-decoration-none">
-
-                        <div class="prod-img-wrap">
+                
+                    <div class="prod-img-wrap">
+                
+                        <a href="{{ product.get_absolute_url }}" class="text-decoration-none d-block h-100">
                             <div class="prod-meta-pill">BY WEIGHT</div>
-
+                
                             {% if product.main_image %}
                             <img src="{{ product.main_image.url }}" class="prod-img" alt="{{ product.name }}">
                             {% else %}
                             <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=600&q=80"
                                 class="prod-img" alt="Product Image">
                             {% endif %}
+                        </a>
+                
+                        <!-- ✅ WISHLIST BUTTON (NOT INSIDE LINK) -->
+                        <button type="button" class="btn-wishlist js-wishlist-btn {% if product.id in wishlist_product_ids %}active{% endif %}"
+                            data-product-id="{{ product.id }}" aria-label="Add to Wishlist">
 
-                            <button class="btn-wishlist" aria-label="Add to Wishlist">
-                                <span class="material-symbols-outlined">favorite</span>
-                            </button>
-                        </div>
-                    </a>
-
+                            <span class="material-symbols-outlined">favorite</span>
+                        </button>
+                
+                    </div>
+                
                     <div class="prod-info">
                         <h3 class="prod-title">{{ product.name|upper }}</h3>
                         <div class="prod-brand">EXPORT SURPLUS</div>
-
+                
                         <div class="prod-price">
                             ₹ {{ product.subcategory.price_per_kg }} / KG
                         </div>
-
+                
                         <a href="{{ product.get_absolute_url }}" class="btn-view">
                             VIEW PRODUCT →
                         </a>
                     </div>
-
+                
                 </div>
+                
             </div>
 
             {% empty %}
@@ -765,6 +771,46 @@
             });
         });
     </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            function getCSRFToken() {
+                return document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+            }
+
+            document.querySelectorAll(".js-wishlist-btn").forEach(button => {
+                button.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    e.stopPropagation(); // 🚨 VERY IMPORTANT (prevents card click)
+
+                    const productId = this.dataset.productId;
+
+                    fetch("{% url 'cart:toggle_wishlist' %}", {
+                        method: "POST",
+                        headers: {
+                            "X-CSRFToken": getCSRFToken(),
+                            "Content-Type": "application/x-www-form-urlencoded"
+                        },
+                        body: new URLSearchParams({
+                            product_id: productId
+                        })
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (!data.success) return;
+
+                            if (data.action === "added") {
+                                this.classList.add("active");
+                            } else {
+                                this.classList.remove("active");
+                            }
+                        });
+                });
+            });
+
+        });
+    </script>
+        
 </body>
 
 </html>

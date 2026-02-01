@@ -80,8 +80,9 @@
 
                 <!-- WISHLIST -->
                 <li class="nav-item">
-                    <a href="#" class="nav-link position-relative">
+                    <a href="{% url 'cart:wishlist' %}" class="nav-link position-relative">
                         <span class="material-symbols-outlined fs-5">favorite</span>
+                
                         {% if wishlist_count %}
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                             {{ wishlist_count }}
@@ -89,6 +90,7 @@
                         {% endif %}
                     </a>
                 </li>
+
 
                 <!-- CART -->
                 <li class="nav-item">

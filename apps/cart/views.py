@@ -4,8 +4,9 @@ from decimal import Decimal
 
 from django.http import JsonResponse
 
-from .models import Cart, CartItem
-from apps.catalog.models import ProductVariant, ProductImage
+from .models import Cart, CartItem, Wishlist, WishlistItem
+
+from apps.catalog.models import Product, ProductVariant, ProductImage
 
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -14,6 +15,20 @@ from .services import get_cart_item_status, CartItemStatus
 
 from django.db.models import Prefetch
 
+
+def get_nav_counts(user):
+    wishlist_count = WishlistItem.objects.filter(
+        wishlist__user=user
+    ).count()
+
+    cart_count = CartItem.objects.filter(
+        cart__user=user
+    ).count()
+
+    return {
+        "wishlist_count": min(wishlist_count, 10),
+        "cart_count": min(cart_count, 10),
+    }
 
 
 
@@ -50,8 +65,6 @@ def cart_view(request):
 
             items.append(item)
 
-
-
     context = {
         "cart": cart,
         "cart_items": items,
@@ -63,8 +76,6 @@ def cart_view(request):
     }
 
     return render(request, "cart/cart_summary.html", context)
-
-
 
 
 @login_required(login_url='accounts:login')
@@ -165,7 +176,6 @@ def update_cart_item(request):
     })
 
 
-
 @login_required
 def remove_cart_item(request):
     if request.method != "POST":
@@ -180,5 +190,84 @@ def remove_cart_item(request):
     item = get_object_or_404(CartItem, id=item_id, cart=cart)
 
     item.delete()
+
+    return JsonResponse({"success": True})
+
+
+
+
+# ----- WISHLIST -----
+
+
+@login_required(login_url="accounts:login")
+def wishlist_view(request):
+    
+    wishlist = Wishlist.objects.filter(user=request.user).first()
+
+    wishlist_items = []
+    if wishlist:
+        wishlist_items = wishlist.items.select_related("product")
+
+    context = {
+        "wishlist": wishlist,
+        "wishlist_items": wishlist_items,
+    }
+
+    return render(request, "cart/wishlist.html", context)
+
+
+@login_required(login_url="accounts:login")
+def toggle_wishlist(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid method"}, status=405)
+
+    product_id = request.POST.get("product_id")
+    if not product_id:
+        return JsonResponse({"error": "Invalid product"}, status=400)
+
+    product = get_object_or_404(
+        Product,
+        id=product_id,
+        is_active=True
+    )
+
+    wishlist, _ = Wishlist.objects.get_or_create(user=request.user)
+
+    wishlist_item = WishlistItem.objects.filter(
+        wishlist=wishlist,
+        product=product
+    ).first()
+
+    if wishlist_item:
+        wishlist_item.delete()
+        return JsonResponse({
+            "success": True,
+            "action": "removed"
+        })
+
+    WishlistItem.objects.create(
+        wishlist=wishlist,
+        product=product
+    )
+
+    return JsonResponse({
+        "success": True,
+        "action": "added"
+    })
+
+
+@login_required(login_url="accounts:login")
+def remove_from_wishlist(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid method"}, status=405)
+
+    item_id = request.POST.get("item_id")
+    if not item_id:
+        return JsonResponse({"error": "Invalid item"}, status=400)
+
+    WishlistItem.objects.filter(
+        id=item_id,
+        wishlist__user=request.user
+    ).delete()
 
     return JsonResponse({"success": True})
