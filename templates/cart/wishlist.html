@@ -431,7 +431,8 @@
 
             <div class="wishlist-card valid-item" data-item-id="{{ item.id }}">
 
-                <a href="{{ item.product.get_absolute_url }}" class="stretched-link"></a>
+                <a href="{{ item.product.get_absolute_url }}?from_wishlist=1" class="stretched-link"></a>
+
             
                     <div class="card-img-wrap">
             
@@ -450,10 +451,11 @@
                             <span class="material-symbols-outlined">delete</span>
                         </button>
                         
-            
-                        <button class="btn-move-cart js-move-to-cart" data-product-id="{{ item.product.id }}">
+                        <a href="{{ item.product.get_absolute_url }}?from_wishlist=1" class="btn-move-cart">
                             MOVE TO CART
-                        </button>
+                        </a>
+
+
                         
                     </div>
             

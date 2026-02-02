@@ -167,15 +167,23 @@ def product_detail(request, category_slug, subcategory_slug, product_slug):
         subcategory__category__slug=category_slug,
     )
 
-    # ✅ WISHLIST STATE (PRODUCT-BASED)
+    # -------------------------------------------------
+    # ✅ USER INTENT: CAME FROM WISHLIST
+    # -------------------------------------------------
+    if request.GET.get("from_wishlist") == "1":
+        request.session["move_to_cart_product_id"] = product.id
 
-    is_wishlisted = False
-    if request.user.is_authenticated:
-        is_wishlisted = WishlistItem.objects.filter(
-            wishlist__user=request.user,
-            product=product
-        ).exists()
+    # -------------------------------------------------
+    # ❤️ WISHLIST STATE (FOR HEART BUTTON ONLY)
+    # -------------------------------------------------
+    is_wishlisted = WishlistItem.objects.filter(
+        wishlist__user=request.user,
+        product=product
+    ).exists()
 
+    # -------------------------------------------------
+    # ✅ VARIANTS + IMAGES
+    # -------------------------------------------------
     variants = (
         ProductVariant.objects
         .filter(product=product, is_active=True)
@@ -213,6 +221,9 @@ def product_detail(request, category_slug, subcategory_slug, product_slug):
             if img.image.url not in variant_map[color]["images"]:
                 variant_map[color]["images"].append(img.image.url)
 
+    # -------------------------------------------------
+    # ✅ RECOMMENDED PRODUCTS
+    # -------------------------------------------------
     recommended_products = (
         Product.objects
         .filter(
@@ -242,14 +253,15 @@ def product_detail(request, category_slug, subcategory_slug, product_slug):
         .order_by("-created_at")[:4]
     )
 
+    # -------------------------------------------------
+    # ✅ CONTEXT
+    # -------------------------------------------------
     context = {
         "product": product,
         "subcategory": product.subcategory,
         "price_per_kg": product.subcategory.price_per_kg,
         "variants": variant_map,
         "recommended_products": recommended_products,
-
-        # 👇 REQUIRED FOR ❤️ BUTTON
         "is_wishlisted": is_wishlisted,
     }
 

@@ -933,8 +933,11 @@
                             <span class="btn-sweep"></span>
                         </button>
                         
-                        
 
+                        {% if from_wishlist and wishlist_item_id %}
+                        <input type="hidden" name="from_wishlist" value="1">
+                        <input type="hidden" name="wishlist_item_id" value="{{ wishlist_item_id }}">
+                        {% endif %}
 
 
                     </form>

@@ -107,7 +107,7 @@ TEMPLATES = [
 
                 # for count of wishlist items  : Passing from CART APP context_processors.py
                 
-                "apps.cart.context_processors.wishlist_count",
+                "apps.cart.context_processors.nav_counts",
             ],
         },
     },

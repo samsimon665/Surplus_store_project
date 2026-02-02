@@ -8,6 +8,8 @@ from django.contrib import messages
 
 from apps.catalog.models import Product
 
+from django.core.paginator import Paginator
+
 
 @admin_required
 def product_create(request):
@@ -33,14 +35,20 @@ def product_create(request):
 
 @admin_required
 def product_list(request):
-    products = (
+    products_qs = (
         Product.objects
         .select_related("subcategory", "subcategory__category")
         .order_by("name")
     )
 
+    paginator = Paginator(products_qs, 10)  # 10 products per page
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     context = {
-        "products": products
+        "products": page_obj,   # IMPORTANT
+        "page_obj": page_obj,
+        "paginator": paginator,
     }
 
     return render(

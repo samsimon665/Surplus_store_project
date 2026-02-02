@@ -83,26 +83,27 @@
                     <a href="{% url 'cart:wishlist' %}" class="nav-link position-relative">
                         <span class="material-symbols-outlined fs-5">favorite</span>
                 
-                        {% if wishlist_count %}
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        <span id="wishlist-count"
+                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger {% if wishlist_count == 0 %}d-none{% endif %}">
                             {{ wishlist_count }}
                         </span>
-                        {% endif %}
                     </a>
                 </li>
+                
 
 
                 <!-- CART -->
                 <li class="nav-item">
                     <a href="{% url 'cart:cart' %}" class="nav-link position-relative">
                         <span class="material-symbols-outlined fs-5">shopping_cart</span>
-                        {% if cart_count %}
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-accent">
+                
+                        <span id="cart-count"
+                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-accent {% if cart_count == 0 %}d-none{% endif %}">
                             {{ cart_count }}
                         </span>
-                        {% endif %}
                     </a>
                 </li>
+                
 
                 <!-- PROFILE -->
                 {% if user.is_authenticated %}

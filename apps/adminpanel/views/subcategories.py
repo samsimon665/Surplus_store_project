@@ -63,31 +63,6 @@ def subcategory_list(request):
     )
 
 
-@admin_required
-def subcategory_list(request):
-    subcategories_qs = (
-        SubCategory.objects
-        .select_related("category")
-        .annotate(product_count=Count("products"))
-        .order_by("name")
-    )
-
-    paginator = Paginator(subcategories_qs, 10)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
-
-    context = {
-        "subcategories": page_obj,
-        "page_obj": page_obj,
-        "paginator": paginator,
-    }
-
-    return render(
-        request,
-        "adminpanel/subcategories/subcategory_list.html",
-        context,
-    )
-
 
 @admin_required
 def subcategory_edit(request, pk):

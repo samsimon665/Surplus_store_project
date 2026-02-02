@@ -88,8 +88,6 @@ def add_to_cart(request):
     except (TypeError, ValueError):
         return JsonResponse({"error": "Invalid variant"}, status=400)
 
-    requested_qty = 1  # ✅ DEFAULT
-
     variant = get_object_or_404(
         ProductVariant,
         id=variant_id,
@@ -104,7 +102,10 @@ def add_to_cart(request):
 
     cart, _ = Cart.objects.get_or_create(user=request.user)
 
-    cart_item = CartItem.objects.filter(cart=cart, variant=variant).first()
+    cart_item = CartItem.objects.filter(
+        cart=cart,
+        variant=variant
+    ).first()
 
     if cart_item:
         if cart_item.quantity + 1 > variant.stock:
@@ -118,24 +119,38 @@ def add_to_cart(request):
 
     else:
         price_per_kg = variant.product.subcategory.price_per_kg
-
         unit_price = Decimal(variant.weight_kg) * price_per_kg
 
         CartItem.objects.create(
             cart=cart,
             variant=variant,
-            quantity=requested_qty,
+            quantity=1,
 
             product_name=variant.product.name,
             color=variant.color,
             size=variant.size,
 
-            weight_kg=variant.weight_kg,   # ✅ MATCHES MODEL
+            weight_kg=variant.weight_kg,
             price_per_kg=price_per_kg,
             unit_price=unit_price,
         )
 
+    # -------------------------------------------------
+    # ✅ WISHLIST → CART (SESSION-BASED, PRODUCT-LEVEL)
+    # -------------------------------------------------
+    move_product_id = request.session.get("move_to_cart_product_id")
+
+    if move_product_id == variant.product.id:
+        WishlistItem.objects.filter(
+            wishlist__user=request.user,
+            product_id=move_product_id
+        ).delete()
+
+        # 🔒 Clear intent after successful move
+        del request.session["move_to_cart_product_id"]
+
     return JsonResponse({"success": True})
+
 
 
 @login_required(login_url='accounts:login')

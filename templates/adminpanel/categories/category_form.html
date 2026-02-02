@@ -1,3 +1,6 @@
+{% load static %}
+
+
 <!DOCTYPE html>
 <html class="light" lang="en">
 
@@ -89,6 +92,10 @@
         });
     </script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<script src="{% static 'js/image_cropper_exact.js' %}"></script>
+
+
 
 </head>
 
@@ -96,6 +103,11 @@
     <div class="flex min-h-screen w-full overflow-hidden">
 
         {% include "adminpanel/includes/sidebar.html" %}
+
+
+        {% include "adminpanel/includes/image_preview_modal.html" %}
+        {% include "adminpanel/includes/cropper_modal.html" %}
+
 
         <main class="flex-1 ml-64 overflow-y-auto ">
             <div class="container mx-auto px-6 py-8 max-w-5xl">
@@ -240,6 +252,27 @@
             </div>
         </main>
     </div>
+
+
+
+
+    <script>
+        initExactImageCropper({
+            inputId: "id_image",
+
+            previewContainerId: null,
+            previewImgId: "categoryImagePreview",
+            previewRowId: null,
+            removeBtnId: "clearImageBtn",
+
+            aspectRatio: 1,
+            width: 800,
+            height: 800
+        });
+    </script>
+        
+        
+        
 </body>
 
 </html>

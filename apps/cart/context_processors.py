@@ -1,14 +1,22 @@
-from .models import WishlistItem
+from .models import WishlistItem, CartItem
 
 
-def wishlist_count(request):
+def nav_counts(request):
     if not request.user.is_authenticated:
-        return {"wishlist_count": 0}
+        return {
+            "wishlist_count": 0,
+            "cart_count": 0,
+        }
 
-    count = WishlistItem.objects.filter(
+    wishlist_count = WishlistItem.objects.filter(
         wishlist__user=request.user
     ).count()
 
+    cart_count = CartItem.objects.filter(
+        cart__user=request.user
+    ).count()
+
     return {
-        "wishlist_count": count
+        "wishlist_count": min(wishlist_count, 10),
+        "cart_count": min(cart_count, 10),
     }
