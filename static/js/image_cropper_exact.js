@@ -1,62 +1,47 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+    /* =====================================================
+       EXACT IMAGE CROPPER (STABLE VERSION)
+    ===================================================== */
+
     window.initExactImageCropper = function (config) {
 
+        /* ---------- REQUIRED ELEMENTS ---------- */
         const input = document.getElementById(config.inputId);
-        if (!input) return;
+        if (!input) {
+            console.error("Cropper: input not found");
+            return;
+        }
 
-        let cropper = null;
-        let activeInput = input;
-
-        // 🔒 STATE FLAG (CRITICAL)
-        let isFromCropper = false;
-
-        // Cropper modal elements
         const cropModal = document.getElementById("cropperModal");
         const cropImage = document.getElementById("cropperImage");
         const cropConfirmBtn = document.getElementById("cropConfirm");
         const cropCancelBtn = document.getElementById("cropCancel");
 
-        // Preview elements (may or may not exist)
-        const previewContainer = config.previewContainerId
-            ? document.getElementById(config.previewContainerId)
-            : null;
+        if (!cropModal || !cropImage || !cropConfirmBtn || !cropCancelBtn) {
+            console.error("Cropper modal elements missing");
+            return;
+        }
 
-        const previewImg = config.previewImgId
-            ? document.getElementById(config.previewImgId)
-            : null;
+        const previewImg = document.getElementById(config.previewImgId);
+        const removeBtn = document.getElementById(config.removeBtnId);
+        const uploadIcon = document.getElementById("uploadIcon");
+        const uploadText = document.getElementById("uploadText");
 
-        const removeBtn = config.removeBtnId
-            ? document.getElementById(config.removeBtnId)
-            : null;
-
-        const previewModal = document.getElementById("imagePreviewModal");
-        const previewModalImg = document.getElementById("imagePreviewModalImg");
-        const previewRow = config.previewRowId
-            ? document.getElementById(config.previewRowId)
-            : null;
+        let cropper = null;
 
         /* =====================================================
-           OPEN CROPPER (INTERCEPT FILE SELECT)
-           ===================================================== */
-        input.addEventListener("change", function (e) {
-
-            // ✅ If change came from cropper → allow preview logic
-            if (isFromCropper) {
-                isFromCropper = false;
-                return;
-            }
-
-            // ❌ Block normal preview for raw file selection
-            e.stopImmediatePropagation();
+           FILE SELECT → OPEN CROPPER
+        ===================================================== */
+        input.addEventListener("change", function () {
 
             if (!this.files || !this.files[0]) return;
 
             const file = this.files[0];
 
             if (!file.type.startsWith("image/")) {
-                alert("Please select a valid image file.");
-                this.value = "";
+                alert("Please select a valid image");
+                input.value = "";
                 return;
             }
 
@@ -69,35 +54,37 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (cropper) cropper.destroy();
 
                 cropper = new Cropper(cropImage, {
-                    aspectRatio: config.aspectRatio,
-                    viewMode: 0,
-                    dragMode: "move",
+                    aspectRatio: config.aspectRatio,   // ✅ SINGLE SOURCE OF TRUTH
+                    viewMode: 2,
                     autoCropArea: 0.9,
                     background: false,
-                    guides: true,
-                    center: true,
-                    highlight: false,
-                    cropBoxMovable: true,
+                    responsive: true,
+                    movable: true,
+                    zoomable: true,
+                    scalable: false,
                     cropBoxResizable: true,
-                    toggleDragModeOnDblclick: false,
+                    cropBoxMovable: true,
                 });
+
+
+
             };
 
             reader.readAsDataURL(file);
-
-        }, true); // 👈 capture phase (MANDATORY)
+        });
 
         /* =====================================================
            CONFIRM CROP
-           ===================================================== */
+        ===================================================== */
         cropConfirmBtn.addEventListener("click", function () {
 
-            if (!cropper || !activeInput) return;
+            if (!cropper) return;
 
             cropper.getCroppedCanvas({
-                width: config.width,
-                height: config.height,
-            }).toBlob(blob => {
+                width: config.width || 800,
+                height: config.height || 800,
+                imageSmoothingQuality: "high"
+            }).toBlob(function (blob) {
 
                 if (!blob) return;
 
@@ -109,11 +96,41 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 const dt = new DataTransfer();
                 dt.items.add(croppedFile);
-                activeInput.files = dt.files;
+                input.files = dt.files;
 
-                // ✅ Mark next change as safe for preview
-                isFromCropper = true;
-                activeInput.dispatchEvent(new Event("change"));
+                /* ---------- PREVIEW ---------- */
+                if (previewImg) {
+                    previewImg.src = URL.createObjectURL(croppedFile);
+                    previewImg.classList.remove("hidden");
+                }
+
+                if (uploadIcon) uploadIcon.classList.add("hidden");
+                if (uploadText) uploadText.classList.add("hidden");
+
+                if (removeBtn) {
+                    removeBtn.classList.remove("hidden");
+                    removeBtn.onclick = function () {
+
+                        // 1️⃣ Fully reset file input (CRITICAL)
+                        input.value = null;
+                    
+                        // 2️⃣ Kill preview completely
+                        if (previewImg) {
+                            URL.revokeObjectURL(previewImg.src);
+                            previewImg.src = "";
+                            previewImg.classList.add("hidden");
+                        }
+                    
+                        // 3️⃣ Restore upload UI
+                        if (uploadIcon) uploadIcon.classList.remove("hidden");
+                        if (uploadText) uploadText.classList.remove("hidden");
+                    
+                        // 4️⃣ Hide clear button
+                        removeBtn.classList.add("hidden");
+                    
+                    };
+                    
+                }
 
                 cropper.destroy();
                 cropper = null;
@@ -124,43 +141,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
         /* =====================================================
            CANCEL CROP
-           ===================================================== */
+        ===================================================== */
         cropCancelBtn.addEventListener("click", function () {
             if (cropper) cropper.destroy();
             cropper = null;
-            activeInput.value = "";
+            input.value = "";
             cropModal.classList.add("hidden");
         });
-
-        /* =====================================================
-           BIG IMAGE PREVIEW (OPTIONAL)
-           ===================================================== */
-        if (previewRow && previewModal && previewModalImg) {
-            previewRow.addEventListener("click", function () {
-                const src = previewModalImg.dataset.src;
-                if (!src) return;
-                previewModalImg.src = src;
-                previewModal.classList.remove("hidden");
-            });
-
-            previewModal.addEventListener("click", function (e) {
-                if (e.target === previewModal) {
-                    previewModal.classList.add("hidden");
-                    previewModalImg.src = "";
-                }
-            });
-        }
-
-        /* =====================================================
-           EDIT MODE (EXISTING IMAGE)
-           ===================================================== */
-        if (window.existingMainImage && previewImg) {
-            if (previewContainer) previewContainer.classList.remove("hidden");
-            previewImg.src = window.existingMainImage.url;
-            if (previewModalImg) {
-                previewModalImg.dataset.src = window.existingMainImage.url;
-            }
-        }
     };
+
+    /* =====================================================
+       AUTO INIT (DO NOT MOVE)
+    ===================================================== */
+    initExactImageCropper({
+        inputId: "id_image",
+        previewImgId: "categoryImagePreview",
+        removeBtnId: "clearImageBtn",
+
+        aspectRatio: 4 / 5,   // ✅ FASHION STANDARD
+        width: 1000,          // ✅ OUTPUT WIDTH
+        height: 1250          // ✅ OUTPUT HEIGHT
+    });
+
 
 });
