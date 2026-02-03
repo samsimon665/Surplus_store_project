@@ -121,35 +121,44 @@
                         </div>
 
                         <!-- Image Upload -->
-                        <!-- Image Upload -->
                         <div class="flex flex-col gap-2">
                             <label class="text-sm font-medium">Category Image</label>
                         
                             <div class="relative flex h-40 cursor-pointer flex-col items-center justify-center
                                        rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 hover:border-primary">
-                        
-                                <!-- ✅ DJANGO FIELD (NO attrs HERE) -->
+                            
+                                <!-- ✅ Django image field (DO NOT ADD attrs here) -->
                                 {{ form.image }}
-                        
+                            
                                 <!-- Upload icon -->
                                 <span id="uploadIcon" class="material-symbols-outlined text-4xl text-slate-400">
                                     cloud_upload
                                 </span>
-                        
+                            
                                 <!-- Upload text -->
                                 <p id="uploadText" class="mt-2 text-sm text-slate-500">
                                     Click to upload or drag & drop
                                 </p>
-                        
-                                <!-- Preview -->
+                            
+                                <!-- ✅ EXISTING IMAGE (EDIT MODE) -->
+                                {% if form.instance.pk and form.instance.image %}
+                                <img id="existingImage" src="{{ form.instance.image.url }}"
+                                    class="absolute inset-0 mx-auto max-h-full rounded-lg object-contain" />
+                                {% endif %}
+                            
+                                <!-- Cropped preview -->
                                 <img id="categoryImagePreview" class="hidden absolute inset-0 mx-auto max-h-full rounded-lg object-contain" />
-                        
-                                <!-- Clear -->
+                            
+                                <!-- ✅ CLEAR BUTTON -->
                                 <button type="button" id="clearImageBtn" class="hidden absolute top-3 right-3 z-20 rounded-md
-                                           bg-red-600 px-2 py-1 text-xs font-medium text-white">
+                                               bg-red-600 px-2 py-1 text-xs font-medium text-white">
                                     ✕ Clear
                                 </button>
+                            
+                                <!-- ✅ THIS IS THE MOST IMPORTANT LINE -->
+                                <input type="checkbox" name="image-clear" id="image-clear" class="hidden">
                             </div>
+
                         
                             {% if form.image.errors %}
                             <p class="mt-1 text-sm text-red-600">
@@ -157,10 +166,8 @@
                             </p>
                             {% endif %}
                         </div>
-
-
-
-
+                        
+                        
                 </div>
 
 

@@ -106,32 +106,47 @@
                         </div>
                     </div>
 
-                    <!-- Main Data Card -->
-                    <div
-                        class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
-
-                        <!-- Filters / Table Actions -->
-                        <div class="border-b border-slate-200 dark:border-slate-800 px-4 py-4 sm:px-6">
-                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                                <div class="relative w-full sm:w-72">
-                                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                        <span class="material-symbols-outlined text-slate-400 text-[20px]">search</span>
-                                    </div>
-                                    <input
-                                        class="block w-full rounded-lg border-0 bg-slate-50 py-1.5 pl-10 pr-3 text-sm text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary dark:bg-slate-800 dark:text-white dark:ring-slate-700 dark:placeholder:text-slate-500 sm:leading-6"
-                                        placeholder="Find a subcategory..." type="text" />
+                    <!-- Filters & Search -->
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <div class="relative flex-1 max-w-md group">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="material-symbols-outlined text-gray-400">search</span>
+                            </div>
+                            <input
+                                class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg leading-5 bg-white dark:bg-[#1a1d2d] text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm shadow-sm"
+                                placeholder="Search products by name or SKU..." type="text" />
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="relative min-w-[160px]">
+                                <select
+                                    class="block w-full pl-3 pr-10 py-2.5 text-base border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-lg bg-white dark:bg-[#1a1d2d] text-gray-900 dark:text-white shadow-sm appearance-none cursor-pointer">
+                                    <option>All Categories</option>
+                                    <option>Men's Wear</option>
+                                    <option>Women's Wear</option>
+                                    <option>Accessories</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                                    <span class="material-symbols-outlined text-[20px]">expand_more</span>
                                 </div>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-sm text-slate-500 dark:text-slate-400">Sort by:</span>
-                                    <select
-                                        class="block rounded-lg border-0 bg-transparent py-1.5 pl-3 pr-8 text-sm text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-primary dark:text-white dark:ring-slate-700">
-                                        <option>Newest First</option>
-                                        <option>Oldest First</option>
-                                        <option>Name (A-Z)</option>
-                                    </select>
+                            </div>
+                    
+                            <div class="relative min-w-[140px]">
+                                <select
+                                    class="block w-full pl-3 pr-10 py-2.5 text-base border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-lg bg-white dark:bg-[#1a1d2d] text-gray-900 dark:text-white shadow-sm appearance-none cursor-pointer">
+                                    <option>Any Status</option>
+                                    <option>Active</option>
+                                    <option>Inactive</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                                    <span class="material-symbols-outlined text-[20px]">expand_more</span>
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Main Data Card -->
+                    <div
+                        class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
 
                         <!-- Table -->
                         <div class="overflow-x-auto">

@@ -31,6 +31,43 @@ document.addEventListener("DOMContentLoaded", function () {
         let cropper = null;
 
         /* =====================================================
+   EDIT MODE INITIAL STATE
+===================================================== */
+        const existingImg = document.getElementById("existingImage");
+
+        if (existingImg && removeBtn) {
+            // Show clear button if image already exists
+            removeBtn.classList.remove("hidden");
+
+            // Hide upload UI
+            uploadIcon?.classList.add("hidden");
+            uploadText?.classList.add("hidden");
+
+            removeBtn.onclick = function () {
+
+                // Tell Django to delete existing image
+                const clearInput = document.getElementById("image-clear");
+                if (clearInput) {
+                    clearInput.checked = true;
+                }
+
+                // Remove existing image from UI
+                existingImg.remove();
+
+                // Reset file input safely
+                input.value = "";
+
+                // Restore upload UI
+                uploadIcon?.classList.remove("hidden");
+                uploadText?.classList.remove("hidden");
+
+                // Hide clear button
+                removeBtn.classList.add("hidden");
+            };
+        }
+
+
+        /* =====================================================
            FILE SELECT → OPEN CROPPER
         ===================================================== */
         input.addEventListener("change", function () {
@@ -109,28 +146,37 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (removeBtn) {
                     removeBtn.classList.remove("hidden");
+
                     removeBtn.onclick = function () {
 
-                        // 1️⃣ Fully reset file input (CRITICAL)
-                        input.value = null;
-                    
-                        // 2️⃣ Kill preview completely
+                        // ✅ 1. Tell Django to delete existing image
+                        const clearInput = document.getElementById("image-clear");
+                        if (clearInput) {
+                            clearInput.checked = true;
+                        }
+
+                        // ✅ 2. Remove existing image (edit mode)
+                        const existingImg = document.getElementById("existingImage");
+                        if (existingImg) {
+                            existingImg.remove();
+                        }
+
+                        // ✅ 3. Remove cropped preview
                         if (previewImg) {
                             URL.revokeObjectURL(previewImg.src);
                             previewImg.src = "";
                             previewImg.classList.add("hidden");
                         }
-                    
-                        // 3️⃣ Restore upload UI
-                        if (uploadIcon) uploadIcon.classList.remove("hidden");
-                        if (uploadText) uploadText.classList.remove("hidden");
-                    
-                        // 4️⃣ Hide clear button
+
+                        // ✅ 4. Restore upload UI
+                        uploadIcon?.classList.remove("hidden");
+                        uploadText?.classList.remove("hidden");
+
+                        // ✅ 5. Hide clear button
                         removeBtn.classList.add("hidden");
-                    
                     };
-                    
                 }
+                
 
                 cropper.destroy();
                 cropper = null;
@@ -163,5 +209,6 @@ document.addEventListener("DOMContentLoaded", function () {
         height: 1250          // ✅ OUTPUT HEIGHT
     });
 
+    input.value = null;
 
 });

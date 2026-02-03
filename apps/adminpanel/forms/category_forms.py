@@ -63,3 +63,15 @@ class ProductCategoryForm(forms.ModelForm):
         return validate_image(
             self.cleaned_data.get("image")
         )
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        image = cleaned_data.get("image")
+
+        # IMAGE IS REQUIRED FOR BOTH CREATE & EDIT
+        if not image:
+            raise forms.ValidationError(
+                "Category image is required. Please upload an image."
+            )
+
+        return cleaned_data

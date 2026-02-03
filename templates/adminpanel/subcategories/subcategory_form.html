@@ -30,56 +30,6 @@
             }
         };
 
-        document.addEventListener("DOMContentLoaded", function () {
-            const input = document.querySelector('input[type="file"]');
-            const preview = document.getElementById("subcategoryImagePreview");
-            const existingImage = document.getElementById("existingImage");
-            const clearBtn = document.getElementById("clearImageBtn");
-            const icon = document.getElementById("uploadIcon");
-            const text = document.getElementById("uploadText");
-            const deleteInput = document.getElementById("deleteImageInput");
-
-            if (!input || !clearBtn) return;
-
-            // Edit mode with existing image
-            if (existingImage) {
-                clearBtn.classList.remove("hidden");
-                icon.classList.add("hidden");
-                text.classList.add("hidden");
-            }
-
-            // New image selected
-            input.addEventListener("change", function () {
-                const file = this.files[0];
-                if (!file) return;
-
-                if (existingImage) existingImage.classList.add("hidden");
-
-                preview.src = URL.createObjectURL(file);
-                preview.classList.remove("hidden");
-
-                clearBtn.classList.remove("hidden");
-                icon.classList.add("hidden");
-                text.classList.add("hidden");
-
-                if (deleteInput) deleteInput.checked = false;
-            });
-
-            // Clear image
-            clearBtn.addEventListener("click", function () {
-                input.value = "";
-
-                preview.src = "";
-                preview.classList.add("hidden");
-
-                if (existingImage) existingImage.classList.add("hidden");
-                if (deleteInput) deleteInput.checked = true;
-
-                clearBtn.classList.add("hidden");
-                icon.classList.remove("hidden");
-                text.classList.remove("hidden");
-            });
-        });
     </script>
     <script>
         window.addEventListener("beforeunload", function () { });
@@ -186,44 +136,49 @@
                             {% endif %}
                         </div>
 
-                        <!-- Image Upload -->
+                        <!-- Sub Category Image -->
                         <div class="flex flex-col gap-2">
                             <label class="text-sm font-medium">Sub Category Image</label>
-
-                            <div
-                                class="relative flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 py-10 hover:border-primary dark:border-slate-700 dark:bg-slate-800/50">
-
+                        
+                            <div class="relative flex h-48 cursor-pointer flex-col items-center justify-center
+                                        rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 hover:border-primary">
+                        
+                                <!-- FILE INPUT (DJANGO FIELD) -->
+                                {{ form.image }}
+                        
+                                <!-- Upload icon -->
                                 <span id="uploadIcon" class="material-symbols-outlined text-4xl text-slate-400">
                                     cloud_upload
                                 </span>
+                        
+                                <!-- Upload text -->
                                 <p id="uploadText" class="mt-2 text-sm text-slate-500">
                                     Click to upload or drag & drop
                                 </p>
-
+                        
+                                <!-- EXISTING IMAGE (EDIT MODE) -->
                                 {% if form.instance.pk and form.instance.image %}
                                 <img id="existingImage" src="{{ form.instance.image.url }}"
-                                    class="mt-4 max-h-40 rounded-lg object-contain" />
+                                    class="absolute inset-0 mx-auto max-h-full rounded-lg object-contain" />
                                 {% endif %}
-
-                                {{ form.image }}
-
-                                <img id="subcategoryImagePreview"
-                                    class="hidden mt-4 max-h-40 rounded-lg object-contain" />
-
-                                <input type="checkbox" name="remove_image" id="deleteImageInput" class="hidden">
-
-                                <button type="button" id="clearImageBtn"
-                                    class="hidden absolute top-3 right-3 rounded-md bg-red-600 px-2 py-1 text-xs font-medium text-white hover:bg-red-700">
+                        
+                                <!-- PREVIEW -->
+                                <img id="categoryImagePreview" class="hidden absolute inset-0 mx-auto max-h-full rounded-lg object-contain" />
+                        
+                                <!-- CLEAR -->
+                                <button type="button" id="clearImageBtn" class="hidden absolute top-3 right-3 z-20 rounded-md
+                                               bg-red-600 px-2 py-1 text-xs font-medium text-white">
                                     ✕ Clear
                                 </button>
-
-                                {% if form.image.errors %}
-                                <p class="mt-1 text-sm text-red-600">
-                                    {{ form.image.errors.0 }}
-                                </p>
-                                {% endif %}
                             </div>
+                        
+                            {% if form.image.errors %}
+                            <p class="mt-1 text-sm text-red-600">
+                                {{ form.image.errors.0 }}
+                            </p>
+                            {% endif %}
                         </div>
+
 
                         <!-- Status Toggle -->
                         <div class="flex items-center justify-between rounded-lg border bg-slate-50 p-4">
@@ -262,6 +217,22 @@
             </div>
         </main>
     </div>
+
+
+
+
+    <script>
+        initExactImageCropper({
+            inputId: "id_image",
+            previewImgId: "categoryImagePreview",
+            removeBtnId: "clearImageBtn",
+
+            aspectRatio: 4 / 5,
+            width: 1000,
+            height: 1250
+        });
+    </script>
+        
 </body>
 
 </html>

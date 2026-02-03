@@ -72,40 +72,30 @@
                     </a>
                 </div>
 
-                <!-- Filters & Tools -->
-                <div
-                    class="flex flex-col sm:flex-row gap-3 items-center justify-between bg-white dark:bg-[#1a1d2d] p-1 rounded-xl sm:rounded-lg">
-                    <div class="flex flex-1 w-full sm:max-w-md gap-2">
-                        <!-- Search -->
-                        <div class="relative flex-1 group">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <span class="material-symbols-outlined text-[#9ca3af]"
-                                    style="font-size: 20px;">search</span>
-                            </div>
-                            <input
-                                class="block w-full pl-10 pr-3 py-2.5 border-none rounded-lg bg-slate-50 dark:bg-[#23263a] text-[#0d101b] dark:text-white placeholder-[#9ca3af] focus:ring-2 focus:ring-primary/20 focus:bg-white dark:focus:bg-[#2a2d3d] transition-all text-sm"
-                                placeholder="Search categories..." type="text" />
+             
+                <!-- Filters & Search -->
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <div class="relative flex-1 max-w-md group">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="material-symbols-outlined text-gray-400">search</span>
                         </div>
-                        <!-- Status Filter -->
+                        <input
+                            class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg leading-5 bg-white dark:bg-[#1a1d2d] text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm shadow-sm"
+                            placeholder="Search products by name or SKU..." type="text" />
+                    </div>
+                    <div class="flex gap-3">
+                    
                         <div class="relative min-w-[140px]">
                             <select
-                                class="appearance-none block w-full pl-3 pr-10 py-2.5 border-none rounded-lg bg-slate-50 dark:bg-[#23263a] text-[#0d101b] dark:text-white text-sm focus:ring-2 focus:ring-primary/20 focus:bg-white dark:focus:bg-[#2a2d3d] cursor-pointer">
-                                <option value="all">All Statuses</option>
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
+                                class="block w-full pl-3 pr-10 py-2.5 text-base border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-lg bg-white dark:bg-[#1a1d2d] text-gray-900 dark:text-white shadow-sm appearance-none cursor-pointer">
+                                <option>Any Status</option>
+                                <option>Active</option>
+                                <option>Inactive</option>
                             </select>
-                            <div
-                                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[#4c599a]">
-                                <span class="material-symbols-outlined" style="font-size: 20px;">expand_more</span>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                                <span class="material-symbols-outlined text-[20px]">expand_more</span>
                             </div>
                         </div>
-                    </div>
-                    <div class="flex gap-2 w-full sm:w-auto justify-end px-2 sm:px-0">
-                        <button
-                            class="p-2 text-[#4c599a] hover:bg-slate-50 dark:hover:bg-[#23263a] rounded-lg transition-colors"
-                            title="Filter Settings">
-                            <span class="material-symbols-outlined" style="font-size: 20px;">filter_list</span>
-                        </button>
                     </div>
                 </div>
 
