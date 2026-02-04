@@ -162,7 +162,7 @@
         /* CATEGORY CARDS */
         .cat-card {
             background: radial-gradient(circle at top left, #1b1b1b, var(--color-surface-soft));
-            border-radius: 22px;
+            border-radius: 26px;
             border: 1px solid rgba(255, 255, 255, 0.06);
             position: relative;
             overflow: hidden;
@@ -194,10 +194,8 @@
         .cat-img-wrap {
             position: relative;
             width: 100%;
-            padding-bottom: 120%;
+            padding-bottom: 155%;
             overflow: hidden;
-            border-radius: 18px;
-            margin: 10px 10px 0;
             background: #050505;
         }
 
@@ -219,61 +217,70 @@
         .cat-overlay {
             position: absolute;
             inset: auto 0 0 0;
-            padding: 18px 18px 16px;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.92), transparent 105%);
+            padding: 26px 24px 26px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.6) 60%, transparent 100%);
+            display: block;
+            /* changed from flex for full width title */
+            z-index: 20;
+            transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .cat-card:hover .cat-overlay {
+            transform: translateY(-48px);
+            /* Moves up to make room for CTA bar */
+        }
+
+        .cat-title-block {
+            width: 100%;
             display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            gap: 10px;
+            justify-content: center;
         }
 
         .cat-title-block h3 {
-            font-size: 1.05rem;
-            margin-bottom: 2px;
+            width: 100%;
+            text-align: center;
+            font-size: 2.6rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            line-height: 1.05;
         }
+
+
 
         .cat-title-block small {
             font-size: 0.7rem;
             letter-spacing: 0.1em;
+            opacity: 0.8;
         }
 
-        .cat-btn {
+    
+
+        /* NEW FULL-WIDTH CTA BAR */
+        .cat-cta-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
             background: var(--color-accent);
             color: #000;
-            width: 42px;
-            height: 42px;
-            border-radius: 999px;
-            display: inline-flex;
+            display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            opacity: 0;
-            transform: translateX(10px) translateY(4px);
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 25px rgba(242, 231, 0, 0.45);
-            text-decoration: none;
-        }
-
-        .cat-card:hover .cat-btn {
-            opacity: 1;
-            transform: translateX(0) translateY(0);
-        }
-
-        .cat-btn span {
+            font-family: var(--font-display);
             font-size: 1.4rem;
+            letter-spacing: 0.18em;
+            font-weight: 600;
+            transform: translateY(101%);
+            transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            z-index: 10;
         }
 
-        .cat-meta-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            border-radius: 999px;
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            font-size: 0.7rem;
-            color: var(--color-text-muted);
-            background: rgba(0, 0, 0, 0.65);
+        .cat-card:hover .cat-cta-bar {
+            transform: translateY(0);
         }
+
+
 
         /* EMPTY STATE & FOOTER */
         .empty-state {
@@ -402,26 +409,16 @@
                             <div class="cat-overlay">
                                 <div class="cat-title-block">
                                     <h3 class="text-white mb-0">{{ category.name }}</h3>
-                                    <small class="text-accent font-monospace">
-                                        ID: CAT_{{ forloop.counter|stringformat:"02d" }}
-                                    </small>
-                                </div>
-
-                                <div class="d-flex flex-column align-items-end gap-2">
-                                    <div class="cat-meta-pill">
-                                        <span class="material-symbols-outlined" style="font-size:1rem;"
-                                            aria-hidden="true">inventory_2</span>
-                                        <span>By Weight</span>
-                                    </div>
-
-                                    <a href="{% url 'catalog:subcategory_list' category.slug %}" class="cat-btn"
-                                        aria-label="View {{ category.name }} subcategories">
-                                        <span class="material-symbols-outlined" aria-hidden="true">
-                                            arrow_forward
-                                        </span>
-                                    </a>
+                                    <!-- Optional small text if needed in future -->
                                 </div>
                             </div>
+
+                            <!-- NEW CTA BAR -->
+                            <a href="{% url 'catalog:subcategory_list' category.slug %}" class="cat-cta-bar"
+                                aria-label="View {{ category.name }} subcategories">
+                                EXPLORE CATEGORY
+                            </a>
+
 
                         </div>
                     </div>

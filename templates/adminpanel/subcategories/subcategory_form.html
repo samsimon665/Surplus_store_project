@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html class="light" lang="en">
 
@@ -12,6 +14,11 @@
         rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
         rel="stylesheet" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="{% static 'js/image_cropper_exact.js' %}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+
 
     <script>
         tailwind.config = {
@@ -46,6 +53,10 @@
     <div class="flex min-h-screen w-full overflow-hidden">
 
         {% include "adminpanel/includes/sidebar.html" %}
+
+
+        {% include "adminpanel/includes/image_preview_modal.html" %}
+        {% include "adminpanel/includes/cropper_modal.html" %}
 
         <main class="flex-1 ml-64 overflow-y-auto">
             <div class="container mx-auto px-6 py-8 max-w-5xl">
@@ -140,36 +151,45 @@
                         <div class="flex flex-col gap-2">
                             <label class="text-sm font-medium">Sub Category Image</label>
                         
-                            <div class="relative flex h-48 cursor-pointer flex-col items-center justify-center
-                                        rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 hover:border-primary">
+                            <div
+                                class="relative flex h-48 cursor-pointer flex-col items-center justify-center
+                                                                rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 hover:border-primary">
                         
-                                <!-- FILE INPUT (DJANGO FIELD) -->
+                                <!-- FILE INPUT (must be absolute + opacity-0) -->
                                 {{ form.image }}
+
                         
                                 <!-- Upload icon -->
-                                <span id="uploadIcon" class="material-symbols-outlined text-4xl text-slate-400">
+                                <span id="uploadIcon" class="material-symbols-outlined text-4xl text-slate-400 z-10">
                                     cloud_upload
                                 </span>
                         
                                 <!-- Upload text -->
-                                <p id="uploadText" class="mt-2 text-sm text-slate-500">
+                                <p id="uploadText" class="mt-2 text-sm text-slate-500 z-10">
                                     Click to upload or drag & drop
                                 </p>
                         
                                 <!-- EXISTING IMAGE (EDIT MODE) -->
                                 {% if form.instance.pk and form.instance.image %}
                                 <img id="existingImage" src="{{ form.instance.image.url }}"
-                                    class="absolute inset-0 mx-auto max-h-full rounded-lg object-contain" />
+                                    class="absolute inset-0 mx-auto max-h-full rounded-lg object-contain z-30 pointer-events-none" />
+
                                 {% endif %}
                         
-                                <!-- PREVIEW -->
-                                <img id="categoryImagePreview" class="hidden absolute inset-0 mx-auto max-h-full rounded-lg object-contain" />
+                                <!-- CROPPED PREVIEW -->
+                                <img id="imagePreview"
+                                    class="hidden absolute inset-0 mx-auto max-h-full rounded-lg object-contain z-30 pointer-events-none" />
+
+
                         
-                                <!-- CLEAR -->
-                                <button type="button" id="clearImageBtn" class="hidden absolute top-3 right-3 z-20 rounded-md
-                                               bg-red-600 px-2 py-1 text-xs font-medium text-white">
+                                <!-- CLEAR BUTTON -->
+                                <button type="button" id="clearImageBtn" class="hidden absolute top-3 right-3 z-40 rounded-md
+                                                                       bg-red-600 px-2 py-1 text-xs font-medium text-white">
                                     ✕ Clear
                                 </button>
+                        
+                                <!-- REQUIRED FOR EDIT MODE CLEAR -->
+                                <input type="checkbox" name="image-clear" id="image-clear" class="hidden">
                             </div>
                         
                             {% if form.image.errors %}
@@ -178,7 +198,7 @@
                             </p>
                             {% endif %}
                         </div>
-
+                        
 
                         <!-- Status Toggle -->
                         <div class="flex items-center justify-between rounded-lg border bg-slate-50 p-4">
@@ -218,21 +238,9 @@
         </main>
     </div>
 
+    
 
 
-
-    <script>
-        initExactImageCropper({
-            inputId: "id_image",
-            previewImgId: "categoryImagePreview",
-            removeBtnId: "clearImageBtn",
-
-            aspectRatio: 4 / 5,
-            width: 1000,
-            height: 1250
-        });
-    </script>
-        
 </body>
 
 </html>

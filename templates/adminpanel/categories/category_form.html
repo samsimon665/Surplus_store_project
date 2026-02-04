@@ -84,7 +84,7 @@
                 <!-- FORM CARD -->
 
                 <div
-                    class="rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-sm">
+                    class="mb-4 rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-sm">
 
 
                     <!-- ✅ FORM TAG FIXED -->
@@ -123,51 +123,54 @@
                         <!-- Image Upload -->
                         <div class="flex flex-col gap-2">
                             <label class="text-sm font-medium">Category Image</label>
-                        
-                            <div class="relative flex h-40 cursor-pointer flex-col items-center justify-center
+
+                            <div
+                                class="relative flex h-40 cursor-pointer flex-col items-center justify-center
                                        rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 hover:border-primary">
-                            
+
                                 <!-- ✅ Django image field (DO NOT ADD attrs here) -->
                                 {{ form.image }}
-                            
+
                                 <!-- Upload icon -->
                                 <span id="uploadIcon" class="material-symbols-outlined text-4xl text-slate-400">
                                     cloud_upload
                                 </span>
-                            
+
                                 <!-- Upload text -->
                                 <p id="uploadText" class="mt-2 text-sm text-slate-500">
                                     Click to upload or drag & drop
                                 </p>
-                            
+
                                 <!-- ✅ EXISTING IMAGE (EDIT MODE) -->
                                 {% if form.instance.pk and form.instance.image %}
                                 <img id="existingImage" src="{{ form.instance.image.url }}"
                                     class="absolute inset-0 mx-auto max-h-full rounded-lg object-contain" />
                                 {% endif %}
-                            
+
                                 <!-- Cropped preview -->
-                                <img id="categoryImagePreview" class="hidden absolute inset-0 mx-auto max-h-full rounded-lg object-contain" />
-                            
+                                <img id="imagePreview"
+                                    class="hidden absolute inset-0 mx-auto max-h-full rounded-lg object-contain z-30 pointer-events-none" />
+
+
                                 <!-- ✅ CLEAR BUTTON -->
                                 <button type="button" id="clearImageBtn" class="hidden absolute top-3 right-3 z-20 rounded-md
                                                bg-red-600 px-2 py-1 text-xs font-medium text-white">
                                     ✕ Clear
                                 </button>
-                            
+
                                 <!-- ✅ THIS IS THE MOST IMPORTANT LINE -->
                                 <input type="checkbox" name="image-clear" id="image-clear" class="hidden">
                             </div>
 
-                        
+
                             {% if form.image.errors %}
                             <p class="mt-1 text-sm text-red-600">
                                 {{ form.image.errors.0 }}
                             </p>
                             {% endif %}
                         </div>
-                        
-                        
+
+
                 </div>
 
 

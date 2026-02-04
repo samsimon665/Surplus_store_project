@@ -31,9 +31,14 @@ document.addEventListener("DOMContentLoaded", function () {
         let cropper = null;
 
         /* =====================================================
-   EDIT MODE INITIAL STATE
-===================================================== */
+            EDIT MODE INITIAL STATE
+           ===================================================== */
         const existingImg = document.getElementById("existingImage");
+
+        // ✅ FIX: prevent "Please select a file" in edit mode
+        if (existingImg) {
+            input.removeAttribute("required");
+        }
 
         if (existingImg && removeBtn) {
             // Show clear button if image already exists
@@ -65,6 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 removeBtn.classList.add("hidden");
             };
         }
+
 
 
         /* =====================================================
@@ -141,6 +147,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     previewImg.classList.remove("hidden");
                 }
 
+                // ✅ FIX: browser validation
+                input.removeAttribute("required");
+
+
                 if (uploadIcon) uploadIcon.classList.add("hidden");
                 if (uploadText) uploadText.classList.add("hidden");
 
@@ -201,14 +211,14 @@ document.addEventListener("DOMContentLoaded", function () {
     ===================================================== */
     initExactImageCropper({
         inputId: "id_image",
-        previewImgId: "categoryImagePreview",
+        previewImgId: "imagePreview",
         removeBtnId: "clearImageBtn",
-
-        aspectRatio: 4 / 5,   // ✅ FASHION STANDARD
-        width: 1000,          // ✅ OUTPUT WIDTH
-        height: 1250          // ✅ OUTPUT HEIGHT
+        aspectRatio: 4 / 5,
+        width: 1000,
+        height: 1250
     });
+    
 
-    input.value = null;
+    
 
 });

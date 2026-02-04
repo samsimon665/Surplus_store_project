@@ -42,9 +42,10 @@ class SubCategoryForm(forms.ModelForm):
             }),
 
             "image": forms.FileInput(attrs={
-                "class": "absolute inset-0 cursor-pointer opacity-0",
+                "class": "absolute inset-0 z-10 w-full h-full cursor-pointer opacity-0",
                 "accept": "image/*"
             }),
+
 
             "is_active": forms.CheckboxInput(attrs={
                 "class": "sr-only peer"
