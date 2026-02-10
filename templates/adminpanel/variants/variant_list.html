@@ -1,3 +1,7 @@
+{% load static %}
+
+
+
 <!DOCTYPE html>
 
 <html class="light" lang="en">
@@ -168,7 +172,8 @@
                 {% regroup variants by color as color_groups %}
 
                 {% if variants %}
-                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 items-start">
+
 
                     {% for group in color_groups %}
                     {% with variants=group.list %}
@@ -180,11 +185,29 @@
                         {# IMAGE #}
                         <div class="aspect-[4/3] bg-slate-100 dark:bg-slate-800 relative overflow-hidden">
                             {% if first.images.all %}
-                            {% with img=first.images.all.0 %}
-                            <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-                                style='background-image: url("{{ img.image.url }}");'>
+                            <div class="relative h-full w-full overflow-hidden variant-carousel">
+                            
+                                {% for img in first.images.all %}
+                                <img src="{{ img.image.url }}" class="variant-slide absolute inset-0 w-full h-full object-cover
+                                                transition-opacity duration-300
+                                                {% if not forloop.first %}hidden{% endif %}">
+                                {% endfor %}
+                            
+                                {% if first.images.count > 1 %}
+                                <!-- Previous -->
+                                <button type="button" class="carousel-prev absolute left-2 top-1/2 -translate-y-1/2
+                                           bg-black/60 text-white w-8 h-8 rounded-full flex items-center justify-center">
+                                    ‹
+                                </button>
+                            
+                                <!-- Next -->
+                                <button type="button" class="carousel-next absolute right-2 top-1/2 -translate-y-1/2
+                                           bg-black/60 text-white w-8 h-8 rounded-full flex items-center justify-center">
+                                    ›
+                                </button>
+                                {% endif %}
+                            
                             </div>
-                            {% endwith %}
                             {% else %}
                             <div class="absolute inset-0 flex items-center justify-center">
                                 <span class="material-symbols-outlined text-slate-400 text-5xl">
@@ -192,6 +215,7 @@
                                 </span>
                             </div>
                             {% endif %}
+
 
                             <div class="absolute top-3 right-3">
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold
@@ -224,7 +248,8 @@
 
                             {# SIZES & STOCK COLLAPSIBLE #}
                             <details
-                                class="group/size w-full border border-slate-100 dark:border-slate-700 rounded-lg bg-slate-50/80 dark:bg-slate-900/40">
+                                class="group/size w-full border border-slate-100 dark:border-slate-700 rounded-lg bg-slate-50/80 dark:bg-slate-900/40 overflow-hidden">
+
                                 <summary
                                     class="flex items-center justify-between px-3 py-2 cursor-pointer list-none select-none">
                                     <div class="flex items-center gap-2">
@@ -280,18 +305,10 @@
                                 </div>
                             </details>
 
-                            {# BOTTOM: TOTAL STOCK ONLY, NO MATH #}
-                            {% with 0 as total_stock %}
-                            {% for v in variants %}
-                            {% if forloop.first %}
-                            {% with v.stock as total_stock %}{% endwith %}
-                            {% else %}
-                            {% with total_stock|add:v.stock as total_stock %}{% endwith %}
-                            {% endif %}
-                            {% endfor %}
                             <div class="flex items-center justify-between mt-auto">
                                 <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">
                                     Total stock: {{ total_stock }} units
+
                                 </span>
                                 <div class="text-right">
                                     <span class="block text-xl font-black text-slate-900 dark:text-white">
@@ -299,6 +316,7 @@
                                     </span>
                                 </div>
                             </div>
+                            
                             {% endwith %}
                         </div>
 
@@ -317,18 +335,20 @@
                                     title="Manage Images">
                                     <span class="material-symbols-outlined text-[20px]">image</span>
                                 </button>
-                                <button
+                                <a href="{% url 'adminpanel:variant_edit' product.id variants.0.id %}"
+
                                     class="p-2 text-slate-400 hover:text-primary hover:bg-white dark:hover:bg-slate-800 rounded-lg transition-colors"
                                     title="Edit Variant">
                                     <span class="material-symbols-outlined text-[20px]">edit</span>
-                                </button>
+                                </a>
+
                             </div>
                         </div>
 
                     </div>
 
                     {% endwith %}
-                    {% endwith %}
+                
                     {% endfor %}
 
                     {# ADD VARIANT CARD #}
@@ -382,6 +402,40 @@
             </div>
         </div>
     </main>
+
+
+
+    <script>
+        document.querySelectorAll(".variant-carousel").forEach(carousel => {
+            const slides = carousel.querySelectorAll(".variant-slide");
+            const nextBtn = carousel.querySelector(".carousel-next");
+            const prevBtn = carousel.querySelector(".carousel-prev");
+
+            if (slides.length <= 1) return;
+
+            let index = 0;
+
+            const showSlide = (i) => {
+                slides.forEach((slide, idx) => {
+                    slide.classList.toggle("hidden", idx !== i);
+                });
+            };
+
+            nextBtn?.addEventListener("click", (e) => {
+                e.stopPropagation();
+                index = (index + 1) % slides.length;
+                showSlide(index);
+            });
+
+            prevBtn?.addEventListener("click", (e) => {
+                e.stopPropagation();
+                index = (index - 1 + slides.length) % slides.length;
+                showSlide(index);
+            });
+        });
+    </script>
+        
+        
 </body>
 
 </html>

@@ -173,6 +173,34 @@
                                         </div>
 
 
+                                        <!-- Size Type -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-900 dark:text-slate-200">
+                                                Size Type
+                                            </label>
+                                        
+                                            <div class="relative mt-2">
+                                                {{ form.size_type }}
+                                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                                                    <span class="material-symbols-outlined text-slate-400 text-sm">
+                                                        expand_more
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        
+                                            {% if form.size_type.errors %}
+                                            <p class="mt-1 text-sm text-red-600">
+                                                {{ form.size_type.errors.0 }}
+                                            </p>
+                                            {% endif %}
+                                        
+                                            <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                                                Select whether this product uses standard (XS–XXL) or waist (28–36) sizes.
+                                            </p>
+                                        </div>
+
+
+
                                         <!-- Description -->
                                         <div>
                                             <label class="block text-sm font-medium text-slate-900 dark:text-slate-200">
@@ -338,9 +366,10 @@
                 Crop Image
             </h3>
 
-            <div class="flex-1 flex items-center justify-center">
-                <img id="cropperImage" class="max-h-full max-w-full object-contain" />
+            <div class="flex-1 relative overflow-hidden">
+                <img id="cropperImage" class="absolute inset-0 max-w-full max-h-full object-contain mx-auto my-auto" />
             </div>
+            
 
             <div class="flex justify-end gap-3 mt-3 shrink-0">
                 <button id="cropCancel" type="button" class="px-4 py-2 rounded-lg border">
@@ -428,19 +457,26 @@
 
                     if (cropper) cropper.destroy();
 
-                    cropper = new Cropper(cropImage, {
-                        aspectRatio: 4 / 5,
-                        viewMode: 0,
-                        dragMode: "move",
-                        autoCropArea: 0.9,
-                        background: false,
-                        guides: true,
-                        center: true,
-                        highlight: false,
-                        cropBoxMovable: true,
-                        cropBoxResizable: true,
-                        toggleDragModeOnDblclick: false,
+                    requestAnimationFrame(() => {
+                        cropper = new Cropper(cropImage, {
+                            aspectRatio: 4 / 5,
+                            viewMode: 1,
+                            dragMode: "move",
+                            autoCropArea: 0.9,
+                            background: false,
+                            guides: true,
+                            center: true,
+                            highlight: false,
+                            cropBoxMovable: true,
+                            cropBoxResizable: true,
+                            toggleDragModeOnDblclick: false,
+                        });
+
+                        // 🔒 THIS LINE PREVENTS COLLAPSE
+                        cropper.resize();
                     });
+
+
                 };
 
                 reader.readAsDataURL(file);

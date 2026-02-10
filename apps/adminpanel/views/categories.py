@@ -7,6 +7,9 @@ from apps.adminpanel.forms.category_forms import ProductCategoryForm
 from apps.catalog.models import ProductCategory
 from django.core.paginator import Paginator
 
+from django.db.models import Count, Q
+
+
 
 @admin_required
 def category_create(request):
@@ -27,9 +30,20 @@ def category_create(request):
 
 @admin_required
 def category_list(request):
-    categories = ProductCategory.objects.order_by("-created_at")
 
-    paginator = Paginator(categories, 10)  # 4 per page
+    categories = (
+        ProductCategory.objects
+        .annotate(
+            subcategory_count=Count(
+                "subcategories",
+                filter=Q(subcategories__is_active=True)
+            )
+        )
+        .order_by("-created_at")
+    )
+
+
+    paginator = Paginator(categories, 10)  
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 

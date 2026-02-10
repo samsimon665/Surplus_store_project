@@ -14,14 +14,14 @@ from apps.adminpanel.utils.validations import (
 
 class ProductForm(forms.ModelForm):
     """
-    Product creation form
+    Product creation / edit form
 
     - category: UI-only (used to filter subcategory)
     - subcategory: saved to DB
-    - main_image: catalog / listing image
+    - size_type: controls variant size system (TOP / WAIST)
     """
 
-    # 🔹 UI-only field
+    # 🔹 UI-only field (NOT in Product model)
     category = forms.ModelChoiceField(
         queryset=ProductCategory.objects.filter(is_active=True),
         required=True,
@@ -42,12 +42,31 @@ class ProductForm(forms.ModelForm):
         fields = [
             "category",        # UI-only
             "subcategory",
+            "size_type",       # ✅ NEW (TOP / WAIST)
             "name",
             "description",
-            "main_image",      # ✅ catalog image
+            "main_image",
             "is_active",
         ]
         widgets = {
+            "subcategory": forms.Select(attrs={
+                "class": (
+                    "block w-full rounded-lg border-0 py-2.5 pl-3 pr-10 "
+                    "text-slate-900 dark:text-white "
+                    "shadow-sm ring-1 ring-inset ring-slate-300 dark:ring-slate-700 "
+                    "focus:ring-2 focus:ring-inset focus:ring-primary "
+                    "dark:bg-slate-800/50 sm:text-sm sm:leading-6 appearance-none"
+                )
+            }),
+            "size_type": forms.Select(attrs={
+                "class": (
+                    "block w-full rounded-lg border-0 py-2.5 pl-3 pr-10 "
+                    "text-slate-900 dark:text-white "
+                    "shadow-sm ring-1 ring-inset ring-slate-300 dark:ring-slate-700 "
+                    "focus:ring-2 focus:ring-inset focus:ring-primary "
+                    "dark:bg-slate-800/50 sm:text-sm sm:leading-6 appearance-none"
+                )
+            }),
             "name": forms.TextInput(attrs={
                 "class": (
                     "block w-full rounded-lg border-0 py-2.5 "
@@ -57,16 +76,7 @@ class ProductForm(forms.ModelForm):
                     "focus:ring-2 focus:ring-inset focus:ring-primary "
                     "dark:bg-slate-800/50 sm:text-sm sm:leading-6"
                 ),
-                "placeholder": "e.g. Vintage Denim Jacket",
-            }),
-            "subcategory": forms.Select(attrs={
-                "class": (
-                    "block w-full rounded-lg border-0 py-2.5 pl-3 pr-10 "
-                    "text-slate-900 dark:text-white "
-                    "shadow-sm ring-1 ring-inset ring-slate-300 dark:ring-slate-700 "
-                    "focus:ring-2 focus:ring-inset focus:ring-primary "
-                    "dark:bg-slate-800/50 sm:text-sm sm:leading-6 appearance-none"
-                )
+                "placeholder": "e.g. Polo T-Shirt",
             }),
             "description": forms.Textarea(attrs={
                 "class": (
@@ -78,7 +88,6 @@ class ProductForm(forms.ModelForm):
                     "dark:bg-slate-800/50 sm:text-sm sm:leading-6"
                 ),
                 "rows": 3,
-                "placeholder": "Detailed information about the batch, condition, and origin...",
             }),
             "main_image": forms.ClearableFileInput(attrs={
                 "class": "hidden",
@@ -92,19 +101,11 @@ class ProductForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # 🔹 No subcategories initially
+        # 🔒 Subcategory always controlled manually
         self.fields["subcategory"].queryset = SubCategory.objects.none()
 
-        # 🔹 Editing existing product
-        if self.instance.pk:
-            category = self.instance.subcategory.category
-            self.fields["category"].initial = category
-            self.fields["subcategory"].queryset = SubCategory.objects.filter(
-                category=category
-            )
-
-        # 🔹 Category selected in POST
-        elif "category" in self.data:
+        # 🔴 POST data has first priority
+        if "category" in self.data:
             try:
                 category_id = int(self.data.get("category"))
                 self.fields["subcategory"].queryset = SubCategory.objects.filter(
@@ -113,9 +114,17 @@ class ProductForm(forms.ModelForm):
             except (TypeError, ValueError):
                 pass
 
-    # -------------------
+        # 🟢 Edit mode fallback
+        elif self.instance.pk:
+            category = self.instance.subcategory.category
+            self.fields["category"].initial = category
+            self.fields["subcategory"].queryset = SubCategory.objects.filter(
+                category=category
+            )
+
+    # =========================
     # VALIDATIONS
-    # -------------------
+    # =========================
 
     def clean_name(self):
         return validate_name(

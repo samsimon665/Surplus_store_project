@@ -187,6 +187,7 @@ def product_detail(request, category_slug, subcategory_slug, product_slug):
     variants = (
         ProductVariant.objects
         .filter(product=product, is_active=True)
+        .order_by("created_at", "size_order")  # ✅ THIS IS THE KEY
         .prefetch_related(
             Prefetch(
                 "images",
@@ -197,6 +198,7 @@ def product_detail(request, category_slug, subcategory_slug, product_slug):
             )
         )
     )
+
 
     variant_map = {}
 

@@ -97,9 +97,9 @@ class ProductAdmin(admin.ModelAdmin):
         "id",
         "subcategory",
         "is_active",
+        "size_type",
         "created_at",
-        "image_preview",   # new column
-        "uuid",   # new column
+        "image_preview", 
     )
 
     list_filter = (

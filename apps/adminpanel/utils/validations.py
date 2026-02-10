@@ -3,6 +3,10 @@ import re
 from django import forms
 
 
+TOP_SIZES = {"XS", "S", "M", "L", "XL", "XXL"}
+WAIST_SIZES = {"28", "30", "32", "34", "36"}
+
+
 def validate_name(
     value,
     *,
@@ -124,7 +128,7 @@ def validate_variant_data(
     if not sizes:
         raise forms.ValidationError("At least one size must be selected.")
 
-    # ---------- IMAGES ----------
+        # ---------- IMAGES ----------
     if not images or len(images) < 2:
         raise forms.ValidationError(
             "At least 2 images are required for a variant."
@@ -134,6 +138,25 @@ def validate_variant_data(
         raise forms.ValidationError(
             "You can upload a maximum of 4 images."
         )
+
+    # ---------- SIZE TYPE ENFORCEMENT ----------
+    if product.size_type == "TOP":
+        invalid_sizes = set(sizes) - TOP_SIZES
+        if invalid_sizes:
+            raise forms.ValidationError(
+                "Invalid size selected for this product. "
+                "Allowed sizes: XS, S, M, L, XL, XXL."
+            )
+
+    if product.size_type == "WAIST":
+        invalid_sizes = set(sizes) - WAIST_SIZES
+        if invalid_sizes:
+            raise forms.ValidationError(
+                "Invalid size selected for this product. "
+                "Allowed sizes: 28, 30, 32, 34, 36."
+            )
+
+
 
     # ---------- SIZE DATA ----------
     for size in sizes:
@@ -173,3 +196,27 @@ def validate_variant_data(
             raise forms.ValidationError(
                 f"Stock must be at least 1 for size {size}."
             )
+        
+        
+def validate_variant_images_edit(
+    *,
+    existing_count,
+    deleted_ids,
+    uploaded_images,
+    min_images=2,
+    max_images=4,
+):
+    deleted_count = len(deleted_ids)
+    uploaded_count = len(uploaded_images)
+
+    final_count = existing_count - deleted_count + uploaded_count
+
+    if final_count < min_images:
+        raise forms.ValidationError(
+            f"At least {min_images} images are required for a variant."
+        )
+
+    if final_count > max_images:
+        raise forms.ValidationError(
+            f"You can have a maximum of {max_images} images per variant."
+        )

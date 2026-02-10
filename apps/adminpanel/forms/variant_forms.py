@@ -43,3 +43,18 @@ class ProductVariantForm(forms.ModelForm):
             )
 
         return color
+    
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # 🔒 FORCE model-level rules to run
+        if self.instance:
+            self.instance.product = self.product
+            self.instance.color = cleaned_data.get("color")
+            self.instance.size = cleaned_data.get("size")
+            self.instance.weight_kg = cleaned_data.get("weight_kg")
+            self.instance.stock = cleaned_data.get("stock")
+
+            self.instance.full_clean(exclude=None)
+
+        return cleaned_data

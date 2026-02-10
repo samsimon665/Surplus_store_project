@@ -77,7 +77,28 @@ class SubCategory(TimeStampedModel):
         return f"{self.category.name} → {self.name}"
 
 
+# ==============================
+# SIZE SYSTEM CONSTANTS
+# ==============================
+TOP_SIZES = ["XS", "S", "M", "L", "XL", "XXL"]
+WAIST_SIZES = ["28", "30", "32", "34", "36"]
+
+
+
 class Product(TimeStampedModel):
+
+    SIZE_TYPE_CHOICES = [
+        ("TOP", "Top sizes (XS, S, M, L, XL, XXL)"),
+        ("WAIST", "Waist sizes (28, 30, 32, 34, 36)"),
+    ]
+
+    size_type = models.CharField(
+        max_length=10,
+        choices=SIZE_TYPE_CHOICES,
+        default="TOP",
+        help_text="Defines which size system this product uses"
+    )
+
     uuid = models.UUIDField(
         default=uuid.uuid4,
         editable=False,
@@ -110,27 +131,23 @@ class Product(TimeStampedModel):
             ("subcategory", "slug"),
         )
 
-
     def save(self, *args, **kwargs):
         if not self.slug:
             base_slug = slugify(self.name)
             slug = base_slug
             counter = 1
-
             while Product.objects.filter(
                 subcategory=self.subcategory,
                 slug=slug
             ).exists():
                 slug = f"{base_slug}-{counter}"
                 counter += 1
-
             self.slug = slug
-
         super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
-    
+
     def get_absolute_url(self):
         return reverse(
             "catalog:product_detail",
@@ -142,7 +159,29 @@ class Product(TimeStampedModel):
         )
 
 
+
 class ProductVariant(TimeStampedModel):
+
+    SIZE_ORDER_MAP = {
+        "XS": 1,
+        "S": 2,
+        "M": 3,
+        "L": 4,
+        "XL": 5,
+        "XXL": 6,
+
+        "28": 101,
+        "30": 102,
+        "32": 103,
+        "34": 104,
+        "36": 105,
+    }
+
+    size_order = models.PositiveSmallIntegerField(
+        editable=False,
+        db_index=True
+    )
+
     product = models.ForeignKey(
         "catalog.Product",
         on_delete=models.CASCADE,
@@ -184,11 +223,9 @@ class ProductVariant(TimeStampedModel):
     )
 
     class Meta:
-        ordering = ["created_at"]
+        ordering = ["color", "size_order"]
         verbose_name = "Product Variant"
         verbose_name_plural = "Product Variants"
-
-        # ✅ CORRECT DB RULE
         constraints = [
             models.UniqueConstraint(
                 fields=["product", "color", "size"],
@@ -196,17 +233,31 @@ class ProductVariant(TimeStampedModel):
             )
         ]
 
+
     def clean(self):
+        
         """
-        Prevent changing color after creation.
-        Images and grouping depend on color.
+        Enforce business rules for variants.
         """
-        if self.pk:
-            old = ProductVariant.objects.get(pk=self.pk)
-            if old.color != self.color:
-                raise ValidationError(
-                    {"color": "Color cannot be changed once created."}
-                )
+        super().clean()
+
+        # 🔒 NEW RULE — SIZE SYSTEM ENFORCEMENT
+        if self.product.size_type == "TOP" and self.size not in TOP_SIZES:
+            raise ValidationError({
+                "size": "Invalid size. Allowed: XS, S, M, L, XL, XXL."
+            })
+
+        if self.product.size_type == "WAIST" and self.size not in WAIST_SIZES:
+            raise ValidationError({
+                "size": "Invalid size. Allowed: 28, 30, 32, 34, 36."
+            })
+        
+        
+    def save(self, *args, **kwargs):
+        self.size_order = self.SIZE_ORDER_MAP.get(self.size, 999)
+        super().save(*args, **kwargs)
+
+
 
     def __str__(self):
         return f"{self.product.name} | {self.color} | {self.size}"
@@ -234,6 +285,16 @@ class ProductImage(TimeStampedModel):
         ordering = ["created_at"]
         verbose_name = "Product Image"
         verbose_name_plural = "Product Images"
+
+    def save(self, *args, **kwargs):
+        if self.is_primary:
+            ProductImage.objects.filter(
+                variant=self.variant,
+                is_primary=True
+            ).exclude(pk=self.pk).update(is_primary=False)
+
+        super().save(*args, **kwargs)
+
 
     def __str__(self):
         return f"Variant Image | Variant ID: {self.variant.id}"

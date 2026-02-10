@@ -134,6 +134,11 @@
                                     <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell w-[25%]"
                                         scope="col">Category</th>
 
+
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider hidden md:table-cell w-[15%]"
+                                            scope="col">Size Type</th>
+                                    
+
                                     <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-[10%]"
                                         scope="col">Status</th>
 
@@ -181,18 +186,36 @@
                                     <td class="px-6 py-4 whitespace-nowrap hidden md:table-cell">
                                         <div class="flex items-center text-sm text-gray-600 dark:text-gray-300">
                                             <span
-                                                class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-xs font-medium mr-2">
+                                                class="bg-gray-300 dark:bg-gray-900 px-2 py-1 rounded text-xs font-medium mr-2">
                                                 {{ product.subcategory.category.name }}
                                             </span>
                                             <span class="material-symbols-outlined text-[14px] text-gray-400 mx-1">
                                                 arrow_forward
                                             </span>
-                                            <span class="text-gray-500 dark:text-gray-400 text-xs">
+                                            <span class="bg-slate-900 text-white px-2 py-1 rounded text-xs font-medium mr-2">
                                                 {{ product.subcategory.name }}
                                             </span>
-
                                         </div>
                                     </td>
+
+                                    <td class="px-6 py-4 whitespace-nowrap hidden md:table-cell">
+                                        {% if product.size_type == "TOP" %}
+                                        <span class="inline-flex items-center rounded-full
+                                                                                             bg-blue-100 text-blue-700
+                                                                                             dark:bg-blue-500/10 dark:text-blue-400
+                                                                                             px-2 py-1 text-xs font-medium">
+                                            XS – XXL
+                                        </span>
+                                        {% elif product.size_type == "WAIST" %}
+                                        <span class="inline-flex items-center rounded-full
+                                                                                             bg-purple-100 text-purple-700
+                                                                                             dark:bg-purple-500/10 dark:text-purple-400
+                                                                                             px-2 py-1 text-xs font-medium">
+                                            28 – 36
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                    
 
                                     <td class="px-6 py-4">
                                         {% if product.is_active %}

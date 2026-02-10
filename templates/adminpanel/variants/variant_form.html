@@ -4,8 +4,10 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Create Product Variants Form</title>
-
+    <title>
+        {% if is_edit %}Edit Variant{% else %}Create Product Variants{% endif %}
+    </title>
+    
     <!-- Tailwind + plugins -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
@@ -66,6 +68,15 @@
         .cropper-line {
             background-color: rgba(99, 102, 241, 0.8);
         }
+
+        #cropperModal img {
+            max-height: 100%;
+        }
+        #cropperModal .flex-1 {
+            min-height: 0;
+        }
+
+
     </style>
 </head>
 
@@ -121,13 +132,22 @@
                     Denim
                     Jacket</a>
                 <span class="material-symbols-outlined text-slate-400 text-sm leading-none">chevron_right</span>
-                <span class="text-slate-900 dark:text-white text-sm font-semibold">New Variant</span>
+                <span class="text-slate-900 dark:text-white text-sm font-semibold">
+                    {% if is_edit %}Edit Variant{% else %}New Variant{% endif %}
+                </span>
+                
             </nav>
 
             <!-- Page Heading -->
             <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
-                <h1 class="text-slate-900 dark:text-white text-3xl md:text-4xl font-black tracking-tight">Create Product
-                    Variants</h1>
+                <h1 class="text-slate-900 dark:text-white text-3xl md:text-4xl font-black tracking-tight">
+                    {% if is_edit %}
+                    Edit Variant
+                    {% else %}
+                    Create Product Variants
+                    {% endif %}
+                </h1>
+                
                 <a href="{% url 'adminpanel:variant_list' product.id %}" class="flex items-center gap-2
                               rounded-full h-10 px-6
                               bg-slate-200 dark:bg-slate-800
@@ -208,9 +228,8 @@
                     <div class="max-w-md">
                         <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Color Name
                             <span class="text-red-500">*</span></label>
-                        <input type="text" name="color" value="{{ posted_data.color|default:'' }}" required
-                            class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3"
-                            placeholder="e.g., Navy Blue" />
+                            <input type="text" name="color" value="{{ posted_data.color|default:'' }}" required class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700
+                                          rounded-lg px-4 py-3" placeholder="e.g., Navy Blue" />
 
 
                         <p class="mt-2 text-xs text-slate-500">The specific color label for this inventory batch.</p>
@@ -340,17 +359,25 @@
                         <button
                             class="px-8 py-3 bg-primary text-white text-sm font-bold rounded-full shadow-lg shadow-primary/30 hover:bg-primary/90 hover:scale-[1.02] transition-all flex items-center gap-2">
                             <span class="material-symbols-outlined text-xl">check_circle</span>
-                            <span>Create Variants</span>
+                            <span>
+                                {% if is_edit %}Update Variant{% else %}Create Variants{% endif %}
+                            </span>
+                            
                         </button>
                 </footer>
             </div>
         </main>
+
+        <input type="hidden" name="deleted_images" id="deleted-images" value="">
+
     </form>
 
 
 
     {{ posted_sizes|json_script:"posted-sizes" }}
     {{ posted_data|json_script:"posted-data" }}
+    {{ existing_images|json_script:"existing-images" }}
+
 
 
 
@@ -374,9 +401,10 @@
                 Crop Image
             </h3>
 
-            <div class="flex-1 flex items-center justify-center">
-                <img id="cropperImage" class="max-h-full max-w-full object-contain" />
+            <div class="flex-1 relative overflow-hidden">
+                <img id="cropperImage" class="absolute inset-0 max-w-full max-h-full object-contain mx-auto my-auto" />
             </div>
+            
 
             <div class="flex justify-end gap-3 mt-3 shrink-0">
                 <button id="cropCancel" type="button" class="px-4 py-2 rounded-lg border">
@@ -389,17 +417,49 @@
         </div>
     </div>
 
+ 
+
+
     <!-- Cropper JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
+
+    <script>
+        window.VARIANT_DATA = JSON.parse(
+            document.getElementById("posted-data")?.textContent || "{}"
+        );
+    </script>
+    
+
     <!-- Variant Images + Cropper -->
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const fileInput = document.getElementById("variant-images");
-            const imageGrid = document.getElementById("image-grid");
 
-            const MAX_IMAGES = 4;
-            let selectedImages = []; // { file, url }
+        document.addEventListener("DOMContentLoaded", function () {
+
+                const existingImages = JSON.parse(
+                    document.getElementById("existing-images")?.textContent || "[]"
+                );
+
+                const IS_EDIT = existingImages.length > 0; // ✅ FIX
+
+                const fileInput = document.getElementById("variant-images");
+                const imageGrid = document.getElementById("image-grid");
+
+                const MAX_IMAGES = 4;
+                let selectedImages = [];
+
+                // 🔁 EDIT MODE ONLY
+                if (IS_EDIT) {
+                    existingImages.slice(0, MAX_IMAGES).forEach(img => {
+                        selectedImages.push({
+                            id: img.id,
+                            url: img.image.startsWith("/") ? img.image : `/media/${img.image}`,
+                            existing: true
+                        });
+                    });
+                }
+            
+
 
             // Cropper-related
             const cropModal = document.getElementById("cropperModal");
@@ -419,12 +479,11 @@
                 const newFiles = Array.from(fileInput.files);
 
                 for (let file of newFiles) {
-                    if (selectedImages.length + pendingFiles.length >= MAX_IMAGES) break;
+                    const totalCount = selectedImages.length + pendingFiles.length;
+                    if (totalCount >= MAX_IMAGES) break;
                     if (!file.type.startsWith("image/")) continue;
                     pendingFiles.push(file);
                 }
-
-                fileInput.value = ""; // allow reselection of same file
 
                 if (!cropper && pendingFiles.length > 0) {
                     startNextCrop();
@@ -446,7 +505,7 @@
 
                     cropper = new Cropper(cropImage, {
                         aspectRatio: 4 / 5,
-                        viewMode: 0,
+                        viewMode: 1,
                         dragMode: "move",
                         autoCropArea: 0.9,
                         background: false,
@@ -458,6 +517,11 @@
                         toggleDragModeOnDblclick: false,
                     });
 
+                    requestAnimationFrame(() => {
+                        cropper.resize();   // 🔒 THIS IS THE FIX
+                    });
+
+
                     cropImage.dataset.originalName = file.name;
                 };
 
@@ -466,6 +530,21 @@
 
             cropConfirmBtn.addEventListener("click", function () {
                 if (!cropper) return;
+
+                // 🔒 HARD LOCK to prevent double click spam
+                cropConfirmBtn.disabled = true;
+
+
+                if (selectedImages.length >= MAX_IMAGES) {
+                    alert("Maximum 4 images allowed");
+                    cropper.destroy();
+                    cropper = null;
+                    cropModal.classList.add("hidden");
+                    cropConfirmBtn.disabled = false;
+                    return;
+                }
+
+
 
                 cropper.getCroppedCanvas({
                     width: 1200,
@@ -491,7 +570,12 @@
                     renderImages();
                     syncFilesBeforeSubmit();
 
+                    fileInput.value = ""; // ✅ THIS LINE WAS MISSING
+
                     cropper.destroy();
+
+                    cropConfirmBtn.disabled = false;
+
                     cropper = null;
                     cropModal.classList.add("hidden");
 
@@ -508,10 +592,13 @@
                 cropper = null;
                 cropModal.classList.add("hidden");
 
+                fileInput.value = ""; // ✅ REQUIRED reset on cancel
+
                 if (pendingFiles.length > 0) {
                     startNextCrop();
                 }
             });
+
 
             /* 3) Render grid + small preview */
             function renderImages() {
@@ -576,27 +663,60 @@
                         cursor-pointer hover:border-primary
                         hover:bg-primary/5 transition-all group
                     `;
-                    addSlot.onclick = () => fileInput.click();
+
+                    addSlot.onclick = () => {
+                        if (selectedImages.length >= MAX_IMAGES) {
+                            alert("You can upload a maximum of 4 images.");
+                            return;
+                        }
+
+                        if (cropper || pendingFiles.length > 0) {
+                            return;
+                        }
+
+                        fileInput.click();
+                    };
 
                     addSlot.innerHTML = `
                         <span class="material-symbols-outlined text-slate-400 group-hover:text-primary text-4xl">
                             add_photo_alternate
                         </span>
                         <span class="text-sm text-slate-400 mt-2 font-medium">
-                            ${selectedImages.length === 0 ? "Add Image" : "Add More"}
+                            Add Image
                         </span>
                     `;
 
                     imageGrid.appendChild(addSlot);
                 }
+
+
             }
 
+            
+            let deletedImageIds = new Set();
+
             function removeImage(index) {
-                URL.revokeObjectURL(selectedImages[index].url);
+                const img = selectedImages[index];
+
+                console.log("JS REMOVE:", img);
+
+                if (img.existing && img.id) {
+                    deletedImageIds.add(String(img.id));
+
+                    document.getElementById("deleted-images").value =
+                        Array.from(deletedImageIds).join(",");
+                }
+
+                if (img.url && img.url.startsWith("blob:")) {
+                    URL.revokeObjectURL(img.url);
+                }
+
                 selectedImages.splice(index, 1);
                 renderImages();
                 syncFilesBeforeSubmit();
             }
+
+
 
             /* 4) Big preview modal close */
             if (imagePreviewModal && imagePreviewModalImg) {
@@ -611,9 +731,18 @@
             /* 5) Sync to real input (for Django) */
             function syncFilesBeforeSubmit() {
                 const dt = new DataTransfer();
-                selectedImages.forEach(item => dt.items.add(item.file));
+
+                selectedImages.forEach(item => {
+                    // ONLY new images
+                    if (!item.existing && item.file) {
+                        dt.items.add(item.file);
+                    }
+                });
+
                 fileInput.files = dt.files;
             }
+
+
 
             const formEl = document.querySelector("form");
             if (formEl) {
@@ -627,7 +756,25 @@
     </script>
 
     <script>
+        window.PRODUCT_SIZE_TYPE = "{{ product.size_type }}";
+    </script>
+
+
+    <script>
         document.addEventListener("DOMContentLoaded", function () {
+
+            const weights = window.VARIANT_DATA?.weights || {};
+            const stocks = window.VARIANT_DATA?.stocks || {};
+
+
+
+            let SIZE_MODE_LOCKED = false; 
+
+            if (!window.PRODUCT_SIZE_TYPE) {
+                console.error("PRODUCT_SIZE_TYPE missing");
+                return;
+            }
+
             const postedSizes = JSON.parse(document.getElementById("posted-sizes").textContent || "[]");
 
             const MODE_ALPHA = { id: "alpha", sizes: ["XS", "S", "M", "L", "XL", "XXL"] };
@@ -678,9 +825,13 @@
             }
 
             function setMode(mode) {
+
+                if (SIZE_MODE_LOCKED) return;
+
                 if (currentMode.id !== mode.id) {
-                    clearAllRows(); // never mix XS rows with 28 rows
+                    clearAllRows(); // never mix XS with 28
                 }
+
                 currentMode = mode;
 
                 if (mode.id === "alpha") {
@@ -698,44 +849,53 @@
                 renderPills();
             }
 
+
             function addRow(size) {
                 if (document.getElementById(`row-${size}`)) return;
 
                 const row = document.createElement("tr");
                 row.id = `row-${size}`;
 
+                // ✅ USE EXISTING VALUES IF EDITING
+                const weightVal = weights[size] ?? "0.00";
+                const stockVal = stocks[size] ?? "1";
+
                 row.innerHTML = `
-          <td class="py-4 px-2">
-            <span class="font-bold bg-slate-100 px-3 py-1 rounded-lg">${size}</span>
-          </td>
-          <td class="py-4 px-2">
-            <input type="number"
-                   step="0.1"
-                   name="weight[${size}]"
-                   value="0.00"
-                   required
-                   class="w-full max-w-[150px] bg-primary/5 border border-primary/40 rounded-full px-4 py-2">
-          </td>
-          <td class="py-4 px-2">
-            <input type="number"
-                   min="1"
-                   name="stock[${size}]"
-                   value="1"
-                   required
-                   class="w-full max-w-[150px] bg-primary/5 border border-primary/40 rounded-full px-4 py-2">
-          </td>
-          <td class="py-4 px-2 text-right">
-            <button type="button"
-                    data-remove="${size}"
-                    class="text-red-500 text-xl">×</button>
-          </td>
-        `;
+                <td class="py-4 px-2">
+                    <span class="font-bold bg-slate-100 px-3 py-1 rounded-lg">${size}</span>
+                </td>
+
+                <td class="py-4 px-2">
+                    <input type="number"
+                        step="0.001"
+                        name="weight[${size}]"
+                        value="${weightVal}"
+                        required
+                        class="w-full max-w-[150px] bg-primary/5 border border-primary/40 rounded-full px-4 py-2">
+                </td>
+
+                <td class="py-4 px-2">
+                    <input type="number"
+                        min="0"
+                        name="stock[${size}]"
+                        value="${stockVal}"
+                        required
+                        class="w-full max-w-[150px] bg-primary/5 border border-primary/40 rounded-full px-4 py-2">
+                </td>
+
+                <td class="py-4 px-2 text-right">
+                    <button type="button"
+                            data-remove="${size}"
+                            class="text-red-500 text-xl">×</button>
+                </td>
+                `;
 
                 const index = ORDER.indexOf(size);
                 const rows = [...tableBody.children];
                 const before = rows.find(r => ORDER.indexOf(r.id.replace("row-", "")) > index);
                 before ? tableBody.insertBefore(row, before) : tableBody.appendChild(row);
             }
+
 
             function removeRow(size) {
                 document.getElementById(`row-${size}`)?.remove();
@@ -768,11 +928,34 @@
             modeAlphaBtn.addEventListener("click", () => setMode(MODE_ALPHA));
             modeNumericBtn.addEventListener("click", () => setMode(MODE_NUMERIC));
 
-            // start in XS‑XXL mode
-            setMode(MODE_ALPHA);
+            // 🔒 FORCE + LOCK SIZE MODE BASED ON PRODUCT
+            const toggleContainer = modeAlphaBtn.closest(".inline-flex");
+
+            if (window.PRODUCT_SIZE_TYPE === "TOP") {
+                setMode(MODE_ALPHA);
+                SIZE_MODE_LOCKED = true;   // ← ADD THIS
+                modeNumericBtn.style.display = "none";
+                toggleContainer.style.pointerEvents = "none";
+                toggleContainer.style.opacity = "0.6";
+            }
+
+            if (window.PRODUCT_SIZE_TYPE === "WAIST") {
+                setMode(MODE_NUMERIC);
+                SIZE_MODE_LOCKED = true;   // ← ADD THIS
+                modeAlphaBtn.style.display = "none";
+                toggleContainer.style.pointerEvents = "none";
+                toggleContainer.style.opacity = "0.6";
+            }
+
+
+
+            // restore rows on validation error
             postedSizes.forEach(size => {
-                if (currentMode.sizes.includes(size)) addRow(size);
+                if (currentMode.sizes.includes(size)) {
+                    addRow(size);
+                }
             });
+
         });
     </script>
 

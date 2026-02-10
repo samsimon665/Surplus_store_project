@@ -61,12 +61,26 @@ class SubCategoryForm(forms.ModelForm):
     def clean_price_per_kg(self):
         price = self.cleaned_data.get("price_per_kg")
 
-        if price is None or price <= 0:
+        if price is None:
+            raise forms.ValidationError("Price per kg is required.")
+
+        # ❌ No decimals allowed
+        if price % 1 != 0:
             raise forms.ValidationError(
-                "Price per KG must be greater than zero."
+                "Price per kg must be a whole number (no decimals)."
             )
 
-        return price
+        if price <= 0:
+            raise forms.ValidationError(
+                "Price per kg must be greater than 0."
+            )
+
+        if price >= 2000:
+            raise forms.ValidationError(
+                "Price per kg must be less than 2000."
+            )
+
+        return int(price)
 
     def clean_description(self):
         return validate_description(
