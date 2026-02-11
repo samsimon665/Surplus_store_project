@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 import re
 
+from .models import Profile
+
 
 class RegisterForm(UserCreationForm):
     first_name = forms.CharField(max_length=10)
@@ -68,3 +70,51 @@ class RegisterForm(UserCreationForm):
             raise ValidationError("This username is already taken.")
 
         return username
+
+# PROFILE
+
+
+class ProfileDetailsForm(forms.ModelForm):
+    full_name = forms.CharField(
+        max_length=150,
+        required=False,
+        widget=forms.TextInput(attrs={
+            "class": "form-control",
+            "placeholder": "Full Name"
+        })
+    )
+
+    class Meta:
+        model = Profile
+        fields = ["gender", "dob"]
+        widgets = {
+            "gender": forms.Select(attrs={"class": "form-select"}),
+            "dob": forms.DateInput(attrs={
+                "class": "form-control",
+                "type": "date"
+            }),
+        }
+
+
+class PhoneUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ["phone"]
+        widgets = {
+            "phone": forms.TextInput(attrs={
+                "class": "form-control",
+                "placeholder": "Enter phone number"
+            })
+        }
+
+
+class ProfileImageForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ["profile_pic"]
+        widgets = {
+            "profile_pic": forms.FileInput(attrs={
+                "class": "form-control",
+                "accept": "image/*"
+            })
+        }

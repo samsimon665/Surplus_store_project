@@ -118,12 +118,13 @@
                         <li>
                             <hr class="dropdown-divider">
                             </hr>
-                        <li>
-                            <form method="post" action="{% url 'accounts:logout' %}">
-                                {% csrf_token %}
-                                <button class="dropdown-item text-danger">Logout</button>
-                            </form>
-                        </li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="{% url 'account_logout' %}">
+                                    Logout
+                                </a>
+                            </li>
+                            
+                            
                     </ul>
                 </li>
                 {% else %}

@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'apps.support.apps.SupportConfig',
     'apps.promotions.apps.PromotionsConfig',
     'apps.cart.apps.CartConfig',  
+    'apps.orders.apps.OrdersConfig',
 
 
 ]
@@ -215,9 +216,10 @@ AUTHENTICATION_BACKENDS = (
 
 # EMAIL
 
-ACCOUNT_EMAIL_REQUIRED = False
-ACCOUNT_EMAIL_VERIFICATION = "none"
-ACCOUNT_CONFIRM_EMAIL_ON_GET = False
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = "optional"
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+
 
 
 # ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1   # 24 hours

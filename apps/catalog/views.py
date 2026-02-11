@@ -153,55 +153,36 @@ def product_detail(request, category_slug, subcategory_slug, product_slug):
 
     product = get_object_or_404(
         Product.objects
-        .filter(
-            is_active=True,
-            variants__is_active=True,   # 🔒 MUST HAVE SELLABLE VARIANT
-        )
-        .select_related(
-            "subcategory",
-            "subcategory__category"
-        )
+        .filter(is_active=True, variants__is_active=True)
+        .select_related("subcategory", "subcategory__category")
         .distinct(),
         slug=product_slug,
         subcategory__slug=subcategory_slug,
         subcategory__category__slug=category_slug,
     )
 
-    # -------------------------------------------------
-    # ✅ USER INTENT: CAME FROM WISHLIST
-    # -------------------------------------------------
     if request.GET.get("from_wishlist") == "1":
         request.session["move_to_cart_product_id"] = product.id
 
-    # -------------------------------------------------
-    # ❤️ WISHLIST STATE (FOR HEART BUTTON ONLY)
-    # -------------------------------------------------
     is_wishlisted = WishlistItem.objects.filter(
         wishlist__user=request.user,
         product=product
     ).exists()
 
-    # -------------------------------------------------
-    # ✅ VARIANTS + IMAGES
-    # -------------------------------------------------
     variants = (
         ProductVariant.objects
         .filter(product=product, is_active=True)
-        .order_by("created_at", "size_order")  # ✅ THIS IS THE KEY
+        .order_by("created_at", "size_order")
         .prefetch_related(
             Prefetch(
                 "images",
                 queryset=ProductImage.objects.order_by(
-                    "-is_primary",
-                    "created_at"
-                )
+                    "-is_primary", "created_at")
             )
         )
     )
 
-
     variant_map = {}
-
     for variant in variants:
         color = variant.color
 
@@ -223,9 +204,25 @@ def product_detail(request, category_slug, subcategory_slug, product_slug):
             if img.image.url not in variant_map[color]["images"]:
                 variant_map[color]["images"].append(img.image.url)
 
-    # -------------------------------------------------
-    # ✅ RECOMMENDED PRODUCTS
-    # -------------------------------------------------
+    # ---------------------------------------------------
+    # 🔥 IMPORTANT PART: HANDLE ?variant=ID
+    # ---------------------------------------------------
+
+    selected_color = None
+    selected_size = None
+
+    variant_id = request.GET.get("variant")
+
+    if variant_id:
+        try:
+            selected_variant = variants.get(id=variant_id)
+            selected_color = selected_variant.color
+            selected_size = selected_variant.size
+        except ProductVariant.DoesNotExist:
+            pass
+
+    # ---------------------------------------------------
+
     recommended_products = (
         Product.objects
         .filter(
@@ -236,28 +233,9 @@ def product_detail(request, category_slug, subcategory_slug, product_slug):
         .exclude(id=product.id)
         .distinct()
         .select_related("subcategory")
-        .prefetch_related(
-            Prefetch(
-                "variants",
-                queryset=ProductVariant.objects.filter(
-                    is_active=True
-                ).prefetch_related(
-                    Prefetch(
-                        "images",
-                        queryset=ProductImage.objects.order_by(
-                            "-is_primary",
-                            "created_at"
-                        )
-                    )
-                )
-            )
-        )
         .order_by("-created_at")[:4]
     )
 
-    # -------------------------------------------------
-    # ✅ CONTEXT
-    # -------------------------------------------------
     context = {
         "product": product,
         "subcategory": product.subcategory,
@@ -265,6 +243,8 @@ def product_detail(request, category_slug, subcategory_slug, product_slug):
         "variants": variant_map,
         "recommended_products": recommended_products,
         "is_wishlisted": is_wishlisted,
+        "selected_color": selected_color,
+        "selected_size": selected_size,
     }
 
     return render(request, "catalog/product_details.html", context)

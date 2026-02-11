@@ -5,6 +5,10 @@ from decimal import Decimal
 
 from django.conf import settings
 
+from decimal import Decimal
+
+from .services import round_money
+
 User = settings.AUTH_USER_MODEL
 
 
@@ -24,26 +28,14 @@ class Cart(models.Model):
 
     @property
     def subtotal(self):
-        """
-        Live subtotal: 
-        sum of (unit_price × quantity) for all cart items.
-        Always correct. Never stored.
-        """
-        return sum(
-            (item.unit_price * item.quantity)
-            for item in self.items.all()
-        ) or Decimal("0.00")
+        total = Decimal("0.00")
+        for item in self.items.all():
+            total += item.unit_price * item.quantity
+        return round_money(total)
 
     @property
     def total(self):
-        """
-        Final payable amount.
-        Currently same as subtotal.
-        Keep separate for future:
-        - shipping
-        - tax
-        - discounts
-        """
+        # shipping is FREE for now
         return self.subtotal
 
 
@@ -85,6 +77,15 @@ class CartItem(models.Model):
     class Meta:
         unique_together = ("cart", "variant")
         ordering = ["-created_at"]
+
+    @property
+    def display_unit_price(self):
+        return round_money(self.unit_price)
+    
+    @property
+    def display_line_total(self):
+        return round_money(self.unit_price * self.quantity)
+
 
     def __str__(self):
         return f"{self.product_name} ({self.size}) × {self.quantity}"

@@ -5,6 +5,11 @@ from django.contrib.auth import authenticate, login, logout as auth_logout
 from .forms import RegisterForm
 from django.contrib.auth.models import User
 
+from allauth.account.models import EmailAddress
+
+
+
+
 
 
 def login_view(request):
@@ -72,6 +77,14 @@ def register_view(request):
             user.set_password(form.cleaned_data["password1"])
             user.save()
 
+            # 🔹 Create EmailAddress entry for allauth
+            EmailAddress.objects.create(
+                user=user,
+                email=user.email,
+                primary=True,
+                verified=False
+            )
+
             if not user.is_active:
                 return redirect("accounts:account_disabled")
 
@@ -90,10 +103,15 @@ def register_view(request):
     return render(request, "accounts/register.html", {"form": form})
 
 
+
+# def logout_view(request):
+#     if request.method == "POST":
+#         auth_logout(request)
+#         return redirect("accounts:login")
+#     return redirect("accounts:login")
+
 def logout_view(request):
-    if request.method == "POST":
-        auth_logout(request)
-        return redirect("accounts:login")
+    auth_logout(request)
     return redirect("accounts:login")
 
 

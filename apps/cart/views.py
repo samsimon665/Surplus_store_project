@@ -1,6 +1,6 @@
-
-# Create your views here.
 from decimal import Decimal
+
+from django.urls import reverse
 
 from django.http import JsonResponse
 
@@ -14,6 +14,10 @@ from django.contrib.auth.decorators import login_required
 from .services import get_cart_item_status, CartItemStatus
 
 from django.db.models import Prefetch
+
+from .services import can_proceed_to_checkout
+
+from .services import is_cart_valid
 
 
 def get_nav_counts(user):
@@ -31,51 +35,61 @@ def get_nav_counts(user):
     }
 
 
-
 @login_required(login_url="accounts:login")
 def cart_view(request):
     cart = Cart.objects.filter(user=request.user).first()
-
-    checkout_allowed = True
     items = []
 
     if cart:
-        for item in (
-            cart.items
-            .select_related("variant", "variant__product")
+        for item in cart.items.select_related(
+            "variant",
+            "variant__product",
+            "variant__product__subcategory",
+            "variant__product__subcategory__category",
         ):
-            status = get_cart_item_status(item)
 
+            status = get_cart_item_status(item)
             item.status = status
             item.is_out_of_stock = (status == CartItemStatus.OUT_OF_STOCK)
 
-            # ✅ CORRECT IMAGE RESOLUTION (color-based)
+            # Generate product URL
+            base_url = reverse(
+                "catalog:product_detail",
+                args=[
+                    item.variant.product.subcategory.category.slug,
+                    item.variant.product.subcategory.slug,
+                    item.variant.product.slug,
+                ],
+            )
+
+            # 🔥 Attach variant query param
+            item.product_url = f"{base_url}?variant={item.variant.id}"
+
+            # Image resolution
             item.display_image = (
                 ProductImage.objects
                 .filter(
                     variant__product=item.variant.product,
-                    variant__color=item.variant.color,
+                    variant__color=item.color,
                 )
                 .order_by("-is_primary", "created_at")
                 .first()
             )
-
-            if status != CartItemStatus.VALID:
-                checkout_allowed = False
 
             items.append(item)
 
     context = {
         "cart": cart,
         "cart_items": items,
-        "checkout_allowed": checkout_allowed,
+        "checkout_allowed": can_proceed_to_checkout(cart),
         "cart_subtotal": cart.subtotal if cart else Decimal("0.00"),
         "cart_total": cart.total if cart else Decimal("0.00"),
         "shipping_cost": "FREE",
-        "discount_amount": None,
     }
 
     return render(request, "cart/cart_summary.html", context)
+
+
 
 
 @login_required(login_url='accounts:login')
@@ -152,7 +166,6 @@ def add_to_cart(request):
     return JsonResponse({"success": True})
 
 
-
 @login_required(login_url='accounts:login')
 def update_cart_item(request):
     if request.method != "POST":
@@ -186,9 +199,18 @@ def update_cart_item(request):
         "success": True,
         "quantity": item.quantity,
         "status": get_cart_item_status(item),
+
+        # ✅ CORRECT
+        "item_line_total": str(item.display_line_total),
+
         "cart_subtotal": str(cart.subtotal),
         "cart_total": str(cart.total),
+        "checkout_allowed": is_cart_valid(cart),
     })
+
+
+
+
 
 
 @login_required
@@ -207,6 +229,27 @@ def remove_cart_item(request):
     item.delete()
 
     return JsonResponse({"success": True})
+
+
+@login_required
+def remove_invalid_items(request):
+    cart = get_object_or_404(Cart, user=request.user)
+
+    removed = False
+
+    for item in cart.items.select_related("variant"):
+        if get_cart_item_status(item) != CartItemStatus.VALID:
+            item.delete()
+            removed = True
+
+    return JsonResponse({
+        "success": True,
+        "removed": removed,
+        "cart_subtotal": str(cart.subtotal),
+        "cart_total": str(cart.total),
+        "checkout_allowed": is_cart_valid(cart),
+    })
+
 
 
 

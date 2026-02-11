@@ -1,3 +1,8 @@
+from decimal import Decimal, ROUND_HALF_UP
+
+
+
+
 class CartItemStatus:
     
     VALID = "valid"
@@ -33,3 +38,15 @@ def is_cart_valid(cart):
     return True
 
 
+def round_money(value: Decimal) -> Decimal:
+    return value.quantize(Decimal("1"), rounding=ROUND_HALF_UP)
+
+
+def can_proceed_to_checkout(cart):
+    """
+    Returns True only if ALL cart items are valid
+    """
+    for item in cart.items.select_related("variant"):
+        if get_cart_item_status(item) != CartItemStatus.VALID:
+            return False
+    return True

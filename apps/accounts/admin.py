@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Profile
+from .models import Profile, Address
+
 
 
 from django.contrib.auth.admin import UserAdmin
@@ -28,9 +29,6 @@ admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
 
 
-
-
-
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
 
@@ -38,16 +36,11 @@ class ProfileAdmin(admin.ModelAdmin):
         'user',
         'phone',
         'gender',
-        'email_verified',
         'profile_pic_preview',
-
     )
 
-    list_filter = ('email_verified', 'gender')
+    list_filter = ('gender',)
     search_fields = ('user__username', 'user__email', 'phone')
-
-    # Email should be READ-ONLY
-    readonly_fields = ('email_verified',)
 
     def profile_pic_preview(self, obj):
         if obj.profile_pic:
@@ -58,3 +51,8 @@ class ProfileAdmin(admin.ModelAdmin):
         return "—"
 
     profile_pic_preview.short_description = "Profile Pic"
+
+
+@admin.register(Address)
+class AddressAdmin(admin.ModelAdmin):
+    list_display = ("user", "full_name", "city", "state", "is_default")

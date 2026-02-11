@@ -76,10 +76,6 @@
             color: var(--color-accent) !important;
         }
 
-        .text-muted-soft {
-            color: var(--color-text-muted) !important;
-        }
-
         /* --- NAVBAR (Identical to subcategory.html) --- */
         .navbar {
             background: rgba(0, 0, 0, 0.96);
@@ -335,32 +331,6 @@
             color: #888;
         }
 
-        /* Promo Input */
-        .promo-group {
-            position: relative;
-            margin-top: 1.5rem;
-        }
-
-        .promo-input {
-            width: 100%;
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 10px 0;
-            color: #fff;
-            border-radius: 0;
-            outline: none;
-        }
-
-        .promo-input:focus {
-            border-bottom-color: var(--color-accent);
-            box-shadow: none;
-        }
-
-        .promo-input::placeholder {
-            color: #555;
-            font-style: italic;
-        }
 
         /* FOOTER (Same as subcategory) */
         footer {
@@ -484,6 +454,31 @@
             letter-spacing: 0.05em;
         }
 
+        .alert {
+            background: #1a1a1a;
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff;
+            border-radius: 12px;
+        }
+
+        .alert-error {
+            border-color: #ff4d4d;
+            background: rgba(255, 77, 77, 0.08);
+            color: #ffb3b3;
+        }
+
+        .alert-success {
+            border-color: #4caf50;
+            background: rgba(76, 175, 80, 0.08);
+            color: #c8facc;
+        }
+        .cart-item-invalid {
+            border: 1px solid rgba(255, 77, 77, 0.6);
+            background: rgba(255, 77, 77, 0.08);
+        }
+
+
+
 
     </style>
 </head>
@@ -512,13 +507,32 @@
 
         <div class="row cart-grid">
 
+            {% if messages %}
+            <div class="container mb-4">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} d-flex align-items-center" role="alert">
+                    <span class="material-symbols-outlined me-2">
+                        {% if message.tags == "error" %}error{% else %}info{% endif %}
+                    </span>
+                    <span>{{ message }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+
             <!-- LEFT COLUMN: ITEMS -->
             <div class="col-lg-8">
 
                 <!-- CART LOOP -->
                 {% for row in cart_items %}
                 
-                <div class="cart-item-card el-fade">
+                <div class="cart-item-card el-fade
+                    {% if row.status != 'valid' %}cart-item-invalid{% endif %}" data-product-url="{{ row.product_url }}">
+
+
+
+
                     <div class="d-flex flex-column flex-md-row gap-4 align-items-start align-items-md-center">
                 
                         <!-- 1. PRODUCT IMAGE -->
@@ -556,8 +570,9 @@
                             
                                 <!-- Price -->
                                 <div class="text-end">
-                                    <div class="h5 mb-0 text-white font-monospace fw-bold">
-                                        ₹ {{ row.unit_price }}
+                                    <div class="h5 mb-0 text-white font-monospace fw-bold" id="item-price-{{ row.id }}">
+                                        ₹ {{ row.display_line_total }}
+
                                     </div>
                                 </div>
                             </div>
@@ -583,7 +598,8 @@
                                         </span>
                                 
                                         <!-- INCREASE -->
-                                        <button type="button" class="qty-btn js-update-cart" data-action="increase" {% if row.status != 'valid' %}disabled{% endif %}>
+                                        <button type="button" class="qty-btn js-update-cart" data-action="increase" {% if row.status != 'valid' %} disabled {% endif %}>
+
                                             <span class="material-symbols-outlined" style="font-size:1rem;">add</span>
                                         </button>
                                 
@@ -594,17 +610,6 @@
                 
                                 <!-- ITEM ACTIONS -->
                                 <div class="d-flex gap-3">
-                
-                                    {# Save for later – enable later when wishlist is wired #}
-                                    {#
-                                    <form method="POST">
-                                        {% csrf_token %}
-                                        <button class="action-icon-btn">
-                                            <span class="material-symbols-outlined">favorite</span>
-                                            Save
-                                        </button>
-                                    </form>
-                                    #}
                 
                                     <!-- REMOVE -->
                                     <button type="button" class="action-icon-btn js-remove-cart" data-item-id="{{ row.id }}">
@@ -666,70 +671,53 @@
             
                     <h3 class="h4 text-white mb-4">ORDER SUMMARY</h3>
             
-                    <!-- SUBTOTAL -->
                     <div class="summary-row">
                         <span>Subtotal</span>
-                        <span class="font-monospace">{{ cart_subtotal }}</span>
+                        <span class="font-monospace" id="cart-subtotal">
+                            {{ cart_subtotal }}
+                        </span>
                     </div>
             
-                    <!-- SHIPPING -->
                     <div class="summary-row">
                         <span>Estimated Delivery</span>
-                        <span class="font-monospace text-muted">
+                        <span class="font-monospace text-muted" id="cart-shipping">
                             {{ shipping_cost }}
                         </span>
                     </div>
             
-                    <!-- DISCOUNT (OPTIONAL) -->
-                    {% if discount_amount %}
-                    <div class="summary-row text-accent">
-                        <span>Discount</span>
-                        <span class="font-monospace">
-                            - {{ discount_amount }}
-                        </span>
-                    </div>
-                    {% endif %}
-            
                     <div class="summary-divider"></div>
             
-                    <!-- TOTAL -->
                     <div class="summary-total">
                         <span>TOTAL</span>
-                        <span class="font-monospace">
+                        <span class="font-monospace" id="cart-total">
                             {{ cart_total }}
                         </span>
                     </div>
             
-                    <!-- CHECKOUT BUTTON -->
                     {% if checkout_allowed %}
-                    <!-- Replace URL later when checkout app is ready -->
-                    <button class="btn-checkout" disabled>
-                        CHECKOUT COMING SOON
-                    </button>
+                    <a href="{% url 'orders:start_checkout' %}" class="btn-checkout" id="checkout-btn">
+                        PLACE ORDER
+                    </a>
+
                     {% else %}
-                    <button class="btn-checkout" disabled>
-                        FIX CART ISSUES
+                    <button class="btn-checkout" id="remove-invalid-btn">
+                        REMOVE UNAVAILABLE ITEMS
                     </button>
                     <p class="text-danger text-center small mt-2">
-                        Please remove out-of-stock or unavailable items to proceed.
+                        Some items are unavailable. Remove them to proceed.
                     </p>
+                    
                     {% endif %}
             
-                    <!-- PROMO CODE (LOCKED FOR NOW) -->
-                    <div class="promo-group">
-                        <label class="small text-muted mb-1">PROMO CODE</label>
-                        <input type="text" class="promo-input" placeholder="Promo codes coming soon" disabled>
-                    </div>
-            
-                    <!-- SECURITY / TRUST -->
                     <div class="mt-4 pt-3 border-top border-secondary border-opacity-25
-                                d-flex gap-2 justify-content-center opacity-50">
+                                            d-flex gap-2 justify-content-center opacity-50">
                         <span class="material-symbols-outlined">lock</span>
-                        <small class="text-muted">Secure Checkout</small>
+                        <small class="text-white">Secure Checkout</small>
                     </div>
             
                 </div>
             </div>
+            
 
 
         </div>
@@ -764,6 +752,8 @@
             </div>
         </div>
     </footer>
+    
+
     
 
     <!-- Bootstrap JS -->
@@ -836,13 +826,41 @@
                                 const wrapper = document.querySelector(`[data-item-id="${itemId}"]`);
                                 const decreaseBtn = wrapper.querySelector('[data-action="decrease"]');
 
+                                const checkoutBtn = document.getElementById("checkout-btn");
+
+                                if (checkoutBtn) {
+                                    if (data.checkout_allowed) {
+                                        checkoutBtn.textContent = "PLACE ORDER";
+                                        checkoutBtn.style.pointerEvents = "auto";
+                                        checkoutBtn.classList.remove("disabled");
+                                    } else {
+                                        checkoutBtn.textContent = "FIX CART ISSUES";
+                                        checkoutBtn.style.pointerEvents = "none";
+                                        checkoutBtn.classList.add("disabled");
+                                    }
+                                }
+
+
                                 // Disable "-" ONLY when quantity is 1
-                                if (data.quantity <= 1) {
+                                if (data.quantity <= 1 || data.status !== "valid") {
                                     decreaseBtn.disabled = true;
                                 } else {
                                     decreaseBtn.disabled = false;
                                 }
+
+                                // Update product price (left card)
+                                document.getElementById(`item-price-${itemId}`).textContent =
+                                    "₹ " + data.item_line_total;
+
+
+
+
+
+                                // 🔥 Update right-side summary
+                                document.getElementById("cart-subtotal").textContent = data.cart_subtotal;
+                                document.getElementById("cart-total").textContent = data.cart_total;
                             }
+
 
 
                         })
@@ -897,7 +915,67 @@
 
         });
     </script>
+
+
+
+
+<!-- Script for REMOVE invalid ITEMS -->
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const btn = document.getElementById("remove-invalid-btn");
+            if (!btn) return;
+
+            btn.addEventListener("click", function () {
+
+                fetch("{% url 'cart:remove_invalid_items' %}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}",
+                    }
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (!data.success) return;
+
+                        // Reload is safest here
+                        window.location.reload();
+                    });
+
+            });
+
+        });
+    </script>
+
+        <script>
+            document.addEventListener("click", function (e) {
+
+                // ❌ Ignore clicks on buttons or controls
+                if (
+                    e.target.closest(".qty-btn") ||
+                    e.target.closest(".js-remove-cart") ||
+                    e.target.closest("button")
+                ) {
+                    return;
+                }
+
+                // ✅ Find closest cart card
+                const card = e.target.closest(".cart-item-card");
+                if (!card) return;
+
+                const url = card.dataset.productUrl;
+                if (url) {
+                    window.location.assign(url);
+                }
+            });
+        </script>
+    
         
+    
+        
+
     
 
 

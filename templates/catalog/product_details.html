@@ -1120,6 +1120,61 @@
         });
     </script>
 
+    <script>
+        window.PRESELECT_VARIANT = {
+            color: "{{ selected_color|default:'' }}",
+            size: "{{ selected_size|default:'' }}"
+        };
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            if (!window.PRESELECT_VARIANT) return;
+
+            const { color, size } = window.PRESELECT_VARIANT;
+            if (!color || !size) return;
+
+            /* 1️⃣ SELECT COLOR */
+            const colorInput = document.querySelector(
+                `.color-option input[value="${color}"]`
+            );
+
+            if (!colorInput) return;
+
+            colorInput.checked = true;
+            handleColorChange(colorInput.dataset.slug);
+
+            /* 2️⃣ SELECT SIZE (AFTER COLOR SWITCH) */
+            setTimeout(() => {
+
+                const sizeGroup = document.getElementById(
+                    'size-group-' + colorInput.dataset.slug
+                );
+
+                if (!sizeGroup) return;
+
+                sizeGroup.querySelectorAll('.size-option').forEach(label => {
+                    const sizeName = label.querySelector('.size-name')?.innerText?.trim();
+                    const input = label.querySelector('input[name="variant_id"]');
+
+                    if (
+                        sizeName === size &&
+                        input &&
+                        !input.disabled
+                    ) {
+                        input.checked = true;
+                    }
+                });
+
+            }, 80);
+
+        });
+    </script>
+    
+
+   
+
 
     <script>
         function showUIAlert(message, type = "error") {
@@ -1337,6 +1392,11 @@
             }
         });
     </script>
+
+    <!-- for PRODUCT from CART -->
+
+    
+
 
 
 

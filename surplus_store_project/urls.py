@@ -40,6 +40,8 @@ urlpatterns = [
 
     path("cart/", include("apps.cart.urls")),
 
+    path("order/", include("apps.orders.urls")),
+
 
 ]
 
