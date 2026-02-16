@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 import re
 
-from .models import Profile
+from .models import Profile, Address
 
 
 class RegisterForm(UserCreationForm):
@@ -75,14 +75,17 @@ class RegisterForm(UserCreationForm):
 
 
 class ProfileDetailsForm(forms.ModelForm):
-    full_name = forms.CharField(
-        max_length=150,
-        required=False,
-        widget=forms.TextInput(attrs={
-            "class": "form-control",
-            "placeholder": "Full Name"
-        })
-    )
+    class Meta:
+        model = Profile
+        fields = ["gender", "dob"]
+        widgets = {
+            "gender": forms.Select(attrs={"class": "form-select"}),
+            "dob": forms.DateInput(attrs={
+                "class": "form-control",
+                "type": "date"
+            }),
+        }
+
 
     class Meta:
         model = Profile
@@ -117,4 +120,33 @@ class ProfileImageForm(forms.ModelForm):
                 "class": "form-control",
                 "accept": "image/*"
             })
+        }
+
+
+class AddressForm(forms.ModelForm):
+    class Meta:
+        model = Address
+        fields = [
+            "full_name",
+            "address_line_1",
+            "address_line_2",
+            "landmark",
+            "city",
+            "district",
+            "state",
+            "pincode",
+            "country",
+            "is_default",
+        ]
+        widgets = {
+            "full_name": forms.TextInput(attrs={"class": "form-control"}),
+            "address_line_1": forms.TextInput(attrs={"class": "form-control"}),
+            "address_line_2": forms.TextInput(attrs={"class": "form-control"}),
+            "landmark": forms.TextInput(attrs={"class": "form-control"}),
+            "city": forms.TextInput(attrs={"class": "form-control"}),
+            "district": forms.TextInput(attrs={"class": "form-control"}),
+            "state": forms.TextInput(attrs={"class": "form-control"}),
+            "pincode": forms.TextInput(attrs={"class": "form-control"}),
+            "country": forms.TextInput(attrs={"class": "form-control"}),
+            "is_default": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }

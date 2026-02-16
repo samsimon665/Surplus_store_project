@@ -3,7 +3,6 @@ from django.utils.html import format_html
 from .models import Profile, Address
 
 
-
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 
@@ -36,6 +35,8 @@ class ProfileAdmin(admin.ModelAdmin):
         'user',
         'phone',
         'gender',
+        'dob',
+        'completion_percentage',
         'profile_pic_preview',
     )
 

@@ -207,16 +207,19 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     /* =====================================================
-       AUTO INIT (DO NOT MOVE)
+    AUTO INIT (SAFE MULTI PAGE)
     ===================================================== */
-    initExactImageCropper({
-        inputId: "id_image",
-        previewImgId: "imagePreview",
-        removeBtnId: "clearImageBtn",
-        aspectRatio: 4 / 5,
-        width: 1000,
-        height: 1250
-    });
+        if (document.getElementById("id_image")) {
+            initExactImageCropper({
+                inputId: "id_image",
+                previewImgId: "imagePreview",
+                removeBtnId: "clearImageBtn",
+                aspectRatio: 4 / 5,
+                width: 1000,
+                height: 1250
+            });
+        }
+
     
 
     
