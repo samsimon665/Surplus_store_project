@@ -449,10 +449,60 @@
             <!-- Left Column: Completion & Profile Image -->
             <div class="col-lg-4 fade-in-up delay-1">
 
+
+
+
+                <!-- Step 1: Profile Picture -->
+
+                <div class="card text-center">
+                    <div class="card-body py-5">
+                        {% if not profile.profile_pic %}
+                            <div class="mb-3">
+                                <span class="badge bg-warning text-dark small">
+                                    Upload image
+                                </span>
+                            </div>
+                        {% endif %}
+                        <div class="profile-img-container mb-4">
+                            {% if profile.profile_pic %}
+                                <img src="{{ profile.profile_pic.url }}" alt="Profile" class="profile-img">
+                            {% else %}
+                                <div class="profile-img-placeholder">
+                                    <span class="material-symbols-outlined"
+                                        style="font-size: 48px; opacity: 0.5;">person</span>
+                                </div>
+                            {% endif %}
+                        
+                            <div class="profile-edit-badge"
+                            onclick="handleProfileImageClick()">
+                                <span class="material-symbols-outlined fs-5">photo_camera</span>
+                            </div>
+                        </div>
+
+                        
+                        <!-- 🔥 ADD THIS FORM RIGHT HERE -->
+                        <form method="POST" action="{% url 'accounts:update_image' %}" enctype="multipart/form-data" id="profileImageForm">
+                            {% csrf_token %}
+                            <input type="file" name="profile_pic" id="profileImageInput" accept="image/*" style="display:none;">
+
+                        </form>
+                        
+                        <h5 class="card-title h3 mb-1 text-white">{{ user.get_full_name|default:user.username }}</h5>
+
+                        <p class="text-muted-soft small mb-0 font-absolute text-uppercase">
+                            Member since {{ user.date_joined|date:"M Y" }}
+                        </p>
+
+                    </div>
+                </div>
+
+
+
+
                 <!-- Completion Card -->
 
 
-                <div class="card mb-4">
+                <div class="card mt-4">
                     <div class="card-body">
                         <h4 class="card-title h5 mb-3">Profile Status</h4>
                         <div class="d-flex justify-content-between align-items-center mb-2">
@@ -507,49 +557,7 @@
 
 
 
-                <!-- Step 1: Profile Picture -->
-
-                <div class="card text-center">
-                    <div class="card-body py-5">
-                        {% if not profile.profile_pic %}
-                            <div class="mb-3">
-                                <span class="badge bg-warning text-dark small">
-                                    Upload image
-                                </span>
-                            </div>
-                        {% endif %}
-                        <div class="profile-img-container mb-4">
-                            {% if profile.profile_pic %}
-                                <img src="{{ profile.profile_pic.url }}" alt="Profile" class="profile-img">
-                            {% else %}
-                                <div class="profile-img-placeholder">
-                                    <span class="material-symbols-outlined"
-                                        style="font-size: 48px; opacity: 0.5;">person</span>
-                                </div>
-                            {% endif %}
-                        
-                            <div class="profile-edit-badge"
-                            onclick="handleProfileImageClick()">
-                                <span class="material-symbols-outlined fs-5">photo_camera</span>
-                            </div>
-                        </div>
-
-                        
-                        <!-- 🔥 ADD THIS FORM RIGHT HERE -->
-                        <form method="POST" action="{% url 'accounts:update_image' %}" enctype="multipart/form-data" id="profileImageForm">
-                            {% csrf_token %}
-                            <input type="file" name="profile_pic" id="profileImageInput" accept="image/*" style="display:none;">
-
-                        </form>
-                        
-                        <h5 class="card-title h3 mb-1 text-white">{{ user.get_full_name|default:user.username }}</h5>
-
-                        <p class="text-muted-soft small mb-0 font-absolute text-uppercase">
-                            Member since {{ user.date_joined|date:"M Y" }}
-                        </p>
-
-                    </div>
-                </div>
+                
             </div>
 
 
@@ -561,7 +569,13 @@
 
 
 
+
+
                 <!-- Step 2: Personal Details -->
+
+
+
+
                 <div class="card mb-4" id="personalDetailsCard">
                     <div class="card-header d-flex justify-content-between align-items-center bg-transparent">
                         <h4 class="mb-0 h5 text-white"><span
@@ -574,7 +588,13 @@
                         </button>
                     </div>
                     <div class="card-body">
+
+
+
+
                         <!-- View Mode -->
+
+
                         <div class="view-content">
                             <div class="row g-4">
                                 <div class="col-sm-6">
@@ -610,6 +630,9 @@
                                 </div>
                             </div>
                         </div>
+
+
+
 
 
                         <!-- Edit Mode -->
@@ -658,9 +681,16 @@
                 </div>
 
 
+
+
+
                 <!-- Step 3: Contact Info -->
 
                 <div class="row g-4 mb-4">
+
+
+
+
 
                     <!-- Email Card -->
 
@@ -707,6 +737,9 @@
                             </div>
                         </div>
                     </div>
+
+
+
 
 
 
@@ -758,6 +791,10 @@
                 </div>
 
 
+
+
+
+
                 <!-- Step 4: Address Book -->
 
                 <div class="card mb-5">
@@ -765,10 +802,19 @@
                         <h4 class="mb-0 h5 text-white"><span
                                 class="material-symbols-outlined me-2 text-accent align-bottom">location_on</span>Address
                             Book</h4>
-                        <button class="btn btn-sm btn-primary d-flex align-items-center gap-1" data-bs-toggle="modal"
-                            data-bs-target="#addAddressModal">
-                            <span class="material-symbols-outlined fs-6">add</span> ADD ADDRESS
-                        </button>
+
+
+                            <button type="button"
+                                    class="btn btn-sm btn-primary d-flex align-items-center gap-1"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#addAddressModal">
+                                <span class="material-symbols-outlined fs-6">add</span>
+                                ADD ADDRESS
+                            </button>
+
+
+                         
+                    
                     </div>
                     <div class="card-body p-4">
                         {% if addresses %}
@@ -794,124 +840,75 @@
                                             </button>
                                             <ul
                                                 class="dropdown-menu dropdown-menu-end dropdown-menu-dark border border-secondary border-opacity-25 shadow-lg">
-                                                <li><a class="dropdown-item d-flex align-items-center gap-2" href="#"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#editAddressModal{{ address.id }}">
-                                                        <span class="material-symbols-outlined fs-6">edit</span> Edit
-                                                    </a></li>
+                                                <li>
+                                                    <a class="dropdown-item d-flex align-items-center gap-2"
+                                                       href="{% url 'accounts:profile' %}?edit={{ address.id }}">
+                                                        <span class="material-symbols-outlined fs-6">edit</span>
+                                                        Edit
+                                                    </a>
+                                                </li>
+                                                
                                                 {% if not address.is_default %}
                                                 <li>
-                                                    <form method="POST" action="{% url 'accounts:add_address' %}">
-
+                                                    <form method="POST" action="{% url 'accounts:set_default_address' address.id %}">
                                                         {% csrf_token %}
                                                         <button class="dropdown-item d-flex align-items-center gap-2"
-                                                            type="submit">
+                                                                type="submit">
                                                             <span class="material-symbols-outlined fs-6">star</span>
                                                             Make Default
                                                         </button>
                                                     </form>
+
                                                 </li>
                                                 {% endif %}
                                                 <li>
                                                     <hr class="dropdown-divider border-secondary border-opacity-25">
                                                 </li>
                                                 <li>
-                                                    <form method="POST" action="#">
+                                                    <form method="POST" action="{% url 'accounts:delete_address' address.id %}">
                                                         {% csrf_token %}
-                                                        <button
-                                                            class="dropdown-item text-danger d-flex align-items-center gap-2"
-                                                            type="submit">
+                                                        <button class="dropdown-item text-danger d-flex align-items-center gap-2"
+                                                                type="submit">
                                                             <span class="material-symbols-outlined fs-6">delete</span>
                                                             Delete
                                                         </button>
                                                     </form>
+
                                                 </li>
                                             </ul>
                                         </div>
 
-                                        <h6 class="fw-bold mb-1 text-white h5">{{ address.full_name }}</h6>
-                                        <p class="text-muted-soft small mb-3 text-uppercase letter-spacing-1">{{
-                                            address.address_type }}</p>
-                                        <div class="text-secondary small mb-0 font-monospace">
-                                            <div class="text-truncate text-white">{{ address.address_line_1 }}</div>
-                                            {% if address.address_line_2 %}<div class="text-truncate text-white">{{
-                                                address.address_line_2 }}</div>{% endif %}
-                                            <div class="text-white">{{ address.city }}, {{ address.state }} {{
-                                                address.zip_code }}</div>
-                                            <div class="text-white">{{ address.country }}</div>
+                                        <h6 class="fw-bold mb-2 text-white h5">
+                                            {{ address.full_name }}
+                                        </h6>
+                                        
+                                        <div class="text-secondary small mb-0">
+                                            <div class="text-white">{{ address.address_line_1 }}</div>
+                                        
+                                            {% if address.address_line_2 %}
+                                                <div class="text-white">{{ address.address_line_2 }}</div>
+                                            {% endif %}
+                                        
+                                            {% if address.landmark %}
+                                                <div class="text-white">{{ address.landmark }}</div>
+                                            {% endif %}
+                                        
+                                            <div class="text-white">
+                                                {{ address.city }}, {{ address.district }},
+                                                {{ address.state }} - {{ address.pincode }}
+                                            </div>
+                                        
+                                            <div class="text-white">
+                                                {{ address.country }}
+                                            </div>
                                         </div>
+                                        
                                     </div>
                                 </div>
                             </div>
 
 
-                            <!-- Edit Address Modal (Inside Loop) -->
-
-                            <div class="modal fade" id="editAddressModal{{ address.id }}" tabindex="-1"
-                                aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title fw-bold h4 text-white">EDIT ADDRESS</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <form method="POST" action="#">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="address_id" value="{{ address.id }}">
-                                            <div class="modal-body">
-                                                <div class="row g-3">
-                                                    <div class="col-12">
-                                                        <label class="form-label small text-muted-soft">Full
-                                                            Name</label>
-                                                        <input type="text" class="form-control" name="full_name"
-                                                            value="{{ address.full_name }}" required>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <label class="form-label small text-muted-soft">Street
-                                                            Address</label>
-                                                        <input type="text" class="form-control mb-2"
-                                                            name="address_line_1" value="{{ address.address_line_1 }}"
-                                                            required>
-                                                        <input type="text" class="form-control" name="address_line_2"
-                                                            value="{{ address.address_line_2 }}"
-                                                            placeholder="Apt, Suite, etc. (Optional)">
-                                                    </div>
-                                                    <div class="col-6">
-                                                        <label class="form-label small text-muted-soft">City</label>
-                                                        <input type="text" class="form-control" name="city"
-                                                            value="{{ address.city }}" required>
-                                                    </div>
-                                                    <div class="col-6">
-                                                        <label
-                                                            class="form-label small text-muted-soft">State/Province</label>
-                                                        <input type="text" class="form-control" name="state"
-                                                            value="{{ address.state }}" required>
-                                                    </div>
-                                                    <div class="col-6">
-                                                        <label class="form-label small text-muted-soft">ZIP /
-                                                            Postal</label>
-                                                        <input type="text" class="form-control" name="zip_code"
-                                                            value="{{ address.zip_code }}" required>
-                                                    </div>
-                                                    <div class="col-6">
-                                                        <label class="form-label small text-muted-soft">Country</label>
-                                                        <input type="text" class="form-control" name="country"
-                                                            value="{{ address.country }}" required>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-outline-light btn-sm"
-                                                    data-bs-dismiss="modal">CANCEL</button>
-                                                <button type="submit" class="btn btn-primary btn-sm">SAVE
-                                                    CHANGES</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End Edit Modal -->
+                            
 
 
                             {% endfor %}
@@ -928,9 +925,12 @@
                             </div>
                             <h6 class="text-white fw-bold h5">NO ADDRESSES FOUND</h6>
                             <p class="text-muted-soft small mb-4">Add a shipping address to speed up checkout.</p>
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAddressModal">
-                                ADD NEW ADDRESS
-                            </button>
+
+                            <a href="{% url 'accounts:profile' %}"
+                                class="btn btn-primary">
+                                    ADD NEW ADDRESS
+                            </a>
+
                         </div>
                         {% endif %}
                     </div>
@@ -953,58 +953,135 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form method="POST" action="{% url 'accounts:add_address' %}">
-
                     {% csrf_token %}
+                
+                    {% if editing_address_id %}
+                        <input type="hidden" name="address_id" value="{{ editing_address_id }}">
+                    {% endif %}
+                
                     <div class="modal-body">
                         <div class="row g-3">
+                    
                             <div class="col-12">
                                 <label class="form-label small text-muted-soft">Full Name</label>
-                                <input type="text" class="form-control" name="full_name" placeholder="John Doe"
-                                    required>
+                                {{ address_form.full_name }}
+                                {% if address_form.full_name.errors %}
+                                    <div class="text-danger small">
+                                        {{ address_form.full_name.errors.0 }}
+                                    </div>
+                                {% endif %}
                             </div>
+                    
                             <div class="col-12">
-                                <label class="form-label small text-muted-soft">Street Address</label>
-                                <input type="text" class="form-control mb-2" name="address_line_1"
-                                    placeholder="123 Main St" required>
-                                <input type="text" class="form-control" name="address_line_2"
-                                    placeholder="Apt, Suite, etc. (Optional)">
+                                <label class="form-label small text-muted-soft">Address Line</label>
+                                {{ address_form.address_line_1 }}
+                                {% if address_form.address_line_1.errors %}
+                                    <div class="text-danger small">
+                                        {{ address_form.address_line_1.errors.0 }}
+                                    </div>
+                                {% endif %}
                             </div>
+                    
+                            <div class="col-12">
+                                <label class="form-label small text-muted-soft">Landmark</label>
+                                {{ address_form.landmark }}
+                                {% if address_form.landmark.errors %}
+                                    <div class="text-danger small">
+                                        {{ address_form.landmark.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                    
                             <div class="col-6">
                                 <label class="form-label small text-muted-soft">City</label>
-                                <input type="text" class="form-control" name="city" required>
+                                {{ address_form.city }}
+                                {% if address_form.city.errors %}
+                                    <div class="text-danger small">
+                                        {{ address_form.city.errors.0 }}
+                                    </div>
+                                {% endif %}
                             </div>
+                    
                             <div class="col-6">
-                                <label class="form-label small text-muted-soft">State/Province</label>
-                                <input type="text" class="form-control" name="state" required>
+                                <label class="form-label small text-muted-soft">District</label>
+                                {{ address_form.district }}
+                                {% if address_form.district.errors %}
+                                    <div class="text-danger small">
+                                        {{ address_form.district.errors.0 }}
+                                    </div>
+                                {% endif %}
                             </div>
+                    
                             <div class="col-6">
-                                <label class="form-label small text-muted-soft">ZIP / Postal</label>
-                                <input type="text" class="form-control" name="zip_code" required>
+                                <label class="form-label small text-muted-soft">State</label>
+                                {{ address_form.state }}
+                                {% if address_form.state.errors %}
+                                    <div class="text-danger small">
+                                        {{ address_form.state.errors.0 }}
+                                    </div>
+                                {% endif %}
                             </div>
+                    
                             <div class="col-6">
+                                <label class="form-label small text-muted-soft">Pincode</label>
+                                {{ address_form.pincode }}
+                                {% if address_form.pincode.errors %}
+                                    <div class="text-danger small">
+                                        {{ address_form.pincode.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                    
+                            <div class="col-12">
                                 <label class="form-label small text-muted-soft">Country</label>
-                                <input type="text" class="form-control" name="country" required>
+                                {{ address_form.country }}
+                                {% if address_form.country.errors %}
+                                    <div class="text-danger small">
+                                        {{ address_form.country.errors.0 }}
+                                    </div>
+                                {% endif %}
                             </div>
+                    
                             <div class="col-12">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="is_default" id="defaultCheck"
-                                        style="border-color: rgba(255,255,255,0.3); background-color: transparent;">
-                                    <label class="form-check-label text-white small" for="defaultCheck">
+                                    {{ address_form.is_default }}
+                                    <label class="form-check-label small text-white">
                                         Set as default address
                                     </label>
                                 </div>
                             </div>
+                    
                         </div>
                     </div>
+                    
+                
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-light btn-sm"
-                            data-bs-dismiss="modal">CANCEL</button>
-                        <button type="submit" class="btn btn-primary btn-sm">SAVE ADDRESS</button>
+                        <button type="button"
+                                class="btn btn-outline-light btn-sm"
+                                data-bs-dismiss="modal">
+                            CANCEL
+                        </button>
+                
+                        <button type="submit"
+                                class="btn btn-primary btn-sm">
+                            {% if editing_address_id %}
+                                UPDATE ADDRESS
+                            {% else %}
+                                SAVE ADDRESS
+                            {% endif %}
+                        </button>
                     </div>
                 </form>
+                
+                
             </div>
         </div>
     </div>
+
+
+
+
+
 
     <!-- Footer similar to categories -->
 
@@ -1238,7 +1315,22 @@
             });
         
         });
-        </script>
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            {% if address_form.errors or editing_address_id or add_mode %}
+                var modal = new bootstrap.Modal(
+                    document.getElementById('addAddressModal')
+                );
+                modal.show();
+            {% endif %}
+
+        });
+    </script>
+
+            
         
         
         

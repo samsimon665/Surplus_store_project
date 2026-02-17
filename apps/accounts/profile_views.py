@@ -1,23 +1,48 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 
-from .forms import ProfileDetailsForm, PhoneUpdateForm, ProfileImageForm
+from .forms import ProfileDetailsForm, PhoneUpdateForm, ProfileImageForm, AddressForm
 
 from allauth.account.models import EmailAddress
 
 from django.contrib.auth.decorators import login_required
 
-from .forms import AddressForm
+from .models import Address 
 
 
 @login_required(login_url='accounts:login')
 def profile_view(request):
     profile = request.user.profile
 
-    details_form = ProfileDetailsForm(
-        instance=profile,
-        initial={"full_name": request.user.first_name}
-    )
+    # -----------------------------------
+    # ADDRESS MODE CONTROL
+    # -----------------------------------
 
+    edit_id = request.GET.get("edit")
+    address_instance = None
+
+    if edit_id:
+        address_instance = get_object_or_404(
+            Address,
+            id=edit_id,
+            user=request.user
+        )
+
+    # If editing → instance form
+    # Else → blank form
+    address_form = AddressForm(instance=address_instance)
+
+    # -----------------------------------
+    # ORDER ADDRESSES (Default on top)
+    # -----------------------------------
+
+    addresses = request.user.addresses.order_by("-is_default", "-id")
+
+    # -----------------------------------
+    # OTHER PROFILE FORMS
+    # -----------------------------------
+
+    details_form = ProfileDetailsForm(instance=profile)
     phone_form = PhoneUpdateForm(instance=profile)
     image_form = ProfileImageForm(instance=profile)
 
@@ -26,7 +51,9 @@ def profile_view(request):
         verified=True
     ).exists()
 
-    addresses = request.user.addresses.all()
+    # -----------------------------------
+    # CONTEXT
+    # -----------------------------------
 
     context = {
         "profile": profile,
@@ -35,10 +62,16 @@ def profile_view(request):
         "image_form": image_form,
         "email_verified": email_verified,
         "phone_verified": False,
+
         "addresses": addresses,
+
+        # Address control
+        "address_form": address_form,
+        "editing_address_id": edit_id,
     }
 
     return render(request, "accounts/profile.html", context)
+
 
 
 @login_required(login_url='accounts:login')
@@ -89,19 +122,111 @@ def update_image(request):
 
 @login_required(login_url="accounts:login")
 def add_address(request):
+
     if request.method != "POST":
         return redirect("accounts:profile")
 
-    form = AddressForm(request.POST)
+    profile = request.user.profile
+    addresses = request.user.addresses.all()
+    address_id = request.POST.get("address_id")
 
+    # 🔥 EDIT MODE
+    if address_id:
+        address_instance = get_object_or_404(
+            Address,
+            id=address_id,
+            user=request.user
+        )
+        form = AddressForm(request.POST, instance=address_instance)
+
+    # 🔥 ADD MODE
+    else:
+        form = AddressForm(request.POST)
+
+    # =============================
+    # IF VALID → SAVE
+    # =============================
     if form.is_valid():
         address = form.save(commit=False)
         address.user = request.user
 
-        # If this is the user's first address → force default
+        # First address → auto default
         if not request.user.addresses.exists():
             address.is_default = True
 
         address.save()
+
+        return redirect("accounts:profile")
+
+    # =============================
+    # IF INVALID → RE-RENDER PROFILE
+    # =============================
+    details_form = ProfileDetailsForm(instance=profile)
+    phone_form = PhoneUpdateForm(instance=profile)
+    image_form = ProfileImageForm(instance=profile)
+
+    email_verified = EmailAddress.objects.filter(
+        user=request.user,
+        verified=True
+    ).exists()
+
+    context = {
+        "profile": profile,
+        "details_form": details_form,
+        "phone_form": phone_form,
+        "image_form": image_form,
+        "email_verified": email_verified,
+        "phone_verified": False,
+        "addresses": addresses,
+
+        # 🔥 IMPORTANT
+        "address_form": form,
+        "editing_address_id": address_id,
+    }
+
+    return render(request, "accounts/profile.html", context)
+
+
+@login_required(login_url="accounts:login")
+def set_default_address(request, pk):
+
+    if request.method != "POST":
+        return redirect("accounts:profile")
+
+    address = get_object_or_404(
+        Address,
+        id=pk,
+        user=request.user
+    )
+
+    # Just mark this one default
+    address.is_default = True
+    address.save()
+
+    return redirect("accounts:profile")
+
+
+@login_required(login_url="accounts:login")
+def delete_address(request, pk):
+
+    if request.method != "POST":
+        return redirect("accounts:profile")
+
+    address = get_object_or_404(
+        Address,
+        id=pk,
+        user=request.user
+    )
+
+    was_default = address.is_default
+
+    address.delete()
+
+    # 🔥 If deleted address was default
+    if was_default:
+        next_address = request.user.addresses.first()
+        if next_address:
+            next_address.is_default = True
+            next_address.save()
 
     return redirect("accounts:profile")

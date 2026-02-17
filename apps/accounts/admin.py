@@ -56,4 +56,62 @@ class ProfileAdmin(admin.ModelAdmin):
 
 @admin.register(Address)
 class AddressAdmin(admin.ModelAdmin):
-    list_display = ("user", "full_name", "city", "state", "is_default")
+
+    list_display = (
+        "user",
+        "full_name",
+        "city",
+        "district",
+        "state",
+        "pincode",
+        "is_default",
+        "created_at",
+    )
+
+    list_filter = (
+        "is_default",
+        "state",
+        "city",
+        "created_at",
+    )
+
+    search_fields = (
+        "user__username",
+        "user__email",
+        "full_name",
+        "city",
+        "state",
+        "pincode",
+    )
+
+    readonly_fields = (
+        "created_at",
+        "updated_at",
+    )
+
+    ordering = ("-created_at",)
+
+
+    fieldsets = (
+        ("User Info", {
+            "fields": ("user", "full_name")
+        }),
+        ("Address Details", {
+            "fields": (
+                "address_line_1",
+                "address_line_2",
+                "landmark",
+                "city",
+                "district",
+                "state",
+                "pincode",
+                "country",
+            )
+        }),
+        ("Settings", {
+            "fields": ("is_default",)
+        }),
+        ("Timestamps", {
+            "fields": ("created_at", "updated_at"),
+        }),
+    )

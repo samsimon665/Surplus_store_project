@@ -9,69 +9,83 @@ from django.db.models import Q
 
 
 class Profile(models.Model):
+
     GENDER_CHOICES = (
         ('M', 'Male'),
         ('F', 'Female'),
         ('O', 'Other'),
     )
 
-
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name="profile"
+        User,
+        on_delete=models.CASCADE,
+        related_name="profile"
     )
 
-    phone = models.CharField(max_length=20, blank=True, null=True)
+    phone = models.CharField(
+        max_length=20,
+        blank=True,
+        null=True
+    )
+
+    phone_verified = models.BooleanField(
+        default=False
+    )
 
     gender = models.CharField(
         max_length=1,
         choices=GENDER_CHOICES,
-        null=True,
-        blank=True
+        blank=True,
+        null=True
     )
 
     profile_pic = models.ImageField(
-        upload_to="profiles/", null=True, blank=True
+        upload_to="profiles/",
+        blank=True,
+        null=True
     )
 
-    
-
-    dob = models.DateField(null=True, blank=True)
+    dob = models.DateField(
+        blank=True,
+        null=True
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    completion_percentage = models.IntegerField(default=0)
-
-    def calculate_completion(self):
+    # ===============================
+    # COMPLETION LOGIC (DYNAMIC)
+    # ===============================
+    @property
+    def completion_percentage(self):
         score = 0
 
-        # 1️⃣ Profile Image
+        # 1️⃣ Profile picture uploaded
         if self.profile_pic:
             score += 25
 
-        # 2️⃣ Account Details (name + gender + dob)
-        if self.user.first_name and self.gender and self.dob:
+        # 2️⃣ Personal details complete
+        if (
+            (self.user.first_name or self.user.last_name) and
+            self.gender and
+            self.dob
+        ):
             score += 25
 
-        # 3️⃣ Address Exists
+        # 3️⃣ At least one address added
         if self.user.addresses.exists():
             score += 25
 
-        # 4️⃣ Phone + Email Verified
+        # 4️⃣ Contact info verified (email + phone)
         email_verified = EmailAddress.objects.filter(
             user=self.user,
             verified=True
         ).exists()
 
-        if self.phone and email_verified:
+        if email_verified and self.phone_verified:
             score += 25
 
         return score
-    
-    def save(self, *args, **kwargs):
-        self.completion_percentage = self.calculate_completion()
-        super().save(*args, **kwargs)
-
 
     def __str__(self):
         return self.user.username
