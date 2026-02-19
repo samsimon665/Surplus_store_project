@@ -214,6 +214,9 @@ AUTHENTICATION_BACKENDS = (
 )
 
 
+ACCOUNT_ADAPTER = "apps.accounts.adapters.CustomAccountAdapter"
+
+
 # EMAIL
 
 ACCOUNT_EMAIL_REQUIRED = True
@@ -221,19 +224,19 @@ ACCOUNT_EMAIL_VERIFICATION = "optional"
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 
 
+ACCOUNT_EMAIL_VERIFICATION = "optional"  # we enforce manually
+ACCOUNT_EMAIL_CONFIRMATION_COOLDOWN = 120  # 2 minutes
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1  # 1 day
 
-# ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1   # 24 hours
-# ACCOUNT_EMAIL_CONFIRMATION_COOLDOWN = 300   # 5 minutes
 
-
-ACCOUNT_ADAPTER = "apps.accounts.adapters.CustomAccountAdapter"
 
 
 LOGIN_REDIRECT_URL = "/catalog/"
 LOGOUT_REDIRECT_URL = "/accounts/login/"
 
 
-ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = "/catalog/"
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = "accounts:profile"
+
 ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = "/accounts/login/"
 
 
@@ -248,19 +251,13 @@ ACCOUNT_SIGNUP_FIELDS = [
 
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
-        "SCOPE": [
-            "profile",
-            "email",
-            "openid"
-        ],
+        "SCOPE": ["profile", "email", "openid"],
         "AUTH_PARAMS": {"access_type": "online"},
+        "VERIFIED_EMAIL": True,
     }
 }
 
 
-SOCIALACCOUNT_LOGIN_ON_GET = True
-SOCIALACCOUNT_ADAPTER = "apps.accounts.adapters.CustomSocialAccountAdapter"
-ACCOUNT_ADAPTER = "apps.accounts.adapters.CustomAccountAdapter"
 
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

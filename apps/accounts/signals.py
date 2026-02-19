@@ -9,13 +9,10 @@ from .models import Profile, Address
 # ---------- HELPER ----------
 
 def update_profile_completion(user):
-    """
-    Safely update profile completion if profile exists.
-    Never crash if profile missing.
-    """
     profile = Profile.objects.filter(user=user).first()
     if profile:
-        profile.calculate_completion()
+        profile.save()   # save() automatically recalculates completion
+
 
 
 # ---------- AUTO CREATE PROFILE ----------

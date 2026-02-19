@@ -14,6 +14,9 @@ urlpatterns = [
 
     path("disabled/", views.account_disabled, name="account_disabled"),
 
+    path("verify-email/", views.send_verification_email, name="verify_email"),
+
+
 
     # Profile
 

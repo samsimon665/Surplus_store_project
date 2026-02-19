@@ -96,7 +96,7 @@
                 Create Account
             </h2>
 
-            <p class="text-gray-400 mb-6">
+            <p class="text-gray-400 mb-6 ">
                 Register to enter the Surplus ecosystem
             </p>
 
@@ -178,6 +178,8 @@
                     REGISTER
                 </button>
 
+            </form>
+
                 <p class="text-center text-gray-400 text-lg mt-2">
                     Already registered?
                     <a href="{% url 'accounts:login' %}" class="text-primary hover:underline">Login</a>
@@ -191,17 +193,21 @@
                 </div>
 
                 {% load socialaccount %}
+                
+                <form method="post" action="{% provider_login_url 'google' %}" class="max-w-md mx-auto">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full py-4 rounded-xl border border-borderc
+                               text-xs font-semibold tracking-wide
+                               flex items-center justify-center gap-2
+                               hover:bg-[#1b2030] transition">
+                        <img src="https://www.svgrepo.com/show/355037/google.svg" class="w-4 h-4">
+                        Continue with Google
+                    </button>
+                </form>
 
-                <a href="{% provider_login_url 'google' %}" class="w-full py-4 rounded-xl border border-borderc
-                                          text-xs font-semibold tracking-wide
-                                          flex items-center justify-center gap-2
-                                          hover:bg-[#1b2030] transition">
-                    <img src="https://www.svgrepo.com/show/355037/google.svg" class="w-4 h-4">
-                    Continue with Google
-                </a>
 
 
-            </form>
+            
 
         </div>
 

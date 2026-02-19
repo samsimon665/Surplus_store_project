@@ -7,6 +7,9 @@ from django.contrib.auth.models import User
 
 from allauth.account.models import EmailAddress
 
+from django.utils import timezone
+from datetime import timedelta
+
 
 
 
@@ -77,13 +80,13 @@ def register_view(request):
             user.set_password(form.cleaned_data["password1"])
             user.save()
 
-            # 🔹 Create EmailAddress entry for allauth
             EmailAddress.objects.create(
                 user=user,
                 email=user.email,
                 primary=True,
                 verified=False
             )
+
 
             if not user.is_active:
                 return redirect("accounts:account_disabled")
@@ -117,3 +120,50 @@ def logout_view(request):
 
 def account_disabled(request):
     return render(request, "accounts/account_disabled.html")
+
+
+
+
+# EMAIL VERIFICATION
+
+
+
+def send_verification_email(request):
+    if not request.user.is_authenticated:
+        return redirect("accounts:login")
+
+    try:
+        email_address = EmailAddress.objects.get(
+            user=request.user, primary=True)
+    except EmailAddress.DoesNotExist:
+        messages.error(request, "No email address found.")
+        return redirect("accounts:profile")
+
+    if email_address.verified:
+        messages.info(request, "Email already verified.")
+        return redirect("accounts:profile")
+
+    # 🔥 2 minute throttle
+    last_sent = request.session.get("last_verification_sent")
+
+    if last_sent:
+        last_sent_time = timezone.datetime.fromisoformat(last_sent)
+        if timezone.now() < last_sent_time + timedelta(minutes=2):
+            messages.warning(
+                request, "Please wait before resending verification email.")
+            return redirect("accounts:profile")
+
+    # Send email
+    email_address.send_confirmation(request)
+
+    # Save send time in session
+    request.session["last_verification_sent"] = timezone.now().isoformat()
+
+    messages.success(
+        request,
+        "Verification email sent successfully.",
+        extra_tags="email_sent"
+    )
+
+
+    return redirect("accounts:profile")

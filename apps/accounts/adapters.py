@@ -1,30 +1,19 @@
 from allauth.account.adapter import DefaultAccountAdapter
-from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
+from django.contrib import messages
+from django.shortcuts import redirect
 
 
 class CustomAccountAdapter(DefaultAccountAdapter):
-    def send_confirmation_mail(self, request, emailconfirmation, signup):
-        return   # disable manual email sending
 
+    def confirm_email(self, request, email_address):
 
-class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
-    def save_user(self, request, sociallogin, form=None):
-        user = super().save_user(request, sociallogin, form)
+        email_address.verified = True
+        email_address.save()
 
-        data = sociallogin.account.extra_data
+        request.session.pop("last_verification_sent", None)
 
-        google_email = data.get("email")
+        # 🔥 add extra tag here
+        messages.success(request, "Email verified successfully.",
+                         extra_tags="email_verified")
 
-        if google_email:
-            user.email = google_email
-            user.save()
-
-        # auto-verify
-        if hasattr(user, "profile"):
-            user.profile.email_verified = True
-            user.profile.save()
-
-        return user
+        return redirect("accounts:profile")

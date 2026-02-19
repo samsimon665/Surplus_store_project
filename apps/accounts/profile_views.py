@@ -46,10 +46,25 @@ def profile_view(request):
     phone_form = PhoneUpdateForm(instance=profile)
     image_form = ProfileImageForm(instance=profile)
 
-    email_verified = EmailAddress.objects.filter(
+    # -----------------------------------
+    # EMAIL STATUS
+    # -----------------------------------
+
+
+    email_obj = EmailAddress.objects.filter(
         user=request.user,
-        verified=True
-    ).exists()
+        primary=True
+    ).first()
+
+    email_verified = False
+
+    if email_obj:
+        email_verified = email_obj.verified
+
+        # 🔥 If email is verified → remove resend timer session
+        if email_obj.verified:
+            request.session.pop("last_verification_sent", None)
+
 
     # -----------------------------------
     # CONTEXT
@@ -60,7 +75,10 @@ def profile_view(request):
         "details_form": details_form,
         "phone_form": phone_form,
         "image_form": image_form,
+
         "email_verified": email_verified,
+        "email_obj": email_obj,
+        
         "phone_verified": False,
 
         "addresses": addresses,
