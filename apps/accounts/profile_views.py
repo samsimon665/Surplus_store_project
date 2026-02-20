@@ -113,17 +113,6 @@ def update_details(request):
 
 
 @login_required(login_url='accounts:login')
-def update_phone(request):
-    if request.method == "POST":
-        form = PhoneUpdateForm(request.POST, instance=request.user.profile)
-
-        if form.is_valid():
-            profile = form.save()
-
-    return redirect("accounts:profile")
-
-
-@login_required(login_url='accounts:login')
 def update_image(request):
     if request.method == "POST":
         form = ProfileImageForm(

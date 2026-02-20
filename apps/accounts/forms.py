@@ -96,28 +96,65 @@ class ProfileDetailsForm(forms.ModelForm):
         }
 
 
+class EmailUpdateForm(forms.ModelForm):
+
     class Meta:
-        model = Profile
-        fields = ["gender", "dob"]
+        model = User
+        fields = ["email"]
         widgets = {
-            "gender": forms.Select(attrs={"class": "form-select"}),
-            "dob": forms.DateInput(attrs={
+            "email": forms.EmailInput(attrs={
                 "class": "form-control",
-                "type": "date"
-            }),
+                "placeholder": "Enter email",
+                "required": True
+            })
         }
+
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+
+        if not email:
+            raise ValidationError("Please enter a valid email address.")
+
+        email = email.strip().lower()
+
+        # Prevent duplicate emails (exclude current user)
+        if User.objects.filter(email__iexact=email).exclude(pk=self.instance.pk).exists():
+            raise ValidationError("This email is already registered.")
+
+        return email
 
 
 class PhoneUpdateForm(forms.ModelForm):
+
     class Meta:
         model = Profile
         fields = ["phone"]
         widgets = {
             "phone": forms.TextInput(attrs={
                 "class": "form-control",
-                "placeholder": "Enter phone number"
+                "placeholder": "Enter phone number",
+                "maxlength": "10",
+                "inputmode": "numeric"
             })
         }
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get("phone")
+
+        if not phone:
+            raise ValidationError("Phone number is required.")
+
+        phone = phone.strip()
+
+        # Only digits allowed
+        if not phone.isdigit():
+            raise ValidationError("Phone number must contain only digits.")
+
+        # Exactly 10 digits (India standard)
+        if len(phone) != 10:
+            raise ValidationError("Phone number must be exactly 10 digits.")
+
+        return phone
 
 
 class ProfileImageForm(forms.ModelForm):

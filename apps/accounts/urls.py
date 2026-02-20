@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .profile_views import profile_view, update_details, update_image, update_phone, add_address, set_default_address, delete_address
+from .profile_views import profile_view, update_details, update_image, add_address, set_default_address, delete_address
 
 app_name = "accounts"
 
@@ -14,15 +14,24 @@ urlpatterns = [
 
     path("disabled/", views.account_disabled, name="account_disabled"),
 
+
+    # EMIAL
+
     path("verify-email/", views.send_verification_email, name="verify_email"),
+    path("profile/update-email/", views.update_email, name="update_email"),
+    
+
+    # PHONE
+
+    path("profile/phone/send-otp/", views.send_phone_otp, name="send_phone_otp"),
+    path("profile/phone/verify-otp/", views.verify_phone_otp, name="verify_phone_otp"),
+    path("profile/update-phone/", views.update_phone, name="update_phone"),
 
 
-
-    # Profile
+    # PROFILE
 
     path("profile/", profile_view, name="profile"),
     path("profile/update-details/", update_details, name="update_details"),
-    path("profile/update-phone/", update_phone, name="update_phone"),
     path("profile/update-image/", update_image, name="update_image"),
     path("profile/address/add/", add_address, name="add_address"),
     path("profile/address/<int:pk>/set-default/", set_default_address, name="set_default_address"),

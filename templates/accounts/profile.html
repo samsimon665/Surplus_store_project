@@ -521,37 +521,91 @@
 
 
                         <ul class="list-group list-group-flush bg-transparent">
-                            <li
-                                class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0 py-2 border-secondary border-opacity-10">
-                                <span class="small text-muted-soft"><span
-                                        class="material-symbols-outlined fs-6 me-2 text-accent">check_circle</span>Profile
-                                    Picture</span>
-                                <span class="text-accent material-symbols-outlined fs-5">done</span>
-                            </li>
 
-                            <li
-                                class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0 py-2 border-secondary border-opacity-10">
-                                <span class="small text-muted-soft"><span
-                                        class="material-symbols-outlined fs-6 me-2 text-accent">badge</span>Personal
-                                    Details</span>
-                                <span class="text-accent material-symbols-outlined fs-5">done</span>
+                            <!-- 1️⃣ Profile Picture -->
+                            <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0 py-2 border-secondary border-opacity-10">
+                                <span class="small text-muted-soft">
+                                    <span class="material-symbols-outlined fs-6 me-2 {% if profile.profile_pic %}text-accent{% else %}text-warning{% endif %}">
+                                        account_circle
+                                    </span>
+                                    Profile Picture
+                                </span>
+                        
+                                {% if profile.profile_pic %}
+                                    <span class="text-accent material-symbols-outlined fs-5">done</span>
+                                {% else %}
+                                    <span class="text-warning material-symbols-outlined fs-5">priority_high</span>
+                                {% endif %}
                             </li>
-
-                            <li
-                                class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0 py-2 border-secondary border-opacity-10">
-                                <span class="small text-muted-soft"><span
-                                        class="material-symbols-outlined fs-6 me-2 text-accent">contact_mail</span>Contact
-                                    Info</span>
-                                <span class="text-accent material-symbols-outlined fs-5">done</span>
+                        
+                        
+                            <!-- 2️⃣ Personal Details -->
+                            <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0 py-2 border-secondary border-opacity-10">
+                                <span class="small text-muted-soft">
+                                    <span class="material-symbols-outlined fs-6 me-2 {% if user.first_name and profile.gender and profile.dob %}text-accent{% else %}text-warning{% endif %}">
+                                        badge
+                                    </span>
+                                    Personal Details
+                                </span>
+                        
+                                {% if user.first_name and profile.gender and profile.dob %}
+                                    <span class="text-accent material-symbols-outlined fs-5">done</span>
+                                {% else %}
+                                    <span class="text-warning material-symbols-outlined fs-5">priority_high</span>
+                                {% endif %}
                             </li>
-
-                            <li
-                                class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0 py-2 border-0">
-                                <span class="small text-muted-soft"><span
-                                        class="material-symbols-outlined fs-6 me-2 text-warning">other_houses</span>Address
-                                    Book</span>
-                                <span class="text-warning material-symbols-outlined fs-5">priority_high</span>
+                        
+                        
+                            <!-- 3️⃣ Email Verification -->
+                            <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0 py-2 border-secondary border-opacity-10">
+                                <span class="small text-muted-soft">
+                                    <span class="material-symbols-outlined fs-6 me-2 {% if email_verified %}text-accent{% else %}text-warning{% endif %}">
+                                        mail
+                                    </span>
+                                    Email Verified
+                                </span>
+                        
+                                {% if email_verified %}
+                                    <span class="text-accent material-symbols-outlined fs-5">done</span>
+                                {% else %}
+                                    <span class="text-warning material-symbols-outlined fs-5">priority_high</span>
+                                {% endif %}
                             </li>
+                        
+                        
+                            <!-- 4️⃣ Phone Verification -->
+                            <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0 py-2 border-secondary border-opacity-10">
+                                <span class="small text-muted-soft">
+                                    <span class="material-symbols-outlined fs-6 me-2 {% if profile.phone_verified %}text-accent{% else %}text-warning{% endif %}">
+                                        call
+                                    </span>
+                                    Phone Verified
+                                </span>
+                        
+                                {% if profile.phone_verified %}
+                                    <span class="text-accent material-symbols-outlined fs-5">done</span>
+                                {% else %}
+                                    <span class="text-warning material-symbols-outlined fs-5">priority_high</span>
+                                {% endif %}
+                            </li>
+                        
+                        
+                            <!-- 5️⃣ Address -->
+                            <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0 py-2 border-0">
+                                <span class="small text-muted-soft">
+                                    <span class="material-symbols-outlined fs-6 me-2 {% if addresses %}text-accent{% else %}text-warning{% endif %}">
+                                        location_on
+                                    </span>
+                                    Address Added
+                                </span>
+                        
+                                {% if addresses %}
+                                    <span class="text-accent material-symbols-outlined fs-5">done</span>
+                                {% else %}
+                                    <span class="text-warning material-symbols-outlined fs-5">priority_high</span>
+                                {% endif %}
+                            </li>
+                        
                         </ul>
                     </div>
                 </div>
@@ -701,9 +755,6 @@
                 <div class="row g-4 mb-4">
 
 
-
-
-
                     <!-- Email Card -->
 
                     <div class="col-md-6">
@@ -722,77 +773,111 @@
                                     {% if email_obj and email_obj.verified %}
                                     <span class="badge badge-verified rounded-pill">VERIFIED</span>
                                     {% else %}
-                                    <span class="badge badge-pending rounded-pill">PENDING</span>
+                                    <span class="badge badge-verified rounded-pill border-warning text-warning bg-transparent border-opacity-25">
+                                        UNVERIFIED
+                                    </span>
                                     {% endif %}
                                 </div>
 
                                 <!-- VIEW MODE -->
                                 <div class="view-content">
 
-                                    <p class="mb-4 text-break fw-medium fs-5 text-white">
-                                        {{ user.email }}
-                                    </p>
+                                    {% if not user.email %}
 
-                                    <div class="d-flex gap-2">
+                                        <p class="mb-4 fw-medium fs-5 text-white">
+                                            No email added
+                                        </p>
 
-                                        <!-- CHANGE BUTTON -->
-                                        <button type="button" class="btn btn-sm btn-outline-light flex-fill"
-                                            onclick="toggleEdit('emailCard')">
-                                            CHANGE
-                                        </button>
+                                        <div class="text-center">
+                                            <button type="button"
+                                                    class="btn btn-sm btn-primary"
+                                                    onclick="toggleEdit('emailCard')">
+                                                ADD EMAIL
+                                            </button>
+                                        </div>
 
-                                        <!-- VERIFY / VERIFIED BUTTON -->
-                                        {% if email_obj and email_obj.verified %}
+                                    {% else %}
 
-                                        <button type="button" class="btn btn-sm btn-success flex-fill" disabled>
-                                            <span class="material-symbols-outlined fs-6 align-middle me-1">
-                                                check_circle
-                                            </span>
-                                            VERIFIED
-                                        </button>
+                                        <p class="mb-4 text-break fw-medium fs-5 text-white">
+                                            {{ user.email }}
+                                        </p>
 
-                                        {% else %}
+                                        <div class="d-flex gap-2">
 
-                                        <a href="{% url 'accounts:verify_email' %}" 
-                                            id="verifyBtn"
-                                            class="btn btn-sm btn-warning flex-fill">
-                                                VERIFY
-                                        </a>
+                                            <!-- CHANGE BUTTON -->
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-light flex-fill"
+                                                    id="changeBtn"
+                                                    onclick="toggleEdit('emailCard')">
+                                                CHANGE
+                                            </button>
 
 
-                                        {% endif %}
 
-                                    </div>
+                                            {% if email_obj and email_obj.verified %}
+
+                                                <button type="button"
+                                                        class="btn btn-sm btn-success flex-fill"
+                                                        disabled>
+                                                    VERIFIED
+                                                </button>
+
+                                            {% else %}
+
+                                                <a href="{% url 'accounts:verify_email' %}"
+                                                id="verifyBtn"
+                                                class="btn btn-sm btn-warning flex-fill">
+                                                    VERIFY
+                                                </a>
+
+                                            {% endif %}
+
+                                        </div>
+
+                                    {% endif %}
+
                                 </div>
+
 
                                 {% endwith %}
 
                                 <!-- EDIT MODE -->
                                 <div class="edit-content">
-                                    <form method="POST" action="#">
+                                    <form method="POST" action="{% url 'accounts:update_email' %}">
                                         {% csrf_token %}
+                                
                                         <div class="mb-3">
-                                            <input type="email" class="form-control" name="email"
-                                                value="{{ user.email }}" required>
+                                            <input type="email"
+                                                   class="form-control"
+                                                   name="email"
+                                                   value="{{ user.email }}"
+                                                   required>
+                                
                                         </div>
+                                        {% for message in messages %}
+                                            {% if "email_error" in message.tags %}
+                                                <div class="text-danger small mt-1 mb-4">
+                                                    {{ message }}
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
 
+                                
                                         <div class="d-flex gap-2">
-
-                                            <button type="submit"
-                                                    class="btn btn-sm btn-primary flex-fill">
-                                                UPDATE EMAIL
-                                            </button>
-                                        
                                             <button type="button"
                                                     class="btn btn-sm btn-outline-light flex-fill"
                                                     onclick="toggleEdit('emailCard')">
                                                 CANCEL
                                             </button>
-                                        
+                                
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-primary flex-fill">
+                                                UPDATE EMAIL
+                                            </button>
                                         </div>
-                                        
                                     </form>
                                 </div>
+                                
 
                             </div>
                         </div>
@@ -806,52 +891,123 @@
                     <div class="col-md-6">
                         <div class="card h-100" id="phoneCard">
                             <div class="card-body">
+
+                                <!-- Header -->
                                 <div class="d-flex justify-content-between align-items-start mb-4">
                                     <div class="d-flex align-items-center gap-2">
                                         <span class="material-symbols-outlined text-accent fs-3">call</span>
                                         <h6 class="mb-0 fw-bold h5 text-white">PHONE NUMBER</h6>
                                     </div>
+
                                     {% if profile.phone_verified %}
-                                    <span class="badge badge-verified rounded-pill">VERIFIED</span>
+                                        <span class="badge badge-verified rounded-pill">VERIFIED</span>
                                     {% else %}
-                                    <span
-                                        class="badge badge-verified rounded-pill border-warning text-warning bg-transparent border-opacity-25">UNVERIFIED</span>
+                                        <span class="badge badge-verified rounded-pill border-warning text-warning bg-transparent border-opacity-25">
+                                            UNVERIFIED
+                                        </span>
                                     {% endif %}
                                 </div>
 
-                                <!-- View -->
-
+                                <!-- VIEW MODE -->
                                 <div class="view-content">
-                                    <p class="mb-4 fw-medium fs-5 text-white">{% if profile.phone %}
-                                        {{ profile.phone }}
+
+                                    {% if profile.phone %}
+                                        <p class="mb-4 fw-medium fs-5 text-white">
+                                            {{ profile.phone }}
+                                        </p>
                                     {% else %}
-                                        No number added
+                                        <p class="mb-4 fw-medium fs-5 text-white">
+                                            No number added
+                                        </p>
                                     {% endif %}
-                                    </p>
-                                    <button class="btn btn-sm btn-outline-light w-100"
-                                        onclick="toggleEdit('phoneCard')">MANAGE PHONE</button>
+
+                                    {% if not profile.phone %}
+
+                                        <!-- Centered ADD button -->
+                                        <div class="text-center">
+                                            <button type="button"
+                                                    class="btn btn-sm btn-primary"
+                                                    onclick="toggleEdit('phoneCard')">
+                                                ADD PHONE
+                                            </button>
+                                        </div>
+
+                                    {% else %}
+
+                                        <div class="d-flex gap-2">
+
+                                            <!-- CHANGE -->
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-light flex-fill"
+                                                    onclick="toggleEdit('phoneCard')">
+                                                CHANGE
+                                            </button>
+
+                                            {% if profile.phone_verified %}
+
+                                                <button type="button"
+                                                        class="btn btn-sm btn-success flex-fill"
+                                                        disabled>
+                                                    VERIFIED
+                                                </button>
+
+                                            {% else %}
+
+                                            <a href="{% url 'accounts:send_phone_otp' %}"
+                                            class="btn btn-sm btn-warning flex-fill">
+                                             VERIFY
+                                         </a>
+
+                                            {% endif %}
+
+                                        </div>
+
+                                    {% endif %}
+
                                 </div>
 
-                                <!-- Edit -->
-
+                                <!-- EDIT MODE -->
                                 <div class="edit-content">
                                     <form method="POST" action="{% url 'accounts:update_phone' %}">
                                         {% csrf_token %}
-                                        <div class="mb-3">
-                                            <input type="tel" class="form-control" name="phone"
-                                                value="{{ profile.phone }}" placeholder="+1234567890">
 
+                                        <div class="mb-3">
+                                            <input type="tel"
+                                                class="form-control"
+                                                name="phone"
+                                                value="{{ profile.phone|default:'' }}"
+                                                placeholder="+1234567890">
                                         </div>
-                                        <div class="d-grid gap-2">
-                                            <button type="submit" class="btn btn-sm btn-primary">SAVE NUMBER</button>
-                                            <button type="button" class="btn btn-sm btn-outline-light"
-                                                onclick="toggleEdit('phoneCard')">CANCEL</button>
+
+                                        {% for message in messages %}
+                                            {% if "phone_update_error" in message.tags %}
+                                                <div class="text-danger small mt-1 mb-3">
+                                                    {{ message }}
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+
+                                        <div class="d-flex gap-2">
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-light flex-fill"
+                                                    onclick="toggleEdit('phoneCard')">
+                                                CANCEL
+                                            </button>
+
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-primary flex-fill">
+                                                SAVE NUMBER
+                                            </button>
                                         </div>
+
                                     </form>
                                 </div>
+
                             </div>
                         </div>
                     </div>
+
+                    
                 </div>
 
 
@@ -991,9 +1147,11 @@
                             <h6 class="text-white fw-bold h5">NO ADDRESSES FOUND</h6>
                             <p class="text-muted-soft small mb-4">Add a shipping address to speed up checkout.</p>
 
-                            <a href="{% url 'accounts:profile' %}" class="btn btn-primary">
+
+                            <button type="button" class="btn btn-primary"
+                                data-bs-toggle="modal" data-bs-target="#addAddressModal">
                                 ADD NEW ADDRESS
-                            </a>
+                            </button>
 
                         </div>
                         {% endif %}
@@ -1426,6 +1584,7 @@
         document.addEventListener("DOMContentLoaded", function () {
         
             const verifyBtn = document.getElementById("verifyBtn");
+            const changeBtn = document.getElementById("changeBtn");
         
             if (!verifyBtn) return;
         
@@ -1445,8 +1604,16 @@
         
             function startCountdown(seconds) {
         
+                // Disable VERIFY
                 verifyBtn.classList.add("disabled");
                 verifyBtn.style.pointerEvents = "none";
+        
+                // Disable CHANGE
+                if (changeBtn) {
+                    changeBtn.classList.add("disabled");
+                    changeBtn.style.pointerEvents = "none";
+                    changeBtn.style.opacity = "0.6";
+                }
         
                 let remaining = seconds;
         
@@ -1458,16 +1625,56 @@
         
                     if (remaining < 0) {
                         clearInterval(interval);
+        
                         verifyBtn.innerText = "VERIFY";
                         verifyBtn.classList.remove("disabled");
                         verifyBtn.style.pointerEvents = "auto";
+        
+                        // Enable CHANGE again
+                        if (changeBtn) {
+                            changeBtn.classList.remove("disabled");
+                            changeBtn.style.pointerEvents = "auto";
+                            changeBtn.style.opacity = "1";
+                        }
                     }
         
                 }, 1000);
             }
         
         });
+        </script>
+        
+
+    {% if messages %}
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+
+        {% for message in messages %}
+            {% if "email_error" in message.tags %}
+                document.getElementById("emailCard").classList.add("is-editing");
+            {% endif %}
+        {% endfor %}
+
+    });
     </script>
+    {% endif %}
+
+
+    
+    {% if messages %}f
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+
+        {% for message in messages %}
+            {% if "phone_update_error" in message.tags %}
+                document.getElementById("phoneCard").classList.add("is-editing");
+            {% endif %}
+        {% endfor %}
+
+    });
+    </script>
+    {% endif %}
+
         
     
 

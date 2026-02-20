@@ -7,6 +7,15 @@ from django.db import transaction
 
 from django.db.models import Q
 
+import random
+import hashlib
+
+from django.utils import timezone
+from datetime import timedelta
+
+from django.conf import settings
+
+
 
 class Profile(models.Model):
 
@@ -62,28 +71,32 @@ class Profile(models.Model):
 
         # 1️⃣ Profile picture uploaded
         if self.profile_pic:
-            score += 25
+            score += 20
 
         # 2️⃣ Personal details complete
         if (
-            (self.user.first_name or self.user.last_name) and
+            self.user.first_name and
             self.gender and
             self.dob
         ):
-            score += 25
+            score += 20
 
-        # 3️⃣ At least one address added
-        if self.user.addresses.exists():
-            score += 25
-
-        # 4️⃣ Contact info verified (email + phone)
+        # 3️⃣ Email verified
         email_verified = EmailAddress.objects.filter(
             user=self.user,
             verified=True
         ).exists()
 
-        if email_verified and self.phone_verified:
-            score += 25
+        if email_verified:
+            score += 20
+
+        # 4️⃣ Phone verified
+        if self.phone_verified:
+            score += 20
+
+        # 5️⃣ At least one address added
+        if self.user.addresses.exists():
+            score += 20
 
         return score
 
@@ -143,3 +156,31 @@ class Address(models.Model):
 
     def __str__(self):
         return f"{self.full_name} - {self.city}, {self.state}"
+
+
+class PhoneOTP(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="phone_otp"
+    )
+
+    phone = models.CharField(max_length=20)
+
+    otp_hash = models.CharField(max_length=64)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+
+    attempts = models.PositiveIntegerField(default=0)
+
+    def is_expired(self):
+        return timezone.now() > self.expires_at
+
+    @staticmethod
+    def generate_code():
+        return str(random.randint(100000, 999999))
+
+    @staticmethod
+    def hash_code(code):
+        return hashlib.sha256(code.encode()).hexdigest()

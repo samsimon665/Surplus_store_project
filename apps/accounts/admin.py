@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Profile, Address
+from .models import Profile, Address, PhoneOTP
 
 
 from django.contrib.auth.admin import UserAdmin
@@ -34,6 +34,7 @@ class ProfileAdmin(admin.ModelAdmin):
     list_display = (
         'user',
         'phone',
+        'phone_verified',
         'gender',
         'dob',
         'completion_percentage',
@@ -115,3 +116,8 @@ class AddressAdmin(admin.ModelAdmin):
             "fields": ("created_at", "updated_at"),
         }),
     )
+
+
+@admin.register(PhoneOTP)
+class PhoneOTPAdmin(admin.ModelAdmin):
+    list_display = ("user", "phone", "created_at", "expires_at", "attempts")
