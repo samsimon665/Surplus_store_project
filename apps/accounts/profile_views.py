@@ -10,6 +10,11 @@ from django.contrib.auth.decorators import login_required
 from .models import Address 
 
 
+from django.utils import timezone
+from datetime import timedelta
+
+
+
 @login_required(login_url='accounts:login')
 def profile_view(request):
     profile = request.user.profile
@@ -65,6 +70,53 @@ def profile_view(request):
         if email_obj.verified:
             request.session.pop("last_verification_sent", None)
 
+    # -----------------------------------
+    # PHONE STATUS CLEANUP
+    # -----------------------------------
+
+
+    if profile.phone_verified:
+        request.session.pop("phone_last_verification_sent", None)
+        request.session.pop("phone_otp_expires_at", None)
+
+    # -----------------------------------
+    # PHONE COOLDOWN TIMER (60s)
+    # -----------------------------------
+
+
+    phone_cooldown_remaining = 0
+
+    last_phone_sent = request.session.get("phone_last_verification_sent")
+
+    if last_phone_sent:
+        sent_time = timezone.datetime.fromisoformat(last_phone_sent)
+        diff = (timezone.now() - sent_time).total_seconds()
+        remaining = 60 - int(diff)
+
+        if remaining > 0:
+            phone_cooldown_remaining = remaining
+
+
+    # -----------------------------------
+    # PHONE OTP VALIDITY TIMER
+    # -----------------------------------
+    phone_otp_remaining = 0
+
+    expires_at = request.session.get("phone_otp_expires_at")
+
+    if expires_at and not profile.phone_verified:
+        expires_time = timezone.datetime.fromisoformat(expires_at)
+        now = timezone.now()
+
+        remaining = int((expires_time - now).total_seconds())
+
+        if remaining > 0:
+            phone_otp_remaining = remaining
+        else:
+            # OTP expired → clear session
+            request.session.pop("phone_otp_expires_at", None)
+            request.session.pop("phone_last_verification_sent", None)
+
 
     # -----------------------------------
     # CONTEXT
@@ -78,12 +130,13 @@ def profile_view(request):
 
         "email_verified": email_verified,
         "email_obj": email_obj,
-        
-        "phone_verified": False,
+
+        "phone_verified": profile.phone_verified,
+        "phone_otp_remaining": phone_otp_remaining,
+        "phone_cooldown_remaining": phone_cooldown_remaining,
 
         "addresses": addresses,
 
-        # Address control
         "address_form": address_form,
         "editing_address_id": edit_id,
     }

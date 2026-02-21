@@ -419,6 +419,29 @@
             max-width: 100%;
             display: block;
         }
+
+        .otp-box {
+            width: 48px;
+            height: 52px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: #000;
+            color: #fff;
+            transition: all 0.2s ease;
+        }
+        
+        .otp-box:focus {
+            border-color: #F2E700;
+            box-shadow: 0 0 0 2px rgba(242,231,0,0.15);
+            outline: none;
+        }
+        
+        .otp-box.filled {
+            border-color: #10b981;
+        }
     </style>
 </head>
 
@@ -923,7 +946,6 @@
 
                                     {% if not profile.phone %}
 
-                                        <!-- Centered ADD button -->
                                         <div class="text-center">
                                             <button type="button"
                                                     class="btn btn-sm btn-primary"
@@ -934,11 +956,13 @@
 
                                     {% else %}
 
-                                        <div class="d-flex gap-2">
+                                        <!-- ACTION ROW -->
+                                        <div class="d-flex gap-2 mb-2">
 
                                             <!-- CHANGE -->
                                             <button type="button"
                                                     class="btn btn-sm btn-outline-light flex-fill"
+                                                    id="phoneChangeBtn"
                                                     onclick="toggleEdit('phoneCard')">
                                                 CHANGE
                                             </button>
@@ -954,13 +978,29 @@
                                             {% else %}
 
                                             <a href="{% url 'accounts:send_phone_otp' %}"
-                                            class="btn btn-sm btn-warning flex-fill">
-                                             VERIFY
-                                         </a>
-
+                                                id="phoneVerifyBtn"
+                                                class="btn btn-sm btn-warning flex-fill">
+                                                {% if phone_cooldown_remaining > 0 %}
+                                                    RESEND IN {{ phone_cooldown_remaining }}s
+                                                {% else %}
+                                                    VERIFY
+                                                {% endif %}
+                                            </a>
                                             {% endif %}
 
                                         </div>
+
+                                        <!-- ENTER OTP -->
+                                        {% if phone_otp_remaining > 0 and not profile.phone_verified %}
+                                            <div class="d-grid mt-2">
+                                                <button type="button"
+                                                        id="phoneOtpBtn"
+                                                        class="btn btn-sm btn-outline-success"
+                                                        onclick="openPhoneOtpModal()">
+                                                    ENTER OTP ({{ phone_otp_remaining }}s)
+                                                </button>
+                                            </div>
+                                        {% endif %}
 
                                     {% endif %}
 
@@ -1645,6 +1685,9 @@
         </script>
         
 
+
+    {% comment %} EMAIL UPDATE ERROR {% endcomment %}
+
     {% if messages %}
     <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -1660,6 +1703,9 @@
     {% endif %}
 
 
+
+
+    {% comment %} PHONE UPDATE ERROR  {% endcomment %}
     
     {% if messages %}f
     <script>
@@ -1675,6 +1721,241 @@
     </script>
     {% endif %}
 
+
+
+
+    {% comment %} PHONE OTP SEND  {% endcomment %}
+
+    {% if messages %}
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+
+        {% for message in messages %}
+            {% if "phone_sent" in message.tags %}
+                var modal = new bootstrap.Modal(
+                    document.getElementById('phoneOtpModal')
+                );
+                modal.show();
+                startOtpTimer();
+            {% endif %}
+        {% endfor %}
+
+    });
+    </script>
+    {% endif %}
+
+    {% comment %} PHONE OTP ERROR {% endcomment %}
+
+    {% if messages %}
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+
+        {% for message in messages %}
+            {% if "phone_otp_error" in message.tags %}
+                var modal = new bootstrap.Modal(
+                    document.getElementById('phoneOtpModal')
+                );
+                modal.show();
+                startOtpTimer();
+            {% endif %}
+        {% endfor %}
+
+    });
+    </script>
+    {% endif %}
+
+
+    {% comment %} OTP TIMER {% endcomment %}
+
+    <script>
+        function startOtpTimer() {
+        
+            let seconds = {{ phone_otp_remaining|default:0 }};
+        
+            const timerEl = document.getElementById("otpTimer");
+        
+            if (!timerEl || seconds <= 0) return;
+        
+            timerEl.innerText = seconds;
+        
+            const interval = setInterval(function() {
+        
+                seconds--;
+                timerEl.innerText = seconds;
+        
+                if (seconds <= 0) {
+                    clearInterval(interval);
+                    timerEl.innerText = "Expired";
+                }
+        
+            }, 1000);
+        }
+    </script>
+
+
+        {% comment %} VERIFY BUTTON TIMER {% endcomment %}
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+            
+                const verifyBtn = document.getElementById("phoneVerifyBtn");
+                const changeBtn = document.getElementById("phoneChangeBtn");
+            
+                if (!verifyBtn) return;
+            
+                let remaining = {{ phone_cooldown_remaining|default:0 }};
+            
+                if (remaining > 0) {
+                    startPhoneCooldown(remaining);
+                }
+            
+                function startPhoneCooldown(seconds) {
+            
+                    verifyBtn.classList.add("disabled");
+                    verifyBtn.style.pointerEvents = "none";
+            
+                    if (changeBtn) {
+                        changeBtn.classList.add("disabled");
+                        changeBtn.style.pointerEvents = "none";
+                        changeBtn.style.opacity = "0.6";
+                    }
+            
+                    let time = seconds;
+            
+                    const interval = setInterval(function () {
+            
+                        verifyBtn.innerText = "RESEND IN " + time + "s";
+                        time--;
+            
+                        if (time < 0) {
+                            clearInterval(interval);
+            
+                            verifyBtn.innerText = "VERIFY";
+                            verifyBtn.classList.remove("disabled");
+                            verifyBtn.style.pointerEvents = "auto";
+            
+                            if (changeBtn) {
+                                changeBtn.classList.remove("disabled");
+                                changeBtn.style.pointerEvents = "auto";
+                                changeBtn.style.opacity = "1";
+                            }
+                        }
+            
+                    }, 1000);
+                }
+            
+            });
+        </script>
+
+
+
+        {% comment %} ENTER OTP BUTTON TIMER  {% endcomment %}
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+            
+                const btn = document.getElementById("phoneOtpBtn");
+                if (!btn) return;
+            
+                let remaining = {{ phone_otp_remaining|default:0 }};
+            
+                const interval = setInterval(function () {
+            
+                    remaining--;
+            
+                    if (remaining <= 0) {
+                        clearInterval(interval);
+                        btn.remove();
+                        return;
+                    }
+            
+                    btn.innerText = "ENTER OTP (" + remaining + "s)";
+            
+                }, 1000);
+            
+            });
+        </script>
+
+        {% comment %} OTP REOPEN  {% endcomment %}
+
+
+        <script>
+            function openPhoneOtpModal() {
+                var modal = new bootstrap.Modal(
+                    document.getElementById('phoneOtpModal')
+                );
+                modal.show();
+            }
+        </script>
+
+
+        {% comment %} OTP SIX BOX  {% endcomment %}
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+            
+                const inputs = document.querySelectorAll("#otpInputs .otp-box");
+                const hiddenInput = document.getElementById("finalOtpInput");
+            
+                if (!inputs.length) return;
+            
+                inputs.forEach((input, index) => {
+            
+                    input.addEventListener("input", function () {
+            
+                        this.value = this.value.replace(/[^0-9]/g, "");
+            
+                        if (this.value.length === 1) {
+                            this.classList.add("filled");
+            
+                            if (index < inputs.length - 1) {
+                                inputs[index + 1].focus();
+                            }
+                        }
+            
+                        updateHiddenInput();
+                    });
+            
+                    input.addEventListener("keydown", function (e) {
+            
+                        if (e.key === "Backspace" && !this.value && index > 0) {
+                            inputs[index - 1].focus();
+                        }
+                    });
+            
+                });
+            
+                function updateHiddenInput() {
+                    let otp = "";
+                    inputs.forEach(i => otp += i.value);
+                    hiddenInput.value = otp;
+                }
+            
+            });
+        </script>
+
+
+        {% if messages %}
+        <script>
+        document.addEventListener("DOMContentLoaded", function() {
+
+            {% for message in messages %}
+
+                {% if "phone_attempts_exceeded" in message.tags %}
+                    var modal = new bootstrap.Modal(
+                        document.getElementById('phoneAttemptsModal')
+                    );
+                    modal.show();
+                {% endif %}
+
+            {% endfor %}
+
+        });
+        </script>
+        {% endif %}
         
     
 
@@ -1720,6 +2001,99 @@
     
                 <button class="btn premium-btn-primary mt-3" data-bs-dismiss="modal">
                     OK
+                </button>
+    
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="phoneOtpModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content premium-modal p-4 text-center">
+    
+                <div class="modal-icon mb-4">
+                    <span class="material-symbols-outlined">
+                        call
+                    </span>
+                </div>
+    
+                <h5 class="text-white mb-3">Enter OTP</h5>
+                <p class="text-muted-soft small mb-3">
+                    OTP sent to {{ profile.phone }}
+                </p>
+
+                {% for message in messages %}
+                    {% if "phone_otp_error" in message.tags %}
+                        <div class="text-danger small mb-3 text-center">
+                            {{ message }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+    
+                <form method="POST" action="{% url 'accounts:verify_phone_otp' %}">
+                    {% csrf_token %}
+    
+                    <div class="d-flex justify-content-center gap-2 mb-3" id="otpInputs">
+
+                        <input type="text" maxlength="1" class="otp-box" />
+                        <input type="text" maxlength="1" class="otp-box" />
+                        <input type="text" maxlength="1" class="otp-box" />
+                        <input type="text" maxlength="1" class="otp-box" />
+                        <input type="text" maxlength="1" class="otp-box" />
+                        <input type="text" maxlength="1" class="otp-box" />
+                    
+                    </div>
+                    
+                    <!-- Hidden actual field -->
+                    <input type="hidden" name="otp" id="finalOtpInput">
+    
+                    <div class="text-warning small mb-3">
+                        Expires in <span id="otpTimer">120</span>s
+                    </div>
+    
+                    <div class="d-flex gap-2">
+                        <button type="button"
+                                class="btn btn-outline-light flex-fill"
+                                data-bs-dismiss="modal">
+                            Cancel
+                        </button>
+    
+                        <button type="submit"
+                                class="btn premium-btn-primary flex-fill">
+                            Verify
+                        </button>
+                    </div>
+                </form>
+    
+            </div>
+        </div>
+    </div>
+
+
+    {% comment %} THREE ATTEMPT FAILURE ERROR {% endcomment %}
+
+
+    <div class="modal fade" id="phoneAttemptsModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content premium-modal p-4 text-center">
+    
+                <div class="modal-icon mb-4">
+                    <span class="material-symbols-outlined">
+                        error
+                    </span>
+                </div>
+    
+                <h5 class="text-white mb-3">
+                    Verification Failed
+                </h5>
+    
+                <p class="text-danger">
+                    You have failed 3 attempts. Please request a new OTP.
+                </p>
+    
+                <button class="btn btn-sm btn-primary mt-3"
+                        data-bs-dismiss="modal">
+                    CLOSE
                 </button>
     
             </div>

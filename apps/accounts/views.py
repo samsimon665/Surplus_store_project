@@ -16,6 +16,11 @@ from .models import PhoneOTP
 
 from django.contrib.auth.decorators import login_required
 
+from .sms import send_otp_sms
+
+
+
+
 def login_view(request):
 
     #  If user already logged in → do NOT show login page
@@ -213,7 +218,6 @@ def send_phone_otp(request):
 
     profile = request.user.profile
 
-    # 🚫 No phone number
     if not profile.phone:
         messages.error(
             request,
@@ -226,12 +230,10 @@ def send_phone_otp(request):
 
     if existing:
 
-        # 🔥 If expired → clean up first
         if existing.is_expired():
             existing.delete()
 
         else:
-            # 🔥 Cooldown (60 seconds from creation)
             cooldown_time = existing.created_at + timedelta(seconds=60)
 
             if timezone.now() < cooldown_time:
@@ -242,17 +244,14 @@ def send_phone_otp(request):
                 )
                 return redirect("accounts:profile")
 
-            # 🔥 If phone changed → invalidate old OTP
             if existing.phone != profile.phone:
                 existing.delete()
 
-    # ✅ Generate new OTP
     code = PhoneOTP.generate_code()
     hashed_code = PhoneOTP.hash_code(code)
 
     expires_at = timezone.now() + timedelta(minutes=2)
 
-    # 🔒 Atomic save
     with transaction.atomic():
         PhoneOTP.objects.update_or_create(
             user=request.user,
@@ -264,8 +263,11 @@ def send_phone_otp(request):
             }
         )
 
-    # 🔥 TEMPORARY (Replace with SMS API later)
-    print("PHONE OTP:", code)
+    # ✅ Development SMS backend
+    send_otp_sms(profile.phone, code)
+
+    request.session["phone_last_verification_sent"] = timezone.now().isoformat()
+    request.session["phone_otp_expires_at"] = expires_at.isoformat()
 
     messages.success(
         request,
@@ -274,6 +276,8 @@ def send_phone_otp(request):
     )
 
     return redirect("accounts:profile")
+
+
 
 @login_required(login_url="accounts:login")
 def verify_phone_otp(request):
@@ -317,6 +321,20 @@ def verify_phone_otp(request):
 
         remaining = 3 - otp_obj.attempts
 
+        # If 3 attempts used → delete + show final message
+        if otp_obj.attempts >= 3:
+            otp_obj.delete()
+
+            request.session.pop("phone_otp_expires_at", None)
+
+            messages.error(
+                request,
+                "You have failed 3 attempts. Please request a new OTP.",
+                extra_tags="phone_attempts_exceeded"
+            )
+            return redirect("accounts:profile")
+
+        # Otherwise normal invalid message
         messages.error(
             request,
             f"Invalid OTP. {remaining} attempts left.",
@@ -346,27 +364,42 @@ def update_phone(request):
     if request.method != "POST":
         return redirect("accounts:profile")
 
-    form = PhoneUpdateForm(
-        request.POST,
-        instance=request.user.profile
-    )
+    profile = request.user.profile
+    old_phone = profile.phone  # 🔥 store old value BEFORE form modifies it
 
-    if form.is_valid():
+    form = PhoneUpdateForm(request.POST, instance=profile)
 
-        profile = form.save(commit=False)
-
-        # Reset verification if number changed
-        if profile.phone != request.user.profile.phone:
-            profile.phone_verified = False
-
-        profile.save()
-
-        messages.success(request, "Phone number updated successfully.")
-
-    else:
+    if not form.is_valid():
         messages.error(
             request,
             form.errors["phone"][0],
             extra_tags="phone_update_error"
         )
+        return redirect("accounts:profile")
+
+    new_phone = form.cleaned_data["phone"]
+
+    with transaction.atomic():
+
+        # ✅ If phone actually changed
+        if new_phone != old_phone:
+
+            profile.phone = new_phone
+            profile.phone_verified = False  # 🔥 invalidate verification
+
+            profile.save(update_fields=["phone", "phone_verified"])
+
+            # 🔥 delete any existing OTP
+            PhoneOTP.objects.filter(user=request.user).delete()
+
+            # 🔥 clear verification timers
+            request.session.pop("phone_last_verification_sent", None)
+            request.session.pop("phone_otp_expires_at", None)
+
+        else:
+            # If same number, just save normally
+            profile.save(update_fields=["phone"])
+
+    messages.success(request, "Phone number updated successfully.")
+
     return redirect("accounts:profile")
