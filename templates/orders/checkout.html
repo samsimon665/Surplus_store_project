@@ -1,1 +1,1094 @@
-<h1>hi checkout </h1>
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Checkout | Surplus Store</title>
+
+    <!-- Bootstrap 5.3.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Fonts: Inter & Bebas Neue -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100;400;700" rel="stylesheet" />
+
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+
+    <style>
+        :root {
+            --color-bg: #000000;
+            --color-sec: #111111;
+            --color-text: #EEEEEE;
+            --color-text-muted: #AAAAAA;
+            --color-accent: #F2E700;
+            --color-border: rgba(255, 255, 255, 0.1);
+            --color-success: #10b981;
+            --radius-md: 12px;
+            --shadow-subtle: 0 4px 15px rgba(0, 0, 0, 0.5);
+            --font-display: 'Bebas Neue', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --nav-height: 80px;
+        }
+
+        body {
+        background-color: var(--color-bg);
+        color: var(--color-text);
+        font-family: var(--font-body);
+        -webkit-font-smoothing: antialiased;
+
+        padding-top: 50px; /* adjust based on navbar height */
+    }
+
+        .checkout-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        /* TYPOGRAPHY */
+        h1,
+        h2,
+        h3,
+        .display-font {
+            font-family: var(--font-display);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.5rem;        /* increase size */
+            color: var(--color-accent);  /* yellow */
+            letter-spacing: 0.05em;
+            margin-bottom: 1.25rem;
+        }
+
+        /* HEADER & PROGRESS */
+        .checkout-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .progress-steps {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            position: relative;
+        }
+
+        .step {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--color-text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .step.active {
+            color: var(--color-accent);
+            font-weight: 700;
+        }
+
+        .step-divider {
+            width: 40px;
+            height: 1px;
+            background: var(--color-border);
+        }
+
+        .progress-line {
+            position: absolute;
+            bottom: -1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 2px;
+            background: var(--color-sec);
+        }
+
+        .progress-line-fill {
+            width: 66%;
+            height: 100%;
+            background: var(--color-accent);
+        }
+
+        /* CARDS */
+        .card-custom {
+            background: var(--color-bg);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--color-border);
+            padding: 1.75rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .divider {
+            border-bottom: 1px solid var(--color-border);
+            margin: 1.5rem 0;
+        }
+
+        /* CONTACT INFO */
+        .contact-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .link-change {
+            color: var(--color-accent);
+            font-size: 0.85rem;
+            text-decoration: underline;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .warning-box {
+            background: rgba(242, 231, 10, 0.05);
+            border: 1px solid rgba(242, 231, 0, 0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .warning-text {
+            font-size: 0.85rem;
+            color: var(--color-accent);
+            flex-grow: 1;
+        }
+
+        /* ADDRESS CARDS */
+        .address-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .address-card {
+            border: 1px solid var(--color-border);
+            border-radius: 10px;
+            padding: 1.25rem;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .address-card.selected {
+            border-color: var(--color-accent);
+            background: var(--color-sec);
+            border-width: 1.5px;
+        }
+
+        .address-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+        }
+
+        /* SHIPPING METHODS */
+        .shipping-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .shipping-card {
+            border: 1px solid var(--color-border);
+            border-radius: 10px;
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .shipping-card.selected {
+            border-color: var(--color-accent);
+            background: var(--color-sec);
+            border-width: 1.5px;
+        }
+
+        .shipping-title {
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.25rem;
+        }
+
+        .shipping-subtitle {
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+        }
+
+        .shipping-est {
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-top: 0.75rem;
+        }
+
+        /* PROMO CODE */
+        .promo-input-group {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-apply {
+            background: var(--color-accent);
+            color: #000;
+            text-transform: uppercase;
+            font-family: var(--font-display);
+            font-size: 1rem;
+            padding: 0.5rem 1.5rem;
+        }
+
+        .promo-status {
+            font-size: 0.85rem;
+            margin-top: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .text-success-custom {
+            color: var(--color-success);
+            font-weight: 500;
+        }
+
+        .navbar {
+            height: var(--nav-height);
+        }
+        /* ORDER SUMMARY (RIGHT COLUMN) */
+        .summary-sticky {
+            position: sticky;
+            top: calc(var(--nav-height) + 10px);
+        }
+        .product-list {
+            max-height: 180px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.05) transparent;
+        }
+
+        .product-list:hover {
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        }
+
+        /* Webkit scrollbar styles */
+        .product-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .product-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .product-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .product-list:hover::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .product-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .product-img {
+            width: 64px;
+            height: 80px;
+            background: var(--color-sec);
+            border-radius: 6px;
+            object-fit: cover;
+        }
+
+        .product-info {
+            flex-grow: 1;
+        }
+
+        .product-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.15rem;
+        }
+
+        .product-meta {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .product-price {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .product-qty {
+            font-size: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .summary-total {
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .btn-checkout {
+            background: var(--color-accent);
+            color: #000;
+            width: 100%;
+            padding: 1.1rem;
+            border-radius: 8px;
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            letter-spacing: 0.05em;
+            transition: opacity 0.2s;
+        }
+
+        .btn-checkout:hover {
+            background: #d9cf00;
+            color: #000;
+            box-shadow: 0 4px 15px rgba(242, 231, 0, 0.4);
+        }
+
+        .trust-badges {
+            text-align: center;
+            margin-top: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .trust-text {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+        }
+
+        /* BOTTOM SECTION */
+        .footer-minimal {
+            text-align: center;
+            margin-top: 4rem;
+            padding-bottom: 3rem;
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+        }
+
+        .badge-cod {
+            border: 1px solid var(--color-border);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: var(--color-text);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 1rem;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 991px) {
+            .summary-sticky {
+                position: static;
+                margin-top: 2rem;
+            }
+
+            .shipping-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .selectable-card input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+/* FOOTER */
+
+        footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            background: #050505;
+            padding: 52px 0 30px;
+            margin-top: 80px;
+        }
+
+        .footer-brand {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            letter-spacing: 0.18em;
+            color: #fff;
+        }
+
+        .footer-link {
+            color: #777;
+            text-decoration: none;
+            margin: 0 14px;
+            font-size: 0.85rem;
+            letter-spacing: 0.08em;
+        }
+
+        .footer-link:hover {
+            color: var(--color-accent);
+        }
+
+        .footer-social {
+            width: 40px;
+            height: 40px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #777;
+            transition: all 0.25s ease;
+        }
+
+        .footer-social:hover {
+            color: #000;
+            background: var(--color-accent);
+            border-color: var(--color-accent);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            margin-top: 25px;
+            padding-top: 16px;
+        }
+
+        .footer-copy {
+            font-size: 0.8rem;
+            color: #666;
+            letter-spacing: 0.12em;
+        }
+
+        /* CONTACT INFO */
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .contact-box {
+            border: 1px solid var(--color-border);
+            background: var(--color-sec);
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            transition: all 0.2s ease;
+        }
+
+        .contact-box:hover {
+            border-color: var(--color-accent);
+        }
+
+        @media (max-width: 768px) {
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* EMAIL  */
+
+        .badge-verify {
+            font-size: 0.65rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-left: 8px;
+        }
+
+        .badge-not-verified {
+            background: #dc3545;
+            color: #fff;
+        }
+
+        /* ADDRESS */
+
+        /* Scroll container */
+        .address-scroll {
+            max-height: 320px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding-right: 6px;
+        }
+
+        /* Thin scrollbar */
+        .address-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .address-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+        }
+
+        /* Address card full width */
+        .address-card {
+            width: 100%;
+            position: relative;
+            border: 1px solid var(--color-border);
+            border-radius: 10px;
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        /* Selected style */
+        .address-card.selected {
+            border-color: var(--color-accent);
+            background: var(--color-sec);
+        }
+
+        /* Default badge yellow */
+        .badge-default {
+            background: var(--color-accent);
+            color: #000;
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-left: 8px;
+        }
+
+        /* Tick icon */
+        .check-icon {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+            font-size: 1.2rem;
+            color: var(--color-accent);
+            display: none;
+        }
+
+        .address-card.selected .check-icon {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar Include Placeholder (Assuming same context) -->
+    {% include 'catalog/navbar.html' %}
+
+    <div class="checkout-container">
+        <!-- HEADER -->
+
+        <header class="checkout-header">
+
+            <div class="progress-steps">
+                <div class="step">Cart</div>
+                <div class="step-divider"></div>
+                <div class="step active">
+                    <span class="material-symbols-outlined"
+                        style="font-size:1.1rem; color: var(--color-accent);">local_shipping</span>
+                    Order Summary
+                </div>
+                <div class="step-divider"></div>
+                <div class="step">Payment</div>
+                <div class="progress-line">
+                    <div class="progress-line-fill"></div>
+                </div>
+            </div>
+        </header>
+
+
+        <div class="row g-4">
+
+            <!-- LEFT COLUMN: FLOW -->
+            <div class="col-lg-8">
+
+                <!-- 1. CONTACT INFORMATION -->
+                <div class="card-custom">
+                
+                    <div class="contact-row">
+                        <h2 class="section-title">Contact Information</h2>
+                        <a href="{% url 'accounts:profile' %}" class="link-change">Change</a>
+                    </div>
+                
+                    <div class="contact-grid">
+                
+                    
+                        <!-- EMAIL BOX -->
+
+
+                        <div class="contact-box">
+                        
+                            {% if user.email %}
+                        
+                            {% if email_verified %}
+                            <!-- VERIFIED STATE -->
+                            <div class="d-flex align-items-center mb-2 text-success fw-semibold" style="font-size: 0.85rem;">
+                                <span class="material-symbols-outlined me-1" style="font-size:18px;">
+                                    check_circle
+                                </span>
+                                Email verified
+                            </div>
+                            {% else %}
+                            <!-- NOT VERIFIED STATE -->
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="text-danger fw-semibold" style="font-size: 0.85rem;">
+                                    Email not verified
+                                </div>
+                                <a href="{% url 'accounts:profile' %}" class="btn btn-sm btn-outline-warning">
+                                    Verify
+                                </a>
+                            </div>
+                            {% endif %}
+                        
+                            <div class="info-label">Email Address</div>
+                            <div class="info-value">
+                                {{ user.email }}
+                            </div>
+                        
+                            {% else %}
+                        
+                            <!-- MISSING EMAIL -->
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="text-danger fw-semibold" style="font-size: 0.85rem;">
+                                    Email not added
+                                </div>
+                                <a href="{% url 'accounts:profile' %}" class="btn btn-sm btn-danger">
+                                    Add Email
+                                </a>
+                            </div>
+                        
+                            <div class="info-label">Email Address</div>
+                            <div class="info-value text-danger">
+                                Not Added
+                            </div>
+                        
+                            {% endif %}                  
+                        </div>
+
+
+
+                
+                        <!-- PHONE BOX -->
+
+
+                        <div class="contact-box">
+                        
+                            {% if user.profile and user.profile.phone %}
+                        
+                            <div class="info-label">Primary Phone</div>
+                            <div class="info-value">
+                                {{ user.profile.phone }}
+                            </div>
+                        
+                            {% else %}
+                        
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="text-danger fw-semibold" style="font-size: 0.85rem;">
+                                    Phone number not added
+                                </div>
+                                <a href="{% url 'accounts:profile' %}" class="btn btn-sm btn-danger">
+                                    Add Phone
+                                </a>
+                            </div>
+                        
+                            <div class="info-label">Phone</div>
+                            <div class="info-value text-danger">
+                                Not Added
+                            </div>
+                        
+                            {% endif %}
+                        
+                        </div>
+                    </div>
+                
+                </div>
+
+
+
+                <!-- 2. DELIVERY ADDRESS -->
+                <div class="card-custom">
+                
+                    <div class="contact-row">
+                        <h2 class="section-title">Delivery Address</h2>
+                
+                        {% if addresses %}
+                        <div class="d-flex gap-3">
+                            <a href="{% url 'accounts:profile' %}" class="link-change">Add New</a>
+                            <a href="{% url 'accounts:profile' %}" class="link-change">Change</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                
+                    {% if addresses %}
+                
+                    <div class="address-scroll">
+                
+                        {% for address in addresses %}
+                        <label class="address-card {% if address.is_default %}selected{% endif %}">
+                
+                            <input type="radio" name="selected_address" value="{{ address.id }}" {% if address.is_default %}checked{% endif %} hidden>
+                
+                            <div class="address-name">
+                                {{ address.full_name }}
+                
+                                {% if address.is_default %}
+                                <span class="badge-default">Default</span>
+                                {% endif %}
+                            </div>
+                
+                            <div class="info-value" style="font-weight: 400; line-height: 1.5;">
+                                {{ address.address_line_1 }}<br>
+                
+                                {% if address.address_line_2 %}
+                                {{ address.address_line_2 }}<br>
+                                {% endif %}
+                
+                                {{ address.city }}, {{ address.state }} - {{ address.pincode }}<br>
+                                {{ address.country }}
+                            </div>
+                
+                            {% if user.profile.phone %}
+                            <div class="info-label mt-2" style="font-size: 0.7rem;">
+                                Phone: {{ user.profile.phone }}
+                            </div>
+                            {% endif %}
+                
+                            <!-- Tick icon ALWAYS present but controlled by CSS -->
+                            <span class="material-symbols-outlined check-icon">
+                                check_circle
+                            </span>
+                
+                        </label>
+                        {% endfor %}
+                
+                    </div>
+                
+                    {% else %}
+                
+                    <div class="text-center py-4">
+                        <div class="text-danger fw-semibold mb-3">
+                            No delivery address found.
+                        </div>
+                
+                        <a href="{% url 'accounts:profile' %}" class="btn btn-danger">
+                            Add Address
+                        </a>
+                    </div>
+                
+                    {% endif %}
+                
+                </div>
+
+
+
+
+
+
+                <!-- 3. SHIPPING METHOD -->
+                <div class="card-custom">
+                    <h2 class="section-title">Shipping Method</h2>
+                
+                    <div class="shipping-grid">
+                
+                        <!-- STANDARD -->
+                        <label class="shipping-card selected">
+                            <input type="radio" name="shipping_method" value="standard" checked hidden>
+                
+                            <div class="shipping-title">
+                                <span>Standard Shipping</span>
+                                <span>Free</span>
+                            </div>
+                
+                            <div class="shipping-subtitle">
+                                Delivery in 7–8 business days
+                            </div>
+                
+                            <div class="shipping-est">
+                                Estimated delivery:
+                                <span class="delivery-date" data-type="standard">
+                                    7–8 days
+                                </span>
+                            </div>
+                        </label>
+                
+                        <!-- EXPRESS -->
+                        <label class="shipping-card">
+                            <input type="radio" name="shipping_method" value="express" hidden>
+                
+                            <div class="shipping-title">
+                                <span>Express Shipping</span>
+                                <span>₹99</span>
+                            </div>
+                
+                            <div class="shipping-subtitle">
+                                Delivery in 4–5 business days
+                            </div>
+                
+                            <div class="shipping-est">
+                                Estimated delivery:
+                                <span class="delivery-date" data-type="express">
+                                    4–5 days
+                                </span>
+                            </div>
+                        </label>
+                
+                    </div>
+                </div>
+
+
+
+
+                <!-- 4. DISCOUNT CODE -->
+                <div class="card-custom">
+                    <h2 class="section-title">Discount Code</h2>
+                    <div class="promo-input-group">
+                        <input type="text" class="form-control" placeholder="Enter promo code"
+                            style="border-radius: 8px; background-color: rgba(255, 255, 255, 0.05); border: 1px solid var(--color-border); color: #fff;">
+                        <button class="btn btn-apply">Apply</button>
+                    </div>
+                    <!-- Applied State Example -->
+                    <div class="promo-status">
+                        <span class="material-symbols-outlined"
+                            style="color:var(--color-success); font-size:1.1rem">check_circle</span>
+                        <span class="text-success-custom">PROMO20 applied!</span>
+                        <span class="ms-2">(-₹450.00)</span>
+                        <a class="link-change ms-auto" style="color:#d9534f">Remove</a>
+                    </div>
+                    <!-- Error State Example (Hidden) -->
+                    <div class="promo-status d-none">
+                        <span class="material-symbols-outlined" style="color:#d9534f; font-size:1.1rem">error</span>
+                        <span style="color:#d9534f; font-size: 0.85rem;">Invalid or expired code.</span>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+
+
+            <!-- RIGHT COLUMN: SUMMARY -->
+            <div class="col-lg-4">
+                <div class="summary-sticky">
+                    <div class="card-custom">
+                        <h2 class="section-title">Order Summary</h2>
+
+                        <!-- PRODUCT LIST -->
+                        <div class="product-list">
+                            <div class="product-item">
+                                <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=200&q=80"
+                                    class="product-img" alt="Product">
+                                <div class="product-info">
+                                    <div class="product-name">Vintage Heavyweight Tee <span
+                                            class="product-qty">x1</span></div>
+                                    <div class="product-meta">L / Midnight Black / 0.4kg</div>
+                                    <div class="product-price">₹1,299.00</div>
+                                    <div class="text-muted" style="font-size: 0.7rem; margin-top: 4px;">Delivers by Feb
+                                        28</div>
+                                </div>
+                            </div>
+                            <div class="product-item">
+                                <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=200&q=80"
+                                    class="product-img" alt="Product">
+                                <div class="product-info">
+                                    <div class="product-name">Surplus Denim Jacket <span class="product-qty">x1</span>
+                                    </div>
+                                    <div class="product-meta">M / Raw Indigo / 1.2kg</div>
+                                    <div class="product-price">₹2,850.00</div>
+                                    <div class="text-muted" style="font-size: 0.7rem; margin-top: 4px;">Delivers by Mar
+                                        1</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <!-- BILLING DETAILS -->
+                        <div class="summary-row">
+                            <span class="text-muted">Subtotal</span>
+                            <span>₹4,149.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="text-muted">Discount (PROMO20)</span>
+                            <span class="text-success-custom">-₹450.00</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="text-muted">Shipping</span>
+                            <span class="text-success-custom">Free</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="text-muted">Est. Tax (GST 12%)</span>
+                            <span>₹443.88</span>
+                        </div>
+
+                        <div class="summary-total">
+                            <div class="summary-row mb-0">
+                                <span>Total Amount</span>
+                                <span>₹4,142.88</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-3 text-end">
+                            <div style="font-size: 0.75rem; color: var(--color-text-muted);">Total Order Weight: 1.6 kg
+                            </div>
+                            <div style="font-size: 0.75rem; color: var(--color-success); font-weight: 600;">You saved
+                                ₹450.00 on this order</div>
+                        </div>
+
+                        <button class="btn btn-checkout mt-4">Continue to Payment</button>
+
+                        <div class="trust-badges">
+                            <span class="material-symbols-outlined" style="font-size:1rem; color:#666">lock</span>
+                            <span class="trust-text">Secure payment powered by <strong>Razorpay</strong></span>
+                        </div>
+                        <div class="text-center mt-2">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Razorpay_logo.svg" height="14"
+                                style="filter: grayscale(1); opacity: 0.6;" alt="Razorpay">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer>
+            <div class="container">
+                <div class="row align-items-center mb-4">
+                    <div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
+                        <div class="footer-brand">SURPLUS<span class="text-accent">STORE</span></div>
+                        <div class="text-muted small mt-1">Premium surplus clothing by weight.</div>
+                    </div>
+                    <div class="col-md-4 text-center mb-3 mb-md-0">
+                        <a href="#" class="footer-link">CONTACT</a>
+                        <a href="#" class="footer-link">FAQ</a>
+                        <a href="#" class="footer-link">SHIPPING</a>
+                        <a href="#" class="footer-link">RETURNS</a>
+                    </div>
+                    <div class="col-md-4 text-center text-md-end">
+                        <div class="d-inline-flex gap-2">
+                            <a href="#" class="footer-social"><span class="material-symbols-outlined">public</span></a>
+                            <a href="#" class="footer-social"><span class="material-symbols-outlined">alternate_email</span></a>
+                            <a href="#" class="footer-social"><span class="material-symbols-outlined">local_shipping</span></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-bottom text-center">
+                    <div class="footer-copy">© 2024 SURPLUS. ALL RIGHTS RESERVED.</div>
+                </div>
+            </div>
+        </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Simple UI interaction logic
+        document.querySelectorAll('.shipping-card').forEach(card => {
+            card.addEventListener('click', function () {
+                document.querySelectorAll('.shipping-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                this.querySelector('input').checked = true;
+            });
+        });
+
+        document.querySelectorAll('.address-card').forEach(card => {
+            card.addEventListener('click', function () {
+                document.querySelectorAll('.address-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+    </script>
+
+    <!-- ADDRESS -->
+    <script>
+        document.querySelectorAll('.address-card input[type="radio"]').forEach(radio => {
+
+            radio.addEventListener('change', function () {
+
+                // Remove selected class from all cards
+                document.querySelectorAll('.address-card')
+                    .forEach(card => card.classList.remove('selected'));
+
+                // Add selected class to current
+                const card = this.closest('.address-card');
+                card.classList.add('selected');
+
+                // Smooth scroll into center
+                card.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+
+            });
+
+        });
+    </script>
+
+    <!-- SHIPPING  -->
+    <script>
+        document.querySelectorAll('input[name="shipping_method"]').forEach(radio => {
+
+            radio.addEventListener('change', function () {
+
+                // Remove selected class
+                document.querySelectorAll('.shipping-card')
+                    .forEach(card => card.classList.remove('selected'));
+
+                // Add selected class
+                this.closest('.shipping-card').classList.add('selected');
+
+                // Optional: you can log selected shipping for now
+                console.log("Selected shipping:", this.value);
+
+            });
+
+        });
+    </script>
+
+
+</body>
+
+</html>

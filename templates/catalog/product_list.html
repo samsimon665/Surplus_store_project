@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -28,6 +30,8 @@
 
     <!-- Anime.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
 
     <style>
         :root {
@@ -75,42 +79,6 @@
             color: var(--color-accent) !important;
         }
 
-        /* NAVBAR (Copied from Subcategory) */
-        .navbar {
-            background: rgba(0, 0, 0, 0.96);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 0.9rem 0;
-            backdrop-filter: blur(12px);
-        }
-
-        .navbar-brand {
-            font-size: 1.9rem;
-        }
-
-        .nav-link {
-            color: rgba(255, 255, 255, 0.72) !important;
-            font-size: 1.05rem;
-            margin-left: 1rem;
-            padding-top: 0.35rem;
-            padding-bottom: 0.35rem;
-            transition: color 0.25s ease, opacity 0.25s ease;
-        }
-
-        .nav-link:hover,
-        .nav-link.active {
-            color: var(--color-accent) !important;
-            opacity: 1;
-        }
-
-        .navbar-toggler {
-            border-radius: var(--radius-pill);
-            border-color: rgba(255, 255, 255, 0.5);
-        }
-
-        .navbar-toggler-icon {
-            filter: invert(1);
-        }
-
         /* BREADCRUMBS */
         .breadcrumb {
             margin-bottom: 0;
@@ -136,47 +104,6 @@
             color: #444;
         }
 
-        /* SEARCH BAR (Centered below header) */
-        .search-area {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .search-container {
-            position: relative;
-            border-radius: var(--radius-pill);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            background: linear-gradient(135deg, #050505, #101010);
-            transition: border-color 0.3s, box-shadow 0.3s;
-            overflow: hidden;
-        }
-
-        .search-container:focus-within {
-            border-color: var(--color-accent);
-            box-shadow: 0 0 0 1px rgba(242, 231, 0, 0.35);
-        }
-
-        .search-input {
-            background: transparent;
-            border: none;
-            color: #fff;
-            font-family: 'Montserrat', monospace;
-            box-shadow: none !important;
-            padding: 0.8rem 1rem 0.8rem 3rem;
-            font-size: 1rem;
-        }
-
-        .search-input::placeholder {
-            color: #555;
-        }
-
-        .search-icon-inside {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--color-text-muted);
-        }
 
         /* BODY SEARCH (New Style) */
         .body-search {

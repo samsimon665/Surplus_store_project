@@ -37,7 +37,7 @@ def get_nav_counts(user):
 
 @login_required(login_url="accounts:login")
 def cart_view(request):
-    cart = Cart.objects.filter(user=request.user).first()
+    cart, _ = Cart.objects.get_or_create(user=request.user)
     items = []
 
     if cart:

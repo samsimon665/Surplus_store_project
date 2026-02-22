@@ -1,0 +1,195 @@
+/* ===============================
+   NAVBAR DESIGN SYSTEM (GLOBAL)
+   This file controls ALL navbar styling.
+   Pages must NOT override navbar styles.
+================================ */
+
+/* ---------- THEME TOKENS ---------- */
+:root {
+    --nav-accent: #F2E700;
+    --nav-bg: rgba(0, 0, 0, .90);
+    --nav-border: rgba(255, 255, 255, .08);
+    --nav-text: #ffffff;
+    --nav-muted: #888;
+    --nav-font-display: 'Bebas Neue', sans-serif;
+    --nav-font-body: 'Montserrat', sans-serif;
+}
+
+/* ---------- NAVBAR CONTAINER ---------- */
+nav.navbar {
+    background: var(--nav-bg) !important;
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--nav-border);
+    padding: .8rem 0;
+    min-height: 78px;
+    z-index: 1055;
+}
+
+/* Prevent page CSS breaking navbar */
+nav.navbar * {
+    box-sizing: border-box;
+}
+
+/* ---------- BRAND ---------- */
+nav.navbar .navbar-brand {
+    font-family: var(--nav-font-display) !important;
+    font-size: 1.85rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* ---------- NAV LINKS ---------- */
+nav.navbar .nav-link {
+    font-family: var(--nav-font-display) !important;
+    font-size: 1.05rem;
+    letter-spacing: 1px;
+    margin-left: 1.2rem;
+    color: var(--nav-text) !important;
+    transition: .25s ease;
+}
+
+/* hover + active */
+nav.navbar .nav-link:hover,
+nav.navbar .nav-link.active {
+    color: var(--nav-accent) !important;
+    text-shadow: 0 0 10px rgba(242, 231, 0, .45);
+}
+
+/* ---------- ICONS ---------- */
+nav.navbar .material-symbols-outlined {
+    font-size: 22px;
+    line-height: 1;
+}
+
+/* ---------- BUTTONS ---------- */
+nav.navbar .btn {
+    font-family: var(--nav-font-display);
+    letter-spacing: 1px;
+    opacity: 1 !important;
+}
+/* ===== NAVBAR SEARCH (HOME STYLE EXACT MATCH) ===== */
+
+.search-container {
+    max-width: 230px !important;
+    height: 36px;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, .15);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    padding: 0 .6rem;
+    gap: .4rem;
+}
+
+.search-icon {
+    color: #444;
+    padding: 0;
+    font-size: 18px;
+}
+
+.search-input {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #000 !important;
+    font-size: .85rem;
+    padding: 0 !important;
+    height: 100%;
+}
+
+.search-input::placeholder {
+    color: #888;
+}
+
+.search-input:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* NAVBAR SEARCH — MATCHES HOME DESIGN */
+
+.nav-search {
+    max-width: 420px;
+}
+
+.nav-search .input-group-text {
+    background: transparent !important;
+    border: 1px solid rgba(255, 255, 255, .12) !important;
+    border-right: none !important;
+    border-radius: 999px 0 0 999px !important;
+    color: #aaa;
+    transition: .25s;
+}
+
+.nav-search .form-control {
+    background: transparent !important;
+    border: 1px solid rgba(255, 255, 255, .12) !important;
+    border-left: none !important;
+    color: #fff !important;
+    font-family: 'Montserrat', monospace;
+}
+
+.nav-search .form-control::placeholder {
+    color: #888;
+}
+
+.nav-search:focus-within .input-group-text,
+.nav-search:focus-within .form-control {
+    border-color: #F2E700 !important;
+    box-shadow: 0 0 0 1px #F2E700,
+        0 4px 12px rgba(242, 231, 0, .15) !important;
+}
+
+/* ---------- BADGES ---------- */
+nav.navbar .badge {
+    font-size: .65rem;
+    padding: .35em .45em;
+}
+
+/* ---------- TOGGLER ---------- */
+nav.navbar .navbar-toggler {
+    border-color: rgba(255, 255, 255, .4);
+    border-radius: 50px;
+}
+
+nav.navbar .navbar-toggler-icon {
+    filter: invert(1);
+}
+
+/* ---------- DROPDOWN ---------- */
+nav.navbar .dropdown-menu {
+    background: #0b0b0b;
+    border: 1px solid rgba(255, 255, 255, .08);
+}
+
+nav.navbar .dropdown-item {
+    color: #ddd;
+    font-size: .9rem;
+}
+
+nav.navbar .dropdown-item:hover {
+    background: rgba(255, 255, 255, .05);
+    color: #fff;
+}
+
+/* ---------- ACCENT TEXT ---------- */
+nav.navbar .text-accent {
+    color: var(--nav-accent) !important;
+}
+
+/* ---------- MOBILE ---------- */
+@media(max-width:991px) {
+
+    nav.navbar {
+        padding: .6rem 0;
+    }
+
+    nav.navbar .nav-link {
+        margin-left: 0;
+        padding: .5rem 0;
+    }
+
+    nav.navbar .search-container {
+        margin-top: .8rem;
+    }
+}
