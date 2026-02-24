@@ -4,11 +4,11 @@ from django.contrib import messages
 
 from apps.cart.models import Cart
 from apps.cart.services import can_proceed_to_checkout
+from .services import get_shipping_preview
+from allauth.account.models import EmailAddress
 
-from allauth.account.models import EmailAddress   # ✅ add this
 
-
-@login_required
+@login_required(login_url="accounts:login")
 def start_checkout(request):
     cart = Cart.objects.filter(user=request.user).first()
 
@@ -25,17 +25,23 @@ def start_checkout(request):
         )
         return redirect("cart:cart")
 
-    # ✅ Check verified email using allauth (REAL SOURCE OF TRUTH)
+    # ✅ Verified email (source of truth)
     email_verified = EmailAddress.objects.filter(
         user=request.user,
         verified=True,
         primary=True
     ).exists()
 
-    # Address
+    # 📞 Phone presence (not mandatory)
+    phone_present = bool(request.user.profile.phone)
 
-    addresses = request.user.addresses.all()
+    # 📍 Addresses (default first)
+    addresses = request.user.addresses.all().order_by("-is_default", "-created_at")
     default_address = addresses.filter(is_default=True).first()
+
+    # 🚚 Shipping previews
+    standard_shipping = get_shipping_preview("standard")
+    express_shipping = get_shipping_preview("express")
 
     return render(
         request,
@@ -43,10 +49,12 @@ def start_checkout(request):
         {
             "cart": cart,
             "cart_items": cart.items.select_related("variant"),
-            "subtotal": cart.subtotal,
-            "total": cart.total,
-            "email_verified": email_verified,   # ✅ pass this
+            "cart_subtotal": cart.subtotal,
+            "email_verified": email_verified,
+            "phone_present": phone_present,
             "addresses": addresses,
             "default_address": default_address,
+            "standard_shipping": standard_shipping,
+            "express_shipping": express_shipping,
         }
     )

@@ -757,7 +757,6 @@
                         {% if addresses %}
                         <div class="d-flex gap-3">
                             <a href="{% url 'accounts:profile' %}" class="link-change">Add New</a>
-                            <a href="{% url 'accounts:profile' %}" class="link-change">Change</a>
                         </div>
                         {% endif %}
                     </div>
@@ -843,16 +842,17 @@
                             </div>
                 
                             <div class="shipping-subtitle">
-                                Delivery in 7–8 business days
+                                Delivery in {{ standard_shipping.min_days }}–{{ standard_shipping.max_days }} business days
                             </div>
                 
                             <div class="shipping-est">
                                 Estimated delivery:
-                                <span class="delivery-date" data-type="standard">
-                                    7–8 days
-                                </span>
+                                {{ standard_shipping.start_date|date:"M d" }}
+                                –
+                                {{ standard_shipping.end_date|date:"M d" }}
                             </div>
                         </label>
+                
                 
                         <!-- EXPRESS -->
                         <label class="shipping-card">
@@ -860,18 +860,18 @@
                 
                             <div class="shipping-title">
                                 <span>Express Shipping</span>
-                                <span>₹99</span>
+                                <span>₹{{ express_shipping.fee }}</span>
                             </div>
                 
                             <div class="shipping-subtitle">
-                                Delivery in 4–5 business days
+                                Delivery in {{ express_shipping.min_days }}–{{ express_shipping.max_days }} business days
                             </div>
                 
                             <div class="shipping-est">
                                 Estimated delivery:
-                                <span class="delivery-date" data-type="express">
-                                    4–5 days
-                                </span>
+                                {{ express_shipping.start_date|date:"M d" }}
+                                –
+                                {{ express_shipping.end_date|date:"M d" }}
                             </div>
                         </label>
                 

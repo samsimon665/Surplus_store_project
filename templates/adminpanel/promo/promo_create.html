@@ -84,11 +84,19 @@
             </div>
 
 
-            {% if form.non_field_errors %}
-            <div class="mb-4 p-4 rounded-lg bg-red-50 border border-red-200">
+            {% if form.errors %}
+            <div class="mb-4 p-4 rounded-lg bg-red-50 border border-red-300">
+            
+                <p class="text-sm font-semibold text-red-700 mb-2">
+                    Please fix the errors below before submitting.
+                </p>
+            
                 {% for error in form.non_field_errors %}
-                <p class="text-sm text-red-600 font-semibold">{{ error }}</p>
+                <p class="text-sm text-red-600 font-semibold">
+                    {{ error }}
+                </p>
                 {% endfor %}
+            
             </div>
             {% endif %}
 
@@ -109,23 +117,24 @@
 
                         <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
 
-                            {% if form.code.errors %}
-                            <p class="text-xs text-red-500 mt-1">{{ form.code.errors.0 }}</p>
-                            {% endif %}
-
                             <div class="flex flex-col gap-2">
-                                <label
-                                    class="text-sm font-bold text-[#0d101b] dark:text-gray-300 uppercase tracking-wider">
+                                <label class="text-sm font-bold text-[#0d101b] dark:text-gray-300 uppercase tracking-wider">
                                     Promo Code
                                 </label>
-
+                            
                                 <input name="code" value="{{ form.code.value|default_if_none:'' }}"
-                                    class="w-full bg-[#f8f9fc] dark:bg-gray-800 border-[#cfd3e7] dark:border-gray-700 rounded-lg h-14 px-4 text-xl font-mono tracking-widest uppercase focus:ring-2 focus:ring-primary/20 focus:border-primary placeholder:text-[#cfd3e7]"
+                                    class="w-full bg-[#f8f9fc] dark:bg-gray-800 border {% if form.code.errors %}border-red-500{% else %}border-[#cfd3e7] dark:border-gray-700{% endif %} rounded-lg h-14 px-4 text-xl font-mono tracking-widest uppercase focus:ring-2 focus:ring-primary/20 focus:border-primary"
                                     placeholder="E.G. SUMMER50" />
-
+                            
+                                {% if form.code.errors %}
+                                <p class="text-xs text-red-500 mt-1">
+                                    {{ form.code.errors.0 }}
+                                </p>
+                                {% endif %}
+                            
                                 <p class="text-xs text-[#4c599a] dark:text-gray-500">
                                     Customers will enter this code at checkout.
-                                </p>
+                                </p>                   
                             </div>
 
 
@@ -196,47 +205,60 @@
 
                                 <!-- Discount Value -->
                                 <div class="flex flex-col gap-2">
-                                    <label id="discountValueLabel"
-                                        class="text-sm font-bold text-[#0d101b] dark:text-gray-300 uppercase tracking-wider">
+                                    <label id="discountValueLabel" class="text-sm font-bold text-[#0d101b] dark:text-gray-300 uppercase tracking-wider">
                                         Discount Percentage
                                     </label>
-
+                                
                                     <div class="relative">
-                                        <span id="discountSymbol"
-                                            class="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-[#4c599a]">
+                                        <span id="discountSymbol" class="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-[#4c599a]">
                                             %
                                         </span>
-
-                                        <input type="number" step="0.01" name="discount_value"
+                                
+                                        <input type="number" step="0.01" min="0.01" max="50" name="discount_value"
                                             value="{{ form.discount_value.value|default_if_none:'' }}"
-                                            class="w-full bg-[#f8f9fc] dark:bg-gray-800 border-[#cfd3e7] dark:border-gray-700 rounded-lg h-14 pl-10 pr-4 text-lg font-semibold focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                                            class="w-full bg-[#f8f9fc] dark:bg-gray-800 border {% if form.discount_value.errors %}border-red-500{% else %}border-[#cfd3e7] dark:border-gray-700{% endif %} rounded-lg h-14 pl-10 pr-4 text-lg font-semibold focus:ring-2 focus:ring-primary/20 focus:border-primary"
                                             placeholder="0.00" />
                                     </div>
+                                
+                                    {% if form.discount_value.errors %}
+                                    <p class="text-xs text-red-500 mt-1">
+                                        {{ form.discount_value.errors.0 }}
+                                    </p>
+                                    {% endif %}                          
                                 </div>
+
+
+
 
                                 <!-- Maximum Discount (ONLY for Percentage) -->
                                 <div id="maxDiscountWrapper" class="flex flex-col gap-2">
-                                    <label
-                                        class="text-sm font-bold text-[#0d101b] dark:text-gray-300 uppercase tracking-wider">
+                                    <label class="text-sm font-bold text-[#0d101b] dark:text-gray-300 uppercase tracking-wider">
                                         Maximum Discount
                                     </label>
-
+                                
                                     <div class="relative">
-                                        <span
-                                            class="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-[#4c599a]">
+                                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-[#4c599a]">
                                             ₹
                                         </span>
-
-                                        <input type="number" step="0.01" name="maximum_discount_amount"
+                                
+                                        <input type="number" step="0.01" min="0.01" name="maximum_discount_amount"
                                             value="{{ form.maximum_discount_amount.value|default_if_none:'' }}"
-                                            class="w-full bg-[#f8f9fc] dark:bg-gray-800 border-[#cfd3e7] dark:border-gray-700 rounded-lg h-14 pl-10 pr-4 text-lg font-semibold focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                                            class="w-full bg-[#f8f9fc] dark:bg-gray-800 border {% if form.maximum_discount_amount.errors %}border-red-500{% else %}border-[#cfd3e7] dark:border-gray-700{% endif %} rounded-lg h-14 pl-10 pr-4 text-lg font-semibold focus:ring-2 focus:ring-primary/20 focus:border-primary"
                                             placeholder="499" />
                                     </div>
-
+                                
+                                    {% if form.maximum_discount_amount.errors %}
+                                    <p class="text-xs text-red-500 mt-1">
+                                        {{ form.maximum_discount_amount.errors.0 }}
+                                    </p>
+                                    {% endif %}
+                                
                                     <p class="text-xs text-[#4c599a] dark:text-gray-500">
-                                        Cap the discount amount for high-value carts.
+                                        Required for percentage discounts. Caps discount amount.
                                     </p>
                                 </div>
+
+
 
                             </div>
                         </div>
@@ -251,32 +273,35 @@
                                 <h2 class="text-lg font-bold text-[#0d101b] dark:text-white">Cart Conditions</h2>
                             </div>
                             <div class="p-6 space-y-4">
-                                {% if form.minimum_cart_value.errors %}
-                                <p class="text-xs text-red-500 mt-1">
-                                    {{ form.minimum_cart_value.errors.0 }}
-                                </p>
-                                {% endif %}
 
                                 <div class="flex flex-col gap-2">
-                                    <label
-                                        class="text-sm font-bold text-[#0d101b] dark:text-gray-300 uppercase tracking-wider">
+                                    <label class="text-sm font-bold text-[#0d101b] dark:text-gray-300 uppercase tracking-wider">
                                         Minimum Cart Value
                                     </label>
+                                
                                     <div class="relative">
-                                        <span
-                                            class="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-[#4c599a]">
+                                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-[#4c599a]">
                                             ₹
                                         </span>
-
-                                        <input type="number" step="0.01" name="minimum_cart_value"
+                                
+                                        <input type="number" step="0.01" min="0" name="minimum_cart_value"
                                             value="{{ form.minimum_cart_value.value|default_if_none:'' }}"
-                                            class="w-full bg-[#f8f9fc] dark:bg-gray-800 border-[#cfd3e7] dark:border-gray-700 rounded-lg h-14 pl-10 pr-4 text-lg font-semibold focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                                            class="w-full bg-[#f8f9fc] dark:bg-gray-800 border {% if form.minimum_cart_value.errors %}border-red-500{% else %}border-[#cfd3e7] dark:border-gray-700{% endif %} rounded-lg h-14 pl-10 pr-4 text-lg font-semibold focus:ring-2 focus:ring-primary/20 focus:border-primary"
                                             placeholder="0.00" />
                                     </div>
+                                
+                                    {% if form.minimum_cart_value.errors %}
+                                    <p class="text-xs text-red-500 mt-1">
+                                        {{ form.minimum_cart_value.errors.0 }}
+                                    </p>
+                                    {% endif %}
+                                
                                     <p class="text-xs text-[#4c599a] dark:text-gray-500">
-                                        Promotion only applies above this value.
+                                        Promotion applies only above this cart value.
                                     </p>
                                 </div>
+
+
                             </div>
                         </div>
 
@@ -287,26 +312,29 @@
                                 <h2 class="text-lg font-bold text-[#0d101b] dark:text-white">Usage Limits</h2>
                             </div>
                             <div class="p-6 space-y-4">
-                                {% if form.usage_limit_total.errors %}
-                                <p class="text-xs text-red-500 mt-1">
-                                    {{ form.usage_limit_total.errors.0 }}
-                                </p>
-                                {% endif %}
 
                                 <div class="flex flex-col gap-2">
-                                    <label
-                                        class="text-sm font-bold text-[#0d101b] dark:text-gray-300 uppercase tracking-wider">
+                                    <label class="text-sm font-bold text-[#0d101b] dark:text-gray-300 uppercase tracking-wider">
                                         Total Usage Limit
                                     </label>
-                                    <input type="number" min="0" name="usage_limit_total"
+                                
+                                    <input type="number" min="0" step="1" name="usage_limit_total"
                                         value="{{ form.usage_limit_total.value|default_if_none:'' }}"
-                                        class="w-full bg-[#f8f9fc] dark:bg-gray-800 border-[#cfd3e7] dark:border-gray-700 rounded-lg h-14 px-4 text-lg font-semibold focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                                        class="w-full bg-[#f8f9fc] dark:bg-gray-800 border {% if form.usage_limit_total.errors %}border-red-500{% else %}border-[#cfd3e7] dark:border-gray-700{% endif %} rounded-lg h-14 px-4 text-lg font-semibold focus:ring-2 focus:ring-primary/20 focus:border-primary"
                                         placeholder="0" />
-
+                                
+                                    {% if form.usage_limit_total.errors %}
+                                    <p class="text-xs text-red-500 mt-1">
+                                        {{ form.usage_limit_total.errors.0 }}
+                                    </p>
+                                    {% endif %}
+                                
                                     <p class="text-xs text-[#4c599a] dark:text-gray-500">
-                                        Set to 0 to disable this promo for all users.
+                                    Example: 50 means 50 total users can use this promo.
                                     </p>
                                 </div>
+
+
                             </div>
                         </div>
                     </div>
@@ -323,49 +351,57 @@
 
                         <div class="p-6 space-y-8">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                {% if form.valid_from.errors %}
-                                <p class="text-xs text-red-500 mt-1">
-                                    {{ form.valid_from.errors.0 }}
-                                </p>
-                                {% endif %}
+
+                                <!-- VALID FROM -->
 
                                 <div class="flex flex-col gap-2">
-                                    <label
-                                        class="text-sm font-bold text-[#0d101b] dark:text-gray-300 uppercase tracking-wider">
+                                    <label class="text-sm font-bold text-[#0d101b] dark:text-gray-300 uppercase tracking-wider">
                                         Valid From
                                     </label>
+                                
                                     <div class="relative">
-                                        <span
-                                            class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-[#4c599a]">
+                                        <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-[#4c599a]">
                                             event
                                         </span>
-                                        <input type="datetime-local" name="valid_from"
-                                            value="{{ form.valid_from.value|date:'Y-m-d\\TH:i' }}"
-                                            class="w-full bg-[#f8f9fc] dark:bg-gray-800 border-[#cfd3e7] dark:border-gray-700 rounded-lg h-14 pl-12 pr-4 text-sm font-semibold focus:ring-2 focus:ring-primary/20 focus:border-primary" />
+                                
+                                        <input type="datetime-local" name="valid_from" value="{{ form.valid_from.value|date:'Y-m-d\\TH:i' }}"
+                                            class="w-full bg-[#f8f9fc] dark:bg-gray-800 border {% if form.valid_from.errors %}border-red-500{% else %}border-[#cfd3e7] dark:border-gray-700{% endif %} rounded-lg h-14 pl-12 pr-4 text-sm font-semibold focus:ring-2 focus:ring-primary/20 focus:border-primary" />
                                     </div>
+                                
+                                    {% if form.valid_from.errors %}
+                                    <p class="text-xs text-red-500 mt-1">
+                                        {{ form.valid_from.errors.0 }}
+                                    </p>
+                                    {% endif %}                          
                                 </div>
 
-                                {% if form.valid_to.errors %}
-                                <p class="text-xs text-red-500 mt-1">
-                                    {{ form.valid_to.errors.0 }}
-                                </p>
-                                {% endif %}
+
+                                <!-- VALID TO -->
+
 
                                 <div class="flex flex-col gap-2">
-                                    <label
-                                        class="text-sm font-bold text-[#0d101b] dark:text-gray-300 uppercase tracking-wider">
+                                    <label class="text-sm font-bold text-[#0d101b] dark:text-gray-300 uppercase tracking-wider">
                                         Valid To
                                     </label>
+                                
                                     <div class="relative">
-                                        <span
-                                            class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-[#4c599a]">
+                                        <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-[#4c599a]">
                                             event_busy
                                         </span>
-                                        <input type="datetime-local" name="valid_to"
-                                            value="{{ form.valid_to.value|date:'Y-m-d\\TH:i' }}"
-                                            class="w-full bg-[#f8f9fc] dark:bg-gray-800 border-[#cfd3e7] dark:border-gray-700 rounded-lg h-14 pl-12 pr-4 text-sm font-semibold focus:ring-2 focus:ring-primary/20 focus:border-primary" />
+                                
+                                        <input type="datetime-local" name="valid_to" value="{{ form.valid_to.value|date:'Y-m-d\\TH:i' }}"
+                                            class="w-full bg-[#f8f9fc] dark:bg-gray-800 border {% if form.valid_to.errors %}border-red-500{% else %}border-[#cfd3e7] dark:border-gray-700{% endif %} rounded-lg h-14 pl-12 pr-4 text-sm font-semibold focus:ring-2 focus:ring-primary/20 focus:border-primary" />
                                     </div>
+                                
+                                    {% if form.valid_to.errors %}
+                                    <p class="text-xs text-red-500 mt-1">
+                                        {{ form.valid_to.errors.0 }}
+                                    </p>
+                                    {% endif %}                          
                                 </div>
+
+
+
                             </div>
 
                             <div class="flex items-center gap-2 p-4 bg-primary/5 dark:bg-primary/10 rounded-lg">

@@ -79,6 +79,31 @@ class Order(models.Model):
         null=True
     )
 
+    shipping_method = models.CharField(
+        max_length=20,
+        choices=(
+            ("standard", "Standard"),
+            ("express", "Express"),
+        ),
+        default="standard"
+    )
+
+    shipping_fee = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal("0.00")
+    )
+
+    delivery_start = models.DateField(
+        null=True,
+        blank=True
+    )
+
+    delivery_end = models.DateField(
+        null=True,
+        blank=True
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
