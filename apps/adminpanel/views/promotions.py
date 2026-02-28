@@ -28,34 +28,8 @@ def promo_create(request):
         form = PromoCodeForm(request.POST)
 
         if form.is_valid():
-            promo = form.save(commit=False)
-
-            # -----------------------------
-            # Convert money fields properly
-            # -----------------------------
-
-            # Percent → store as integer (no *100)
-            if promo.discount_type == PromoCode.PERCENT:
-                promo.discount_value = int(promo.discount_value)
-
-            # Flat → convert rupees → paise
-            elif promo.discount_type == PromoCode.FLAT:
-                promo.discount_value = int(promo.discount_value * 100)
-
-            # Minimum cart value → always rupees → paise
-            promo.minimum_cart_value = int(promo.minimum_cart_value * 100)
-
-            # Max cap → rupees → paise (only if provided)
-            if promo.maximum_discount_amount:
-                promo.maximum_discount_amount = int(
-                    promo.maximum_discount_amount * 100
-                )
-
-            promo.save()
-
+            form.save()
             return redirect("adminpanel:promo_list")
-
-        # If invalid → fall through and render with errors
 
     else:
         form = PromoCodeForm()
@@ -104,37 +78,42 @@ def promo_list(request):
 
 
 @admin_required
-def promo_list(request):
-    status = request.GET.get("status", "all")
-    query = request.GET.get("q", "").strip()
+def promo_edit(request, promo_id):
+    promo = PromoCode.objects.get(id=promo_id)
 
-    promos_qs = PromoCode.objects.all().order_by("-created_at")
+    # Convert paise → rupees before showing in form
+    initial_data = {
+        "code": promo.code,
+        "discount_type": promo.discount_type,
+        "discount_value": (
+            promo.discount_value / 100
+            if promo.discount_type == PromoCode.FLAT
+            else promo.discount_value
+        ),
+        "minimum_cart_value": promo.minimum_cart_value / 100,
+        "maximum_discount_amount": (
+            promo.maximum_discount_amount / 100
+            if promo.maximum_discount_amount
+            else None
+        ),
+        "usage_limit_total": promo.usage_limit_total,
+        "valid_from": promo.valid_from,
+        "valid_to": promo.valid_to,
+        "is_active": promo.is_active,
+    }
 
-    # 🔎 SEARCH
-    if query:
-        promos_qs = promos_qs.filter(
-            Q(code__icontains=query) |
-            Q(discount_type__icontains=query)
-        )
+    if request.method == "POST":
+        form = PromoCodeForm(request.POST, instance=promo)
 
-    # 🔘 STATUS FILTER (business logic)
-    promos = []
-    for promo in promos_qs:
-        promo_status = promo.get_status()
-        if status == "all" or promo_status == status:
-            promos.append(promo)
+        if form.is_valid():
+            form.save()
+            return redirect("adminpanel:promo_list")
 
-    paginator = Paginator(promos, 10)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
+    else:
+        form = PromoCodeForm(initial=initial_data, instance=promo)
 
     return render(
         request,
-        "adminpanel/promo/promo_list.html",
-        {
-            "promos": page_obj,
-            "page_obj": page_obj,
-            "paginator": paginator,
-            "current_status": status,
-        },
+        "adminpanel/promo/promo_create.html",  # reuse same template
+        {"form": form, "is_edit": True},
     )

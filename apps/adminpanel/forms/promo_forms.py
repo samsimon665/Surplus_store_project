@@ -138,4 +138,29 @@ class PromoCodeForm(forms.ModelForm):
                     "Usage limit cannot exceed 100 users."
                 )
 
+        # ---------------------------------
+        # Convert rupees → paise (IMPORTANT)
+        # ---------------------------------
+
+
+        if not self.errors:
+
+            # Percent → store as integer (no *100)
+            if discount_type == PromoCode.PERCENT and discount_value is not None:
+                cleaned_data["discount_value"] = int(discount_value)
+
+            # Flat → convert rupees → paise
+            if discount_type == PromoCode.FLAT and discount_value is not None:
+                cleaned_data["discount_value"] = int(discount_value * 100)
+
+            # Minimum cart → rupees → paise
+            if cleaned_data.get("minimum_cart_value") is not None:
+                cleaned_data["minimum_cart_value"] = int(
+                    cleaned_data["minimum_cart_value"] * 100
+                )
+
+            # Maximum discount cap → rupees → paise
+            if max_discount is not None:
+                cleaned_data["maximum_discount_amount"] = int(max_discount * 100)
+
         return cleaned_data

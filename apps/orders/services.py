@@ -133,3 +133,36 @@ def get_shipping_preview(shipping_method: str):
         "start_date": start,
         "end_date": end,
     }
+
+
+def calculate_checkout_totals(
+    cart,
+    discount_amount=Decimal("0.00"),
+    shipping_fee=Decimal("0.00"),
+    tax_rate=Decimal("0.00")  # Example: Decimal("0.12") for 12%
+):
+    """
+    Centralized total calculation.
+    All checkout math must happen here.
+    """
+
+    subtotal = cart.subtotal
+
+    discounted_subtotal = subtotal - discount_amount
+
+    # Safety: never allow negative
+    if discounted_subtotal < Decimal("0.00"):
+        discounted_subtotal = Decimal("0.00")
+
+    tax_amount = discounted_subtotal * tax_rate
+
+    total = discounted_subtotal + shipping_fee + tax_amount
+
+    return {
+        "subtotal": subtotal,
+        "discount": discount_amount,
+        "discounted_subtotal": discounted_subtotal,
+        "tax": tax_amount,
+        "shipping": shipping_fee,
+        "total": total,
+    }

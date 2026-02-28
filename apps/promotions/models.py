@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 from django.utils import timezone
 
 
@@ -12,6 +13,11 @@ class TimeStampedModel(models.Model):
         abstract = True
 
 
+alphanumeric_validator = RegexValidator(
+    regex=r'^[A-Za-z0-9]+$',
+    message="Promo code must contain only letters and numbers.",
+)
+
 class PromoCode(TimeStampedModel):
     PERCENT = "PERCENT"
     FLAT = "FLAT"
@@ -22,9 +28,10 @@ class PromoCode(TimeStampedModel):
     )
 
     code = models.CharField(
-        max_length=50,
+        max_length=15,
         unique=True,
         db_index=True,
+        validators=[alphanumeric_validator],
     )
 
     discount_type = models.CharField(
@@ -65,15 +72,46 @@ class PromoCode(TimeStampedModel):
     def clean(self):
 
         # -------------------------
+        # Promo Code validation
+        # -------------------------
+        if not self.code:
+            raise ValidationError({"code": "Promo code is required."})
+
+        code_length = len(self.code)
+
+        if code_length < 5:
+            raise ValidationError({
+                "code": "Promo code must be at least 5 characters long."
+            })
+
+        if code_length > 15:
+            raise ValidationError({
+                "code": "Promo code cannot exceed 15 characters."
+            })
+
+        if self.code.isdigit():
+            raise ValidationError({
+                "code": "Promo code cannot contain only numbers."
+            })
+
+        # -------------------------
         # Date validation
         # -------------------------
-        if not self.valid_from or not self.valid_to:
-            raise ValidationError("Valid from and valid to are required.")
+        if not self.valid_from:
+            raise ValidationError({"valid_from": "Valid from is required."})
+
+
+        if not self.valid_to:
+            raise ValidationError({"valid_to": "Valid to is required."})
 
 
         if self.valid_to <= self.valid_from:
             raise ValidationError({
                 "valid_to": "Valid To must be later than Valid From."
+            })
+        if self.valid_to < timezone.now():
+            raise ValidationError({
+                "valid_to": "Valid To cannot be in the past."
             })
 
         # -------------------------
@@ -95,7 +133,6 @@ class PromoCode(TimeStampedModel):
                     "discount_value": "Percentage discount cannot exceed 25%."
                 })
             
-            print("DEBUG DISCOUNT VALUE:", self.discount_value)
 
             # Cap required
             if self.maximum_discount_amount is None:
@@ -126,6 +163,26 @@ class PromoCode(TimeStampedModel):
                     "maximum_discount_amount":
                     "Maximum discount amount should not be set for flat discounts."
                 })
+            
+        # -------------------------
+        # Minimum Cart Value Validation
+        # -------------------------
+        if self.minimum_cart_value is None:
+            raise ValidationError({
+                "minimum_cart_value": "Minimum cart value is required."
+            })
+
+        if self.minimum_cart_value < 50000:
+            raise ValidationError({
+                "minimum_cart_value":
+                "Minimum cart value must be at least ₹500."
+            })
+
+        if self.minimum_cart_value > 250000:
+            raise ValidationError({
+                "minimum_cart_value":
+                "Minimum cart value cannot exceed ₹2500."
+            })
 
        # -------------------------
         # Usage limit validation

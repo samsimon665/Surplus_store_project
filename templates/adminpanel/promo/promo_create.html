@@ -147,7 +147,8 @@
                                 <div class="flex items-center gap-3 h-14">
                                     <div
                                         class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in">
-                                        <input type="checkbox" id="toggle" name="is_active"
+                                        <input type="hidden" name="is_active" value="False">
+                                        <input type="checkbox" id="toggle" name="is_active" value="True"
                                             class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer right-6 transition-all duration-300"
                                             {% if form.is_active.value %}checked{% endif %} />
 
@@ -185,7 +186,7 @@
                                 </label>
 
                                 <!-- Django needs these -->
-                                <input type="hidden" name="discount_type" id="discount_type" value="PERCENT">
+                                <input type="hidden" name="discount_type" id="discount_type" value="{{ form.discount_type.value|default:'PERCENT' }}">
 
                                 <div class="flex p-1 bg-[#f1f3f9] dark:bg-gray-800 rounded-lg w-full sm:w-fit">
                                     <button type="button" onclick="setDiscountType('PERCENT', this)"
@@ -318,7 +319,7 @@
                                         Total Usage Limit
                                     </label>
                                 
-                                    <input type="number" min="0" step="1" name="usage_limit_total"
+                                    <input type="number" min="1" max="100" step="1" name="usage_limit_total"
                                         value="{{ form.usage_limit_total.value|default_if_none:'' }}"
                                         class="w-full bg-[#f8f9fc] dark:bg-gray-800 border {% if form.usage_limit_total.errors %}border-red-500{% else %}border-[#cfd3e7] dark:border-gray-700{% endif %} rounded-lg h-14 px-4 text-lg font-semibold focus:ring-2 focus:ring-primary/20 focus:border-primary"
                                         placeholder="0" />

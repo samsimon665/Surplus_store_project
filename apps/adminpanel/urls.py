@@ -17,7 +17,7 @@ from apps.adminpanel.views.variants import variant_list, variant_create, variant
 
 from apps.adminpanel.views.faq import faq_list, faq_create
 
-from apps.adminpanel.views.promotions import promo_list, promo_create
+from apps.adminpanel.views.promotions import promo_list, promo_create, promo_edit
 
 
 app_name = "adminpanel"
@@ -63,8 +63,7 @@ urlpatterns = [
 
     path("promos/", promo_list, name="promo_list"),
     path("promos/add/", promo_create, name="promo_create"),
-
-
+    path("promos/<int:promo_id>/edit/", promo_edit, name="promo_edit"),
 
 
 ]

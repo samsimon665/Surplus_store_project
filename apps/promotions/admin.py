@@ -43,6 +43,8 @@ class PromoCodeAdmin(admin.ModelAdmin):
         "code",
         "discount_type",
         "display_discount_value",
+        "is_active",
+        "is_currently_valid",
         "display_minimum_cart_value",
         "display_max_discount_amount",
         "usage_limit_total",
