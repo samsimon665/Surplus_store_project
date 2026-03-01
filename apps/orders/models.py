@@ -73,6 +73,19 @@ class Order(models.Model):
         decimal_places=3
     )
 
+    tax_rate = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        help_text="Tax rate applied at order time (e.g., 12.00)"
+    )
+
+
+    tax_amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal("0.00")
+    )
+
     promo_code = models.CharField(
         max_length=50,
         blank=True,

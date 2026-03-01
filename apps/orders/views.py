@@ -14,24 +14,26 @@ from .services import get_shipping_preview, calculate_checkout_totals
 
 from allauth.account.models import EmailAddress
 
+from django.utils import timezone
+
+from apps.catalog.models import ProductImage
+
+from decimal import Decimal, ROUND_HALF_UP
 
 
 
 @login_required(login_url="accounts:login")
 def start_checkout(request):
 
+    # -------------------------------------------------
+    # 1️⃣ Load Cart
+    # -------------------------------------------------
     cart = Cart.objects.filter(user=request.user).first()
 
-    # -----------------------------------
-    # 1️⃣ Cart existence check
-    # -----------------------------------
     if not cart or not cart.items.exists():
         messages.error(request, "Your cart is empty.")
         return redirect("cart:cart")
 
-    # -----------------------------------
-    # 2️⃣ Hard cart validation
-    # -----------------------------------
     if not can_proceed_to_checkout(cart):
         messages.error(
             request,
@@ -39,9 +41,9 @@ def start_checkout(request):
         )
         return redirect("cart:cart")
 
-    # -----------------------------------
-    # 3️⃣ Email verification (required)
-    # -----------------------------------
+    # -------------------------------------------------
+    # 2️⃣ Email Verification (Required)
+    # -------------------------------------------------
     email_verified = EmailAddress.objects.filter(
         user=request.user,
         verified=True,
@@ -52,25 +54,25 @@ def start_checkout(request):
         messages.error(request, "Please verify your email before checkout.")
         return redirect("accounts:profile")
 
-    # -----------------------------------
-    # 4️⃣ Phone (optional)
-    # -----------------------------------
+    # -------------------------------------------------
+    # 3️⃣ Phone (Optional)
+    # -------------------------------------------------
     phone_present = bool(
         hasattr(request.user, "profile") and request.user.profile.phone
     )
 
-    # -----------------------------------
-    # 5️⃣ Address loading
-    # -----------------------------------
+    # -------------------------------------------------
+    # 4️⃣ Addresses
+    # -------------------------------------------------
     addresses = request.user.addresses.all().order_by(
         "-is_default",
         "-created_at"
     )
     default_address = addresses.filter(is_default=True).first()
 
-    # -----------------------------------
-    # 6️⃣ Shipping preview
-    # -----------------------------------
+    # -------------------------------------------------
+    # 5️⃣ Shipping
+    # -------------------------------------------------
     selected_shipping = request.GET.get("shipping", "standard")
 
     standard_shipping = get_shipping_preview("standard")
@@ -78,14 +80,37 @@ def start_checkout(request):
 
     if selected_shipping == "express":
         shipping_fee = Decimal(express_shipping.fee)
-        shipping_data = express_shipping
     else:
         shipping_fee = Decimal("0.00")
-        shipping_data = standard_shipping
 
-    # -----------------------------------
-    # 7️⃣ Promo Revalidation (Optional)
-    # -----------------------------------
+    # -------------------------------------------------
+    # 6️⃣ Build Cart Items (LIKE cart_view)
+    # -------------------------------------------------
+    cart_items = []
+
+    for item in cart.items.select_related(
+        "variant",
+        "variant__product",
+        "variant__product__subcategory",
+        "variant__product__subcategory__category",
+    ):
+
+        # Attach correct image based on color
+        item.display_image = (
+            ProductImage.objects
+            .filter(
+                variant__product=item.variant.product,
+                variant__color=item.color,
+            )
+            .order_by("-is_primary", "created_at")
+            .first()
+        )
+
+        cart_items.append(item)
+
+    # -------------------------------------------------
+    # 7️⃣ Promo Revalidation
+    # -------------------------------------------------
     applied_code = request.session.get("applied_promo")
 
     discount = Decimal("0.00")
@@ -104,50 +129,72 @@ def start_checkout(request):
             discount = result.discount
             applied_promo = result.promo
         else:
-            # Remove invalid promo
-            request.session.pop("applied_promo", None)
             promo_error = result.error
 
-    # -----------------------------------
-    # 8️⃣ Tax calculation (12% GST example)
-    # -----------------------------------
-    taxable_amount = cart.subtotal - discount
-    tax_rate = Decimal("0.12")
-    tax_amount = taxable_amount * tax_rate
+    # -------------------------------------------------
+    # 8️⃣ Totals Calculation
+    # -------------------------------------------------
+    subtotal = cart.subtotal
+    taxable_amount = subtotal - discount
 
-    # -----------------------------------
-    # 9️⃣ Final total
-    # -----------------------------------
-    final_total = taxable_amount + tax_amount + shipping_fee
+    tax_rate = Decimal("12.00")
 
-    # -----------------------------------
-    # 10️⃣ Render
-    # -----------------------------------
+    tax_amount = (
+        taxable_amount * tax_rate / Decimal("100")
+    ).quantize(
+        Decimal("1"),
+        rounding=ROUND_HALF_UP
+    )
+
+    final_total = (
+        taxable_amount + tax_amount + shipping_fee
+    ).quantize(
+        Decimal("1"),
+        rounding=ROUND_HALF_UP
+    )
+
+    # -------------------------------------------------
+    # 10 Totals Weight 
+    # -------------------------------------------------
+
+    total_weight = sum(
+        item.weight_kg * item.quantity
+        for item in cart.items.all()
+    )
+
+
+    # -------------------------------------------------
+    # 9️⃣ Render
+    # -------------------------------------------------
     return render(
         request,
         "orders/checkout.html",
         {
             "cart": cart,
-            "cart_items": cart.items.select_related("variant"),
-            "cart_subtotal": cart.subtotal,
+            "cart_items": cart_items,
+
+            "cart_subtotal": subtotal,
             "discount": discount,
             "applied_promo": applied_promo,
             "promo_error": promo_error,
+
             "shipping_fee": shipping_fee,
             "selected_shipping": selected_shipping,
-            "tax_amount": tax_amount,
-            "final_total": final_total,
-            "email_verified": email_verified,
-            "phone_present": phone_present,
-            "addresses": addresses,
-            "default_address": default_address,
             "standard_shipping": standard_shipping,
             "express_shipping": express_shipping,
-            "shipping_data": shipping_data,
+
+            "total_weight": round(total_weight, 3),
+
+            "tax_amount": tax_amount,
+            "final_total": final_total,
+
+            "email_verified": email_verified,
+            "phone_present": phone_present,
+
+            "addresses": addresses,
+            "default_address": default_address,
         }
     )
-
-
 
 
 @require_POST
@@ -170,19 +217,8 @@ def update_promo_ajax(request):
 
         request.session.pop("applied_promo", None)
 
-        totals = calculate_checkout_totals(
-            cart=cart,
-            discount_amount=Decimal("0.00"),
-            shipping_fee=Decimal("0.00"),
-            tax_rate=Decimal("0.12"),
-        )
-
         return JsonResponse({
-            "success": True,
-            "discount": "0.00",
-            "tax": str(totals["tax"]),
-            "total": str(totals["total"]),
-            "discounted_subtotal": str(totals["discounted_subtotal"]),
+            "success": True
         })
 
     # ---------------------------
@@ -192,35 +228,30 @@ def update_promo_ajax(request):
 
         code = request.POST.get("promo_code", "").strip()
 
+        if not code:
+            return JsonResponse({
+                "success": False,
+                "error": "Please enter a promo code."
+            }, status=400)
+
         result = validate_promo_for_cart(
             user=request.user,
             cart=cart,
             code=code
         )
 
-        if not result.success:
+        # Store code in session ALWAYS
+        request.session["applied_promo"] = code.upper()
+
+        if result.success:
+            return JsonResponse({
+                "success": True
+            })
+        else:
             return JsonResponse({
                 "success": False,
                 "error": result.error
             }, status=400)
-
-        request.session["applied_promo"] = result.promo.code
-
-        totals = calculate_checkout_totals(
-            cart=cart,
-            discount_amount=result.discount,
-            shipping_fee=Decimal("0.00"),
-            tax_rate=Decimal("0.12"),
-        )
-
-        return JsonResponse({
-            "success": True,
-            "code": result.promo.code,
-            "discount": str(totals["discount"]),
-            "tax": str(totals["tax"]),
-            "total": str(totals["total"]),
-            "discounted_subtotal": str(totals["discounted_subtotal"]),
-        })
 
     # ---------------------------
     # INVALID ACTION
@@ -229,3 +260,79 @@ def update_promo_ajax(request):
         "success": False,
         "error": "Invalid action."
     }, status=400)
+
+
+@require_POST
+@login_required(login_url="accounts:login")
+def update_checkout_summary(request):
+
+    cart = Cart.objects.filter(user=request.user).first()
+
+    if not cart or not cart.items.exists():
+        return JsonResponse({"error": "Cart empty"}, status=400)
+
+    shipping_method = request.POST.get("shipping", "standard")
+
+    # --------------------
+    # SHIPPING
+    # --------------------
+    if shipping_method == "express":
+        express = get_shipping_preview("express")
+        shipping_fee = Decimal(express["fee"])
+    else:
+        shipping_fee = Decimal("0.00")
+
+    # --------------------
+    # PROMO (from session)
+    # --------------------
+    applied_code = request.session.get("applied_promo")
+    discount = Decimal("0.00")
+
+    if applied_code:
+        result = validate_promo_for_cart(
+            user=request.user,
+            cart=cart,
+            code=applied_code
+        )
+        if result.success:
+            discount = result.discount
+
+    # --------------------
+    # TOTAL WEIGHT
+    # --------------------
+    total_weight = sum(
+        item.weight_kg * item.quantity
+        for item in cart.items.all()
+    )
+
+    # --------------------
+    # TAX + TOTAL
+    # --------------------
+    subtotal = cart.subtotal
+    taxable_amount = subtotal - discount
+    tax_rate = Decimal("12.00")
+
+    tax_amount = (
+        taxable_amount * tax_rate / Decimal("100")
+    ).quantize(
+        Decimal("1"),
+        rounding=ROUND_HALF_UP
+    )
+
+    final_total = (
+        taxable_amount + tax_amount + shipping_fee
+    ).quantize(
+        Decimal("1"),
+        rounding=ROUND_HALF_UP
+    )
+
+    return JsonResponse({
+        "subtotal": str(subtotal),
+        "discount": str(discount),
+        "shipping": str(shipping_fee),
+        "tax": str(tax_amount),
+        "total": str(final_total),
+        "weight": str(round(total_weight, 3)),
+    })
+
+

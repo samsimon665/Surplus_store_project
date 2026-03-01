@@ -221,16 +221,12 @@
 
                                 <!-- VALUE -->
                                 <td class="px-6 py-5 text-sm font-semibold">
-                                    {% if promo.discount_type == "PERCENT" %}
-                                    {{ promo.discount_value }}% Off
-                                    {% else %}
-                                    ₹{{ promo.discount_value|floatformat:2 }}
-                                    {% endif %}
+                                    {{ promo.display_discount_label }}
                                 </td>
 
                                 <!-- MIN CART -->
                                 <td class="px-6 py-5 text-sm text-slate-600 dark:text-slate-400">
-                                    ₹{{ promo.minimum_cart_value|floatformat:2 }}
+                                    ₹{{ promo.display_minimum_cart_value }}
                                 </td>
 
                                 <!-- USAGE (SAME STYLE, SAFE DEFAULT) -->
@@ -238,112 +234,125 @@
                                     <div class="flex flex-col gap-1.5 w-32">
                                         <div class="flex justify-between text-[10px] font-bold text-slate-500">
                                             <span>
-                                                {% if promo.usage_limit_total %}
-                                                {{ promo.usage_limit_per_user }}/{{ promo.usage_limit_total }}
-                                                {% else %}
-                                                Unlimited
-                                                {% endif %}
+                                                {{ promo.total_usage_count }}/{{ promo.usage_limit_total }}
                                             </span>
-                                            <span>—</span>
                                         </div>
-                                        <div
-                                            class="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                                            <div class="h-full bg-primary rounded-full" style="width: 40%"></div>
+
+                                        <div class="h-2.5 w-full bg-slate-200 dark:bg-slate-900 rounded-full overflow-hidden">
+                                            <div class="h-full bg-primary"
+                                                style="width: {{ promo.usage_percentage|default:0 }}%;">
+                                            </div>
                                         </div>
                                     </div>
-                                </td>
-
-                                <!-- VALIDITY -->
-                                <td class="px-6 py-5">
-                                    <div class="text-xs">
-                                        <p class="font-medium text-slate-700 dark:text-slate-300">
-                                            {{ promo.valid_from|date:"M d, Y" }}
-                                        </p>
-                                        <p class="text-slate-400">
-                                            to {{ promo.valid_to|date:"M d, Y" }}
-                                        </p>
-                                    </div>
-                                </td>
-
-                                <!-- STATUS -->
-                                <td class="px-6 py-5 text-center">
-                                    {% if promo.get_status == "active" %}
-                                    <span
-                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-status-active/10 text-status-active">
-                                        <span class="h-1.5 w-1.5 rounded-full bg-status-active"></span>
-                                        Active
-                                    </span>
-                                    {% elif promo.get_status == "expired" %}
-                                    <span
-                                        class="inline-flex items-center gap-1.5 rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-700 dark:bg-red-500/10 dark:text-red-400">
-                                        <span class="h-1.5 w-1.5 rounded-full bg-status-expired"></span>
-                                        Expired
-                                    </span>
-                                    {% else %}
-                                    <span
-                                        class="inline-flex items-center gap-1.5 rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-700 dark:bg-red-500/10 dark:text-red-400">
-                                        <span class="h-1.5 w-1.5 rounded-full bg-status-inactive"></span>
-                                        Inactive
-                                    </span>
-                                    {% endif %}
-                                </td>
-
-                                <!-- ACTIONS (UNCHANGED) -->
-                                <td class="px-6 py-5 text-right">
-                                    <div
-                                        class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button class="p-2 text-slate-400 hover:text-primary transition-colors">
-                                            <span class="material-symbols-outlined text-[20px]">visibility</span>
-                                        </button>
-
-                                        <a href="{% url 'adminpanel:promo_edit' promo.id %}"
-                                            class="p-2 text-slate-400 hover:text-primary transition-colors inline-block">
-                                            <span class="material-symbols-outlined text-[20px]">edit_square</span>
-                                        </a>
-
-                                        <button class="p-2 text-slate-400 hover:text-status-expired transition-colors">
-                                            <span class="material-symbols-outlined text-[20px]">delete</span>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
 
 
-                            {% endfor %}
 
-                        </tbody>
-                    </table>
+
                 </div>
-                <!-- Pagination Footer -->
-                <div
-                    class="px-6 py-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                        <span class="text-xs font-medium text-slate-500">Rows per page:</span>
-                        <select class="text-xs font-bold bg-transparent border-none focus:ring-0 p-0 cursor-pointer">
-                            <option>10</option>
-                            <option>20</option>
-                            <option>50</option>
-                        </select>
-                        <span class="text-xs text-slate-400 ml-2">Showing 1-4 of 12 codes</span>
+                </td>
+
+                <!-- VALIDITY -->
+                <td class="px-6 py-5">
+                    <div class="text-xs">
+                        <p class="font-medium text-slate-700 dark:text-slate-300">
+                            {{ promo.valid_from|date:"M d, Y" }}
+                        </p>
+                        <p>to</p>
+                        <p class="font-medium text-slate-700 dark:text-slate-300">
+                            {{ promo.valid_to|date:"M d, Y" }}
+                        </p>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <button
-                            class="p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-30"
-                            disabled="">
-                            <span class="material-symbols-outlined text-lg leading-none">chevron_left</span>
+                </td>
+
+                <!-- STATUS -->
+                <td class="px-6 py-5 text-center">
+
+                    {% if promo.status == "active" %}
+                    <span
+                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-status-active/10 text-status-active">
+                        <span class="h-1.5 w-1.5 rounded-full bg-status-active"></span>
+                        Active
+                    </span>
+
+                    {% elif promo.status == "expired" %}
+                    <span
+                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-600 dark:bg-red-500/10 dark:text-red-400">
+                        <span class="h-1.5 w-1.5 rounded-full bg-status-expired"></span>
+                        Expired
+                    </span>
+
+                    {% elif promo.status == "upcoming" %}
+                    <span
+                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-400">
+                        <span class="h-1.5 w-1.5 rounded-full bg-yellow-500"></span>
+                        Upcoming
+                    </span>
+
+                    {% else %}
+                    <span
+                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-gray-200 text-gray-600 dark:bg-gray-500/10 dark:text-gray-400">
+                        <span class="h-1.5 w-1.5 rounded-full bg-status-inactive"></span>
+                        Inactive
+                    </span>
+
+                    {% endif %}
+                </td>
+
+
+
+                <!-- ACTIONS (UNCHANGED) -->
+                <td class="px-6 py-5 text-right">
+                    <div
+                        class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button class="p-2 text-slate-400 hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined text-[20px]">visibility</span>
                         </button>
-                        <button class="h-8 w-8 rounded-lg bg-primary text-white text-xs font-bold">1</button>
-                        <button
-                            class="h-8 w-8 rounded-lg text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 text-xs font-bold">2</button>
-                        <button
-                            class="h-8 w-8 rounded-lg text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 text-xs font-bold">3</button>
-                        <button
-                            class="p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-white dark:hover:bg-slate-800 transition-colors">
-                            <span class="material-symbols-outlined text-lg leading-none">chevron_right</span>
-                        </button>
+
+                        <a href="{% url 'adminpanel:promo_edit' promo.id %}"
+                            class="p-2 text-slate-400 hover:text-primary transition-colors inline-block">
+                            <span class="material-symbols-outlined text-[20px]">edit_square</span>
+                        </a>
+
                     </div>
+                </td>
+                </tr>
+
+
+                {% endfor %}
+
+                </tbody>
+                </table>
+            </div>
+            <!-- Pagination Footer -->
+            <div
+                class="px-6 py-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <span class="text-xs font-medium text-slate-500">Rows per page:</span>
+                    <select class="text-xs font-bold bg-transparent border-none focus:ring-0 p-0 cursor-pointer">
+                        <option>10</option>
+                        <option>20</option>
+                        <option>50</option>
+                    </select>
+                    <span class="text-xs text-slate-400 ml-2">Showing 1-4 of 12 codes</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button
+                        class="p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-white dark:hover:bg-slate-800 transition-colors disabled:opacity-30"
+                        disabled="">
+                        <span class="material-symbols-outlined text-lg leading-none">chevron_left</span>
+                    </button>
+                    <button class="h-8 w-8 rounded-lg bg-primary text-white text-xs font-bold">1</button>
+                    <button
+                        class="h-8 w-8 rounded-lg text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 text-xs font-bold">2</button>
+                    <button
+                        class="h-8 w-8 rounded-lg text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-800 text-xs font-bold">3</button>
+                    <button
+                        class="p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-white dark:hover:bg-slate-800 transition-colors">
+                        <span class="material-symbols-outlined text-lg leading-none">chevron_right</span>
+                    </button>
                 </div>
             </div>
+        </div>
         </div>
     </main>
     <!-- Modal Placeholder: Delete Confirmation (Hidden by default) -->

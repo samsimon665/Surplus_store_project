@@ -1,5 +1,4 @@
 from decimal import Decimal
-from django.utils import timezone
 from apps.promotions.models import PromoCode, PromoUsage
 
 
@@ -12,18 +11,6 @@ class PromoValidationResult:
 
 
 def validate_promo_for_cart(user, cart, code):
-    """
-    Validates promo against:
-    - existence
-    - active status
-    - date validity
-    - usage limit
-    - user usage
-    - minimum cart value
-
-    Returns PromoValidationResult
-    """
-
     if not code:
         return PromoValidationResult(False, error="Enter promo code.")
 
@@ -34,39 +21,43 @@ def validate_promo_for_cart(user, cart, code):
     except PromoCode.DoesNotExist:
         return PromoValidationResult(False, error="Invalid promo code.")
 
-    now = timezone.now()
+    # 1️⃣ Must be active RIGHT NOW
+    if promo.status != "active":
+        return PromoValidationResult(False, error="Promo is not currently active.")
 
-    if not promo.is_active:
-        return PromoValidationResult(False, error="Promo inactive.")
+    # 2️⃣ Cart total in paise (assumes cart.subtotal is Decimal rupees)
+    cart_total_paise = int(cart.subtotal * 100)
 
-    if now < promo.valid_from:
-        return PromoValidationResult(False, error="Promo not started yet.")
+    # 3️⃣ Minimum cart value
+    if cart_total_paise < promo.minimum_cart_value:
+        min_rupees = promo.minimum_cart_value / 100
+        return PromoValidationResult(
+            False,
+            error=f"Minimum cart value is ₹{min_rupees:.2f}"
+        )
 
-    if now > promo.valid_to:
-        return PromoValidationResult(False, error="Promo expired.")
-
-    if PromoUsage.objects.filter(promo=promo, user=user).exists():
-        return PromoValidationResult(False, error="You already used this promo.")
-
+    # 4️⃣ Global usage limit
     if promo.usages.count() >= promo.usage_limit_total:
         return PromoValidationResult(False, error="Promo usage limit reached.")
 
-    cart_total_paise = int(cart.subtotal * 100)
+    # 5️⃣ Already used by this user
+    if PromoUsage.objects.filter(promo=promo, user=user).exists():
+        return PromoValidationResult(False, error="You already used this promo.")
 
-    if cart_total_paise < promo.minimum_cart_value:
-        return PromoValidationResult(
-            False,
-            error=f"Minimum cart value is ₹{promo.minimum_cart_value / 100}"
-        )
-
-    # ----- Discount Calculation -----
+    # 6️⃣ Calculate discount (in paise)
     if promo.discount_type == PromoCode.FLAT:
-        discount_paise = promo.discount_value
+        discount_paise = min(promo.discount_value, cart_total_paise)
 
     else:  # PERCENT
-        raw_discount = cart_total_paise * promo.discount_value // 100
-        discount_paise = min(raw_discount, promo.maximum_discount_amount)
+        percent_discount = cart_total_paise * promo.discount_value // 100
 
+        if promo.maximum_discount_amount:
+            discount_paise = min(
+                percent_discount, promo.maximum_discount_amount)
+        else:
+            discount_paise = percent_discount
+
+    # Convert to rupees Decimal for frontend
     discount = Decimal(discount_paise) / 100
 
     return PromoValidationResult(

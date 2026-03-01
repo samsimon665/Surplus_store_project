@@ -4,6 +4,9 @@ from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.utils import timezone
 
+from decimal import Decimal
+
+
 
 class TimeStampedModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -204,6 +207,58 @@ class PromoCode(TimeStampedModel):
                 "usage_limit_total":
                 "Usage limit cannot exceed 100 users."
             })
+
+    # -------------------------
+    # Display Helpers
+    # -------------------------
+
+
+    @property
+    def display_discount_value(self):
+        if self.discount_type == self.FLAT:
+            return (Decimal(self.discount_value) / Decimal("100")).quantize(Decimal("0.01"))
+        return self.discount_value
+
+
+    @property
+    def display_minimum_cart_value(self):
+        return (Decimal(self.minimum_cart_value) / Decimal("100")).quantize(Decimal("0.01"))
+
+
+    @property
+    def display_maximum_discount_amount(self):
+        if self.maximum_discount_amount:
+            return (Decimal(self.maximum_discount_amount) / Decimal("100")).quantize(Decimal("0.01"))
+        return None
+    
+    @property
+    def display_discount_label(self):
+        if self.discount_type == self.FLAT:
+            return f"₹{self.display_discount_value}"
+
+        if self.discount_type == self.PERCENT:
+            if self.display_maximum_discount_amount:
+                return f"{self.display_discount_value}% / ₹{self.display_maximum_discount_amount}"
+            return f"{self.display_discount_value}%"
+
+        return ""
+
+    @property
+    def total_usage_count(self):
+        return self.usages.count()
+
+    @property
+    def usage_percentage(self):
+        if not self.usage_limit_total:
+            return 0
+
+        if self.total_usage_count == 0:
+            return 0
+
+        return int((self.total_usage_count / self.usage_limit_total) * 100)
+
+
+
             
     def save(self, *args, **kwargs):
         self.code = self.code.upper()
@@ -212,7 +267,8 @@ class PromoCode(TimeStampedModel):
     # -------------------------
     # Status Helper
     # -------------------------
-    def get_status(self):
+    @property
+    def status(self):
         now = timezone.now()
 
         if not self.is_active:

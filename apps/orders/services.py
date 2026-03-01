@@ -1,3 +1,5 @@
+from apps.promotions.services import validate_promo_for_cart
+from decimal import Decimal, ROUND_HALF_UP
 from decimal import Decimal
 from datetime import date, timedelta
 from django.db import transaction
@@ -166,3 +168,116 @@ def calculate_checkout_totals(
         "shipping": shipping_fee,
         "total": total,
     }
+
+
+def create_order_from_checkout(request, cart, shipping_method, address_text):
+
+    with transaction.atomic():
+
+        # ---------------------
+        # 1️⃣ Subtotal
+        # ---------------------
+        subtotal = cart.subtotal
+
+        # ---------------------
+        # 2️⃣ Promo
+        # ---------------------
+        discount = Decimal("0.00")
+        promo_code = request.session.get("applied_promo")
+
+        if promo_code:
+            result = validate_promo_for_cart(
+                user=request.user,
+                cart=cart,
+                code=promo_code
+            )
+            if result.success:
+                discount = result.discount
+            else:
+                promo_code = None  # invalid
+
+        taxable_amount = subtotal - discount
+
+        # ---------------------
+        # 3️⃣ Shipping
+        # ---------------------
+        shipping_fee = Decimal("0.00")
+
+        if shipping_method == "express":
+            express = get_shipping_preview("express")
+            shipping_fee = Decimal(express["fee"])
+
+        # ---------------------
+        # 4️⃣ Tax (12%)
+        # ---------------------
+        tax_rate = Decimal("12.00")
+
+        tax_amount = (
+            taxable_amount * tax_rate / Decimal("100")
+        ).quantize(
+            Decimal("1"),
+            rounding=ROUND_HALF_UP
+        )
+
+        # ---------------------
+        # 5️⃣ Final Total
+        # ---------------------
+        total_amount = (
+            taxable_amount + tax_amount + shipping_fee
+        ).quantize(
+            Decimal("1"),
+            rounding=ROUND_HALF_UP
+        )
+
+        # ---------------------
+        # 6️⃣ Total Weight
+        # ---------------------
+        total_weight = sum(
+            item.weight_kg * item.quantity
+            for item in cart.items.all()
+        )
+
+        # ---------------------
+        # 7️⃣ Create Order
+        # ---------------------
+        order = Order.objects.create(
+            user=request.user,
+            address_text=address_text,
+
+            subtotal=subtotal,
+            discount_amount=discount,
+
+            tax_rate=tax_rate,
+            tax_amount=tax_amount,
+
+            shipping_method=shipping_method,
+            shipping_fee=shipping_fee,
+
+            total_amount=total_amount,
+            total_weight_kg=total_weight,
+
+            promo_code=promo_code if promo_code else None,
+        )
+
+        # ---------------------
+        # 8️⃣ Create Order Items
+        # ---------------------
+        for item in cart.items.select_related("variant", "variant__product"):
+
+            OrderItem.objects.create(
+                order=order,
+
+                product_name=item.variant.product.name,
+                color=item.color,
+                size=item.size,
+
+                quantity=item.quantity,
+                weight_kg=item.weight_kg,
+
+                unit_price=item.unit_price,
+                total_price=item.line_total,
+
+                variant_id=item.variant.id,
+            )
+
+        return order

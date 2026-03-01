@@ -57,7 +57,7 @@ def promo_list(request):
     # 🔘 STATUS FILTER (business logic)
     promos = []
     for promo in promos_qs:
-        promo_status = promo.get_status()
+        promo_status = promo.status
         if status == "all" or promo_status == status:
             promos.append(promo)
 

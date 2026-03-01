@@ -136,6 +136,6 @@ class PromoCodeAdmin(admin.ModelAdmin):
     display_usage_percent.short_description = "Usage %"
 
     def is_currently_valid(self, obj):
-        return obj.get_status() == "active"
+        return obj.status == "active"
     is_currently_valid.boolean = True
     is_currently_valid.short_description = "Valid Now?"
