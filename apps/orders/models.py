@@ -3,13 +3,14 @@ from django.conf import settings
 from decimal import Decimal
 import uuid
 
+from django.db.models import Q
+
 User = settings.AUTH_USER_MODEL
 
 
 class Order(models.Model):
 
     ORDER_STATUS_CHOICES = (
-        ("created", "Created"),
         ("pending_payment", "Pending Payment"),
         ("paid", "Paid"),
         ("cancelled", "Cancelled"),
@@ -43,7 +44,7 @@ class Order(models.Model):
     status = models.CharField(
         max_length=20,
         choices=ORDER_STATUS_CHOICES,
-        default="created"
+        default="pending_payment"
     )
 
     payment_status = models.CharField(
@@ -122,6 +123,13 @@ class Order(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user"],
+                condition=Q(status="pending_payment"),
+                name="unique_pending_order_per_user"
+            )
+        ]
 
     def __str__(self):
         return f"Order {self.uuid} | {self.user}"

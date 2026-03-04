@@ -60,6 +60,7 @@ class AddressAdmin(admin.ModelAdmin):
 
     list_display = (
         "user",
+        "id",
         "full_name",
         "city",
         "district",
@@ -91,7 +92,6 @@ class AddressAdmin(admin.ModelAdmin):
     )
 
     ordering = ("-created_at",)
-
 
     fieldsets = (
         ("User Info", {

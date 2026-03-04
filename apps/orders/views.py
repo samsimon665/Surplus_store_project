@@ -1,7 +1,6 @@
 
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
-from decimal import Decimal
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
@@ -79,7 +78,7 @@ def start_checkout(request):
     express_shipping = get_shipping_preview("express")
 
     if selected_shipping == "express":
-        shipping_fee = Decimal(express_shipping.fee)
+        shipping_fee = Decimal(express_shipping["fee"])
     else:
         shipping_fee = Decimal("0.00")
 
@@ -240,14 +239,22 @@ def update_promo_ajax(request):
             code=code
         )
 
-        # Store code in session ALWAYS
-        request.session["applied_promo"] = code.upper()
-
         if result.success:
+
+            # ✅ Store only if valid
+            request.session["applied_promo"] = code.upper()
+
             return JsonResponse({
-                "success": True
+                "success": True,
+                "code": result.promo.code,
+                "discount": str(result.discount)
             })
+
         else:
+
+            # ❌ Remove invalid promo from session
+            request.session.pop("applied_promo", None)
+
             return JsonResponse({
                 "success": False,
                 "error": result.error

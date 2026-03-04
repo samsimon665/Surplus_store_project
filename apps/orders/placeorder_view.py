@@ -1,11 +1,12 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
 from django.views.decorators.http import require_POST
-from django.shortcuts import get_object_or_404
 from django.db import transaction
-from .services import create_order_from_checkout
+from django.core.exceptions import ValidationError
+
 from apps.cart.models import Cart
+from .services import create_order_from_checkout
 
 
 @login_required(login_url="accounts:login")
@@ -26,27 +27,29 @@ def place_order(request):
         messages.error(request, "Please select delivery address.")
         return redirect("orders:start_checkout")
 
-    address = get_object_or_404(request.user.addresses, id=address_id)
-
-    # Snapshot address
-    address_text = f"""
-    {address.full_name}
-    {address.address_line_1}
-    {address.address_line_2 or ''}
-    {address.city}, {address.state} - {address.pincode}
-    {address.country}
-    """
-
-    # 🔥 CREATE ORDER
-    order = create_order_from_checkout(
-        request=request,
-        cart=cart,
-        shipping_method=shipping_method,
-        address_text=address_text,
+    address = get_object_or_404(
+        request.user.addresses,
+        id=address_id
     )
 
-    # Clear cart AFTER order created
-    cart.items.all().delete()
-    request.session.pop("applied_promo", None)
+    # Snapshot address (LOCK TEXT)
+    address_text = f"""
+{address.full_name}
+{address.address_line_1}
+{address.address_line_2 or ''}
+{address.city}, {address.state} - {address.pincode}
+{address.country}
+""".strip()
+
+    try:
+        order = create_order_from_checkout(
+            request=request,
+            cart=cart,
+            shipping_method=shipping_method,
+            address_text=address_text,
+        )
+    except ValidationError as e:
+        messages.error(request, str(e))
+        return redirect("orders:start_checkout")
 
     return redirect("orders:payment_page", uuid=order.uuid)
