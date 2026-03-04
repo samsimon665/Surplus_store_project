@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'apps.promotions.apps.PromotionsConfig',
     'apps.cart.apps.CartConfig',  
     'apps.orders.apps.OrdersConfig',
+    'apps.payments.apps.PaymentsConfig',
 
 
 ]

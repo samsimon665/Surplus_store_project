@@ -20,7 +20,6 @@ from apps.catalog.models import ProductImage
 from decimal import Decimal, ROUND_HALF_UP
 
 
-
 @login_required(login_url="accounts:login")
 def start_checkout(request):
 
@@ -41,7 +40,7 @@ def start_checkout(request):
         return redirect("cart:cart")
 
     # -------------------------------------------------
-    # 2️⃣ Email Verification (Required)
+    # 2️⃣ Email Verification
     # -------------------------------------------------
     email_verified = EmailAddress.objects.filter(
         user=request.user,
@@ -49,16 +48,14 @@ def start_checkout(request):
         primary=True
     ).exists()
 
-    if not email_verified:
-        messages.error(request, "Please verify your email before checkout.")
-        return redirect("accounts:profile")
+    # -------------------------------------------------
+    # 3️⃣ Phone Check (SAFE)
+    # -------------------------------------------------
+    profile = getattr(request.user, "profile", None)
 
-    # -------------------------------------------------
-    # 3️⃣ Phone (Optional)
-    # -------------------------------------------------
-    phone_present = bool(
-        hasattr(request.user, "profile") and request.user.profile.phone
-    )
+    phone_present = False
+    if profile and profile.phone and profile.phone.strip():
+        phone_present = True
 
     # -------------------------------------------------
     # 4️⃣ Addresses
@@ -67,6 +64,7 @@ def start_checkout(request):
         "-is_default",
         "-created_at"
     )
+
     default_address = addresses.filter(is_default=True).first()
 
     # -------------------------------------------------
@@ -83,7 +81,7 @@ def start_checkout(request):
         shipping_fee = Decimal("0.00")
 
     # -------------------------------------------------
-    # 6️⃣ Build Cart Items (LIKE cart_view)
+    # 6️⃣ Build Cart Items
     # -------------------------------------------------
     cart_items = []
 
@@ -94,7 +92,6 @@ def start_checkout(request):
         "variant__product__subcategory__category",
     ):
 
-        # Attach correct image based on color
         item.display_image = (
             ProductImage.objects
             .filter(
@@ -131,9 +128,10 @@ def start_checkout(request):
             promo_error = result.error
 
     # -------------------------------------------------
-    # 8️⃣ Totals Calculation
+    # 8️⃣ Totals
     # -------------------------------------------------
     subtotal = cart.subtotal
+
     taxable_amount = subtotal - discount
 
     tax_rate = Decimal("12.00")
@@ -153,17 +151,50 @@ def start_checkout(request):
     )
 
     # -------------------------------------------------
-    # 10 Totals Weight 
+    # 9️⃣ Total Weight
     # -------------------------------------------------
-
     total_weight = sum(
         item.weight_kg * item.quantity
         for item in cart.items.all()
     )
 
+    # -------------------------------------------------
+    # 🔟 Checkout Issues
+    # -------------------------------------------------
+    checkout_issues = []
+
+    if not request.user.email:
+        checkout_issues.append({
+            "message": "Email address not added.",
+            "action_text": "Add Email",
+            "url": "accounts:profile"
+        })
+
+    elif not email_verified:
+        checkout_issues.append({
+            "message": "Email not verified.",
+            "action_text": "Verify Email",
+            "url": "accounts:profile"
+        })
+
+    if not phone_present:
+        checkout_issues.append({
+            "message": "Phone number not added.",
+            "action_text": "Add Phone",
+            "url": "accounts:profile"
+        })
+
+    if not addresses.exists():
+        checkout_issues.append({
+            "message": "No delivery address found.",
+            "action_text": "Add Address",
+            "url": "accounts:profile"
+        })
+
+    checkout_blocked = len(checkout_issues) > 0
 
     # -------------------------------------------------
-    # 9️⃣ Render
+    # 1️⃣1️⃣ Render
     # -------------------------------------------------
     return render(
         request,
@@ -192,6 +223,9 @@ def start_checkout(request):
 
             "addresses": addresses,
             "default_address": default_address,
+
+            "checkout_blocked": checkout_blocked,
+            "checkout_issues": checkout_issues,
         }
     )
 

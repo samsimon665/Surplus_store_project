@@ -1,9 +1,8 @@
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
-from django.views.decorators.http import require_POST
 from django.db import transaction
-from django.core.exceptions import ValidationError
 
 from apps.cart.models import Cart
 from .services import create_order_from_checkout
@@ -14,12 +13,18 @@ from .services import create_order_from_checkout
 @transaction.atomic
 def place_order(request):
 
+    # -------------------------------------------------
+    # 1️⃣ Load Cart
+    # -------------------------------------------------
     cart = Cart.objects.filter(user=request.user).first()
 
     if not cart or not cart.items.exists():
-        messages.error(request, "Cart is empty.")
+        messages.error(request, "Your cart is empty.")
         return redirect("cart:cart")
 
+    # -------------------------------------------------
+    # 2️⃣ Get Shipping + Address
+    # -------------------------------------------------
     shipping_method = request.POST.get("shipping_method", "standard")
     address_id = request.POST.get("selected_address")
 
@@ -32,24 +37,38 @@ def place_order(request):
         id=address_id
     )
 
-    # Snapshot address (LOCK TEXT)
+    # -------------------------------------------------
+    # 3️⃣ Create Address Snapshot
+    # -------------------------------------------------
     address_text = f"""
 {address.full_name}
 {address.address_line_1}
-{address.address_line_2 or ''}
+{address.address_line_2 or ""}
 {address.city}, {address.state} - {address.pincode}
 {address.country}
-""".strip()
+"""
 
+    # -------------------------------------------------
+    # 4️⃣ Create Order
+    # -------------------------------------------------
     try:
+
         order = create_order_from_checkout(
             request=request,
             cart=cart,
             shipping_method=shipping_method,
             address_text=address_text,
         )
-    except ValidationError as e:
+
+    except Exception as e:
+
         messages.error(request, str(e))
         return redirect("orders:start_checkout")
 
-    return redirect("orders:payment_page", uuid=order.uuid)
+    # -------------------------------------------------
+    # 5️⃣ Redirect to Payment Page (Next Step)
+    # -------------------------------------------------
+    return redirect(
+        "orders:payment_page",
+        uuid=order.uuid
+    )
