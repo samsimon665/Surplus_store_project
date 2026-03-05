@@ -4,6 +4,8 @@ from django.urls import reverse
 
 from .models import Order, OrderItem
 
+from apps.catalog.models import ProductVariant, ProductImage
+
 
 # -------------------------------------------------------
 # Order Item Inline (inside Order page)
@@ -52,8 +54,8 @@ class OrderItemInline(admin.TabularInline):
 class OrderAdmin(admin.ModelAdmin):
 
     list_display = (
-        "uuid",
         "user",
+        "uuid",
         "status_badge",
         "payment_status_badge",
         "shipping_method",
@@ -193,6 +195,7 @@ class OrderItemAdmin(admin.ModelAdmin):
 
     list_display = (
         "product_name",
+        "image_preview",
         "color",
         "size",
         "quantity",
@@ -220,6 +223,7 @@ class OrderItemAdmin(admin.ModelAdmin):
     list_per_page = 50
 
     readonly_fields = (
+        "image_preview",
         "order",
         "variant_id",
         "created_at",
@@ -230,6 +234,7 @@ class OrderItemAdmin(admin.ModelAdmin):
 
         ("Item Details", {
             "fields": (
+                "image_preview",
                 "order",
                 "product_name",
                 "color",
@@ -272,3 +277,26 @@ class OrderItemAdmin(admin.ModelAdmin):
             url,
             obj.order.uuid
         )
+    
+    @admin.display(description="Image")
+    def image_preview(self, obj):
+
+        try:
+            variant = ProductVariant.objects.select_related(
+                "product").get(id=obj.variant_id)
+        except ProductVariant.DoesNotExist:
+            return "—"
+
+        image = (
+            ProductImage.objects
+            .filter(variant__product=variant.product, is_primary=True)
+            .first()
+        )
+
+        if image and image.image:
+            return format_html(
+                '<img src="{}" style="width:50px;height:60px;object-fit:cover;border-radius:4px;" />',
+                image.image.url
+            )
+
+        return "—"

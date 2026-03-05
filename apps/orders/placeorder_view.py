@@ -41,12 +41,12 @@ def place_order(request):
     # 3️⃣ Create Address Snapshot
     # -------------------------------------------------
     address_text = f"""
-{address.full_name}
-{address.address_line_1}
-{address.address_line_2 or ""}
-{address.city}, {address.state} - {address.pincode}
-{address.country}
-"""
+        {address.full_name}
+        {address.address_line_1}
+        {address.address_line_2 or ""}
+        {address.city}, {address.state} - {address.pincode}
+        {address.country}
+        """
 
     # -------------------------------------------------
     # 4️⃣ Create Order
@@ -68,7 +68,4 @@ def place_order(request):
     # -------------------------------------------------
     # 5️⃣ Redirect to Payment Page (Next Step)
     # -------------------------------------------------
-    return redirect(
-        "orders:payment_page",
-        uuid=order.uuid
-    )
+    return redirect("payments:payment_page", uuid=order.uuid)
