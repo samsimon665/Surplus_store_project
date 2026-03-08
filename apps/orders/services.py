@@ -9,6 +9,9 @@ from datetime import date, timedelta
 from django.db import transaction
 from django.core.exceptions import ValidationError
 
+from apps.payments.models import Payment
+from apps.payments.services import create_razorpay_order
+
 from apps.cart.services import (
     can_proceed_to_checkout,
     get_cart_item_status,
@@ -170,6 +173,18 @@ def create_order_from_checkout(request, cart, shipping_method, address_text):
 
         status="pending_payment",
         payment_status="pending",
+    )
+
+    # Create Razorpay Order
+    razorpay_order = create_razorpay_order(order)
+
+    # Save Payment record
+    Payment.objects.create(
+        order=order,
+        gateway="razorpay",
+        razorpay_order_id=razorpay_order["id"],
+        amount=order.total_amount,
+        status="created"
     )
 
     # -------------------------------------------------
