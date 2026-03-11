@@ -1438,6 +1438,157 @@
         </script>
 
 
+
+    <!-- Razorpay -->
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+        
+            const checkoutForm = document.querySelector('form[action="{% url "orders:place_order" %}"]');
+            const checkoutBtn = document.getElementById("checkout-btn");
+        
+            if (!checkoutForm || !checkoutBtn) return;
+        
+            checkoutForm.addEventListener("submit", function (e) {
+        
+                e.preventDefault();  // stop normal form submit
+        
+                // Disable button immediately
+                checkoutBtn.disabled = true;
+                checkoutBtn.innerText = "Processing Payment...";
+        
+                const formData = new FormData(checkoutForm);
+        
+                fetch("{% url 'orders:place_order' %}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+        
+                    if (!data.success) {
+
+                        console.error("Order creation failed:", data);
+                    
+                        alert("Order creation failed. Please try again.");
+        
+                        checkoutBtn.disabled = false;
+                        checkoutBtn.innerText = "Continue to Payment";
+        
+                        return;
+                    }
+        
+                    const options = {
+        
+                        key: data.key,
+                        amount: data.amount,
+                        currency: "INR",
+        
+                        name: "SurPLUS Store",
+                        description: "Order Payment",
+        
+                        order_id: data.razorpay_order_id,
+        
+                        handler: function (response) {
+        
+                            fetch("/payments/verify/", {
+        
+                                method: "POST",
+        
+                                headers: {
+                                    "Content-Type": "application/x-www-form-urlencoded",
+                                    "X-CSRFToken": "{{ csrf_token }}"
+                                },
+        
+                                body: new URLSearchParams({
+        
+                                    razorpay_payment_id: response.razorpay_payment_id,
+                                    razorpay_order_id: response.razorpay_order_id,
+                                    razorpay_signature: response.razorpay_signature
+        
+                                })
+        
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+
+                                console.log("VERIFY RESPONSE:", data);
+
+                                if (data.success) {
+
+                                    console.log("Payment verified, redirecting...");
+                                
+                                    window.location.replace(data.redirect_url);
+                                
+                                    return;
+
+                                } else {
+
+                                    alert("Payment verification failed. Please contact support if amount was deducted.");
+
+                                    checkoutBtn.disabled = false;
+                                    checkoutBtn.innerText = "Continue to Payment";
+
+                                }
+
+                            });
+        
+                        },
+        
+                        modal: {
+                            ondismiss: function () {
+        
+                                alert("Payment cancelled.");
+        
+                                checkoutBtn.disabled = false;
+                                checkoutBtn.innerText = "Continue to Payment";
+        
+                            }
+                        },
+        
+                        theme: {
+                            color: "#000000"
+                        }
+        
+                    };
+        
+                    const rzp = new Razorpay(options);
+        
+                    rzp.on("payment.failed", function () {
+        
+                        alert("Payment failed. Please try again.");
+        
+                        checkoutBtn.disabled = false;
+                        checkoutBtn.innerText = "Continue to Payment";
+        
+                    });
+        
+                    rzp.open();
+        
+                })
+                .catch(error => {
+
+                    console.error("FULL CHECKOUT ERROR:", error);
+                
+                    alert("Checkout error. Check browser console.");
+                
+                    checkoutBtn.disabled = false;
+                    checkoutBtn.innerText = "Continue to Payment";
+                
+                });
+        
+            });
+        
+        });
+        
+    </script>
+
 </body>
 
 </html>

@@ -10,10 +10,10 @@ class Payment(models.Model):
         ("failed", "Failed"),
     )
 
-    order = models.OneToOneField(
+    order = models.ForeignKey(
         Order,
         on_delete=models.CASCADE,
-        related_name="payment"
+        related_name="payments"
     )
 
     gateway = models.CharField(

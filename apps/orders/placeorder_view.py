@@ -3,15 +3,28 @@ from django.views.decorators.http import require_POST
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
 from django.db import transaction
+from django.conf import settings
+from django.http import JsonResponse
+from django.utils import timezone
+
+from datetime import timedelta
 
 from apps.cart.models import Cart
+from apps.orders.models import Order
+from apps.payments.models import Payment
+from apps.payments.services import create_razorpay_order
+
 from .services import create_order_from_checkout
+
+from .services import cart_matches_order
 
 
 @login_required(login_url="accounts:login")
 @require_POST
 @transaction.atomic
 def place_order(request):
+
+    print("PLACE ORDER CALLED")
 
     # -------------------------------------------------
     # 1️⃣ Load Cart
@@ -20,17 +33,91 @@ def place_order(request):
 
     if not cart or not cart.items.exists():
         messages.error(request, "Your cart is empty.")
-        return redirect("cart:cart")
+        return JsonResponse({
+            "success": False,
+            "error": "Cart empty"
+        })
 
     # -------------------------------------------------
-    # 2️⃣ Get Shipping + Address
+    # 2️⃣ Check Pending Order
+    # -------------------------------------------------
+
+
+    pending_order = Order.objects.filter(
+        user=request.user,
+        status="pending_payment"
+    ).first()
+
+    if pending_order:
+
+        
+
+        # -------------------------------
+        # Expire order after 30 minutes
+        # -------------------------------
+        if pending_order.created_at < timezone.now() - timedelta(minutes=30):
+
+            pending_order.status = "cancelled"
+            pending_order.payment_status = "failed"
+            pending_order.save()
+
+            pending_order = None
+
+        # -------------------------------
+        # Detect cart changes
+        # -------------------------------
+        elif not cart_matches_order(cart, pending_order):
+
+            pending_order.status = "cancelled"
+            pending_order.payment_status = "failed"
+            pending_order.save()
+
+            pending_order = None
+
+        # -------------------------------
+        # Reuse order if still valid
+        # -------------------------------
+        if pending_order:
+
+
+            # Reset order payment status for retry
+            pending_order.payment_status = "pending"
+            pending_order.save(update_fields=["payment_status"])
+
+            Payment.objects.filter(order=pending_order, status="created").update(status="failed")
+
+            # Create new Razorpay order
+            razorpay_order = create_razorpay_order(pending_order)
+
+            # Create new payment attempt
+            Payment.objects.create(
+                order=pending_order,
+                gateway="razorpay",
+                razorpay_order_id=razorpay_order["id"],
+                amount=pending_order.total_amount,
+                status="created"
+            )
+
+            return JsonResponse({
+                "success": True,
+                "order_uuid": str(pending_order.uuid),
+                "razorpay_order_id": razorpay_order["id"],
+                "amount": int(pending_order.total_amount * 100),
+                "key": settings.RAZORPAY_KEY_ID
+            })                                                                                                                                      
+
+    # -------------------------------------------------
+    # 3️⃣ Get Shipping + Address
     # -------------------------------------------------
     shipping_method = request.POST.get("shipping_method", "standard")
     address_id = request.POST.get("selected_address")
 
     if not address_id:
         messages.error(request, "Please select delivery address.")
-        return redirect("orders:start_checkout")
+        return JsonResponse({
+            "success": False,
+            "error": "Address not selected"
+        })
 
     address = get_object_or_404(
         request.user.addresses,
@@ -38,7 +125,7 @@ def place_order(request):
     )
 
     # -------------------------------------------------
-    # 3️⃣ Create Address Snapshot
+    # 4️⃣ Create Address Snapshot
     # -------------------------------------------------
     address_text = f"""
         {address.full_name}
@@ -46,14 +133,16 @@ def place_order(request):
         {address.address_line_2 or ""}
         {address.city}, {address.state} - {address.pincode}
         {address.country}
-        """
+    """
 
     # -------------------------------------------------
-    # 4️⃣ Create Order
+    # 5️⃣ Create Order
     # -------------------------------------------------
+
+
     try:
 
-        order = create_order_from_checkout(
+        order, razorpay_order = create_order_from_checkout(
             request=request,
             cart=cart,
             shipping_method=shipping_method,
@@ -61,11 +150,16 @@ def place_order(request):
         )
 
     except Exception as e:
-
-        messages.error(request, str(e))
-        return redirect("orders:start_checkout")
+        print("PLACE ORDER ERROR:", e)
+        raise
 
     # -------------------------------------------------
-    # 5️⃣ Redirect to Payment Page (Next Step)
+    # 6️⃣ Return Razorpay Data
     # -------------------------------------------------
-    return redirect("payments:payment_page", uuid=order.uuid)
+    return JsonResponse({
+        "success": True,
+        "order_uuid": str(order.uuid),
+        "razorpay_order_id": razorpay_order["id"],
+        "amount": int(order.total_amount * 100),
+        "key": settings.RAZORPAY_KEY_ID
+    })

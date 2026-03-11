@@ -42,7 +42,7 @@ urlpatterns = [
 
     path("order/", include("apps.orders.urls")),
 
-    path("payment/", include("apps.payments.urls")),
+    path("payments/", include("apps.payments.urls")),
 
 
 ]

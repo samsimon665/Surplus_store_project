@@ -4,7 +4,7 @@ from . import views
 app_name = "payments"
 
 urlpatterns = [
-
-    path("<uuid:uuid>/", views.payment_page, name="payment_page"),
+    
+    path("verify/", views.verify_payment, name="verify_payment")
 
 ]

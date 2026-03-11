@@ -193,13 +193,8 @@ def create_order_from_checkout(request, cart, shipping_method, address_text):
     for data in order_items_data:
         OrderItem.objects.create(order=order, **data)
 
-    # -------------------------------------------------
-    # 8️⃣ CLEAR CART + PROMO (SAFE AFTER LOCK)
-    # -------------------------------------------------
-    cart.items.all().delete()
-    request.session.pop("applied_promo", None)
 
-    return order
+    return order, razorpay_order
 
 
 def get_shipping_preview(shipping_method: str):
@@ -259,3 +254,25 @@ def calculate_checkout_totals(
         "total": total,
     }
 
+
+def cart_matches_order(cart, order):
+
+    cart_items = list(
+        cart.items.values_list(
+            "variant_id",
+            "size",
+            "color",
+            "quantity"
+        )
+    )
+
+    order_items = list(
+        order.items.values_list(
+            "variant_id",
+            "size",
+            "color",
+            "quantity"
+        )
+    )
+
+    return sorted(cart_items) == sorted(order_items)
