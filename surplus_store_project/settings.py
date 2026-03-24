@@ -37,10 +37,14 @@ DEBUG = True
 
 
 ALLOWED_HOSTS = [
-    "*",
-    # "192.168.0.148",
+    "127.0.0.1",
+    "localhost",
+    "leisha-proconsultation-tenselessly.ngrok-free.dev",
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://leisha-proconsultation-tenselessly.ngrok-free.dev",
+]
 
 # Application definition
 
@@ -291,3 +295,4 @@ SMS_BACKEND = "console"   # options: "console", "twilio", "msg91"
 
 RAZORPAY_KEY_ID = env("RAZORPAY_KEY_ID")
 RAZORPAY_KEY_SECRET = env("RAZORPAY_KEY_SECRET")
+RAZORPAY_WEBHOOK_SECRET = env("RAZORPAY_WEBHOOK_SECRET")

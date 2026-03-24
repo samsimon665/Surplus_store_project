@@ -1469,7 +1469,20 @@
                     },
                     body: formData
                 })
-                .then(res => res.json())
+                .then(async res => {
+                
+                    const text = await res.text();
+                
+                    try {
+                        return JSON.parse(text);
+                    } catch (err) {
+                
+                        console.error("Server returned invalid JSON:", text);
+                
+                        throw new Error("Invalid server response");
+                    }
+                
+                })
                 .then(data => {
         
                     if (!data.success) {
@@ -1558,17 +1571,29 @@
         
                     };
         
-                    const rzp = new Razorpay(options);
-        
-                    rzp.on("payment.failed", function () {
-        
-                        alert("Payment failed. Please try again.");
-        
+                    if (typeof Razorpay === "undefined") {
+
+                        console.error("Razorpay SDK not loaded");
+                    
+                        alert("Payment system unavailable. Please refresh and try again.");
+                    
                         checkoutBtn.disabled = false;
                         checkoutBtn.innerText = "Continue to Payment";
-        
+                    
+                        return;
+                    }
+                    
+                    const rzp = new Razorpay(options);
+                    
+                    rzp.on("payment.failed", function () {
+                    
+                        alert("Payment failed. Please try again.");
+                    
+                        checkoutBtn.disabled = false;
+                        checkoutBtn.innerText = "Continue to Payment";
+                    
                     });
-        
+                    
                     rzp.open();
         
                 })

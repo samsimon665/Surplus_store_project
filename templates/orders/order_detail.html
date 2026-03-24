@@ -1,0 +1,28 @@
+<h1>Order Details</h1>
+
+<p><strong>Order ID:</strong> {{ order.uuid }}</p>
+<p><strong>Status:</strong> {{ order.status }}</p>
+<p><strong>Payment:</strong> {{ order.payment_status }}</p>
+<p><strong>Total:</strong> ₹{{ order.total_amount }}</p>
+
+<h3>Delivery Window</h3>
+<p>{{ order.delivery_start }} → {{ order.delivery_end }}</p>
+
+<h3>Shipping Address</h3>
+<pre>{{ order.address_text }}</pre>
+
+<h3>Items</h3>
+
+<ul>
+    {% for item in order.items.all %}
+    <li>
+        {{ item.product_name }}
+        | Size: {{ item.size }}
+        | Color: {{ item.color }}
+        | Qty: {{ item.quantity }}
+        | ₹{{ item.total_price }}
+    </li>
+    {% endfor %}
+</ul>
+
+<a href="/order/">Back to Orders</a>

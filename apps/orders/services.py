@@ -1,3 +1,4 @@
+from django.utils import timezone
 from apps.cart.services import can_proceed_to_checkout
 from apps.orders.models import Order, OrderItem
 from apps.cart.services import get_cart_item_status, CartItemStatus
@@ -176,7 +177,14 @@ def create_order_from_checkout(request, cart, shipping_method, address_text):
     )
 
     # Create Razorpay Order
+    
     razorpay_order = create_razorpay_order(order)
+
+
+    if not razorpay_order:
+        raise ValidationError(
+            "Payment gateway unavailable. Please try again."
+        )
 
     # Save Payment record
     Payment.objects.create(
@@ -276,3 +284,4 @@ def cart_matches_order(cart, order):
     )
 
     return sorted(cart_items) == sorted(order_items)
+

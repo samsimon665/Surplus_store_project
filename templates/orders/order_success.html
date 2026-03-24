@@ -1,0 +1,452 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Success</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #000000;
+            --card-bg: #111111;
+            --accent: #F2E700;
+            --text-main: #EEEEEE;
+            --text-muted: #888888;
+            --border-color: #222222;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .glow {
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(242, 231, 0, 0.05) 0%, rgba(0, 0, 0, 0) 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            padding: 24px;
+            z-index: 10;
+            position: relative;
+        }
+
+        .card {
+            background: #000000;
+            border-radius: 20px;
+            padding: 48px;
+            border: 2px solid rgba(188, 142, 5, 0.563);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .checkmark-container {
+            width: 72px;
+            height: 72px;
+            background: rgba(242, 231, 0, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            position: relative;
+            animation: scaleIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .checkmark-container::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border-radius: 50%;
+            background: rgba(242, 231, 0, 0.05);
+            z-index: -1;
+            animation: pulseGlow 2s infinite;
+        }
+
+        .checkmark {
+            width: 32px;
+            height: 32px;
+            color: var(--accent);
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+            stroke: currentColor;
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            animation: drawCheck 0.6s ease-out 0.4s forwards;
+        }
+
+        @keyframes scaleIn {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes drawCheck {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        @keyframes pulseGlow {
+            0% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 0;
+            }
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+
+        .section-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-color);
+            margin-left: 16px;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            background: rgba(24, 24, 24, 0.791);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .detail-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .detail-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .text-accent {
+            color: var(--accent);
+        }
+
+        .items-list {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 32px;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .item-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .item-name {
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .item-qty {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .item-price {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .address-container {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            line-height: 1.6;
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 40px;
+            white-space: pre-line;
+            font-weight: 400;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .btn {
+            flex: 1;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #000000;
+            box-shadow: 0 0 20px rgba(242, 231, 0, 0.1);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(242, 231, 0, 0.25);
+            background: #FFFA4D;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .redirect-text {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards 1s;
+        }
+
+        .redirect-text span {
+            color: var(--accent);
+            font-variant-numeric: tabular-nums;
+            font-weight: 600;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .card {
+                padding: 32px 24px;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .title {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="noise"></div>
+    <div class="glow"></div>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <div class="checkmark-container">
+                    <svg class="checkmark" viewBox="0 0 24 24">
+                        <path d="M20 6L9 17L4 12" />
+                    </svg>
+                </div>
+                <h1 class="title">Order Placed Successfully!</h1>
+            </div>
+
+            <div class="section-label">Order Details</div>
+
+            <div class="details-grid">
+                <div class="detail-item">
+                    <span class="detail-label">Order ID</span>
+                    <span class="detail-value">#{{ order.uuid|slice:":8"|upper }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Payment Status</span>
+                    <span class="detail-value text-accent">Paid</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Total Amount</span>
+                    <span class="detail-value">₹{{ order.total_amount|floatformat:2 }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Delivery Window</span>
+                    <span class="detail-value">{{ order.delivery_start|date:"M d, Y" }} → {{ order.delivery_end|date:"M d, Y" }}</span>
+                </div>
+            </div>
+
+            <div class="redirect-text">
+                Redirecting to your orders...          
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Confetti Animation: Side Cannons
+        const end = Date.now() + 3 * 1000; // 3 seconds
+        const confettiColors = ["#a786ff", "#fd8bbc", "#eca184", "#f8deb1"];
+
+        function frame() {
+            if (Date.now() > end) return;
+
+            confetti({
+                particleCount: 2,
+                angle: 60,
+                spread: 55,
+                startVelocity: 60,
+                origin: { x: 0, y: 0.5 },
+                colors: confettiColors,
+                zIndex: 100
+            });
+            confetti({
+                particleCount: 2,
+                angle: 120,
+                spread: 55,
+                startVelocity: 60,
+                origin: { x: 1, y: 0.5 },
+                colors: confettiColors,
+                zIndex: 100
+            });
+
+            requestAnimationFrame(frame);
+        }
+
+        // Trigger animation
+        frame();
+
+        // Redirect after animation finishes
+        setTimeout(function () {
+            window.location.href = "{% url 'orders:order_list' %}";
+        }, 5500);
+
+    </script>
+</body>
+
+</html>

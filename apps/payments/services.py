@@ -9,14 +9,25 @@ client = razorpay.Client(
 
 def create_razorpay_order(order):
 
-    amount = int(order.total_amount * 100)  # convert rupees → paise
+    amount = int(order.total_amount * 100)
 
     data = {
         "amount": amount,
         "currency": "INR",
         "receipt": str(order.uuid),
+        "notes": {
+            "order_uuid": str(order.uuid)
+        }
     }
 
-    razorpay_order = client.order.create(data=data)
+    try:
 
-    return razorpay_order
+        razorpay_order = client.order.create(data=data)
+
+        return razorpay_order
+
+    except Exception as e:
+
+        print("RAZORPAY ORDER CREATION FAILED:", e)
+
+        return None

@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib import messages
 from django.db import transaction
 from django.conf import settings
@@ -17,6 +17,7 @@ from apps.payments.services import create_razorpay_order
 from .services import create_order_from_checkout
 
 from .services import cart_matches_order
+
 
 
 @login_required(login_url="accounts:login")
@@ -42,14 +43,17 @@ def place_order(request):
     # 2️⃣ Check Pending Order
     # -------------------------------------------------
 
-
-    pending_order = Order.objects.filter(
-        user=request.user,
-        status="pending_payment"
-    ).first()
+    pending_order = (
+        Order.objects
+        .select_for_update()
+        .filter(
+            user=request.user,
+            status="pending_payment"
+        )
+        .first()
+    )
 
     if pending_order:
-
         
 
         # -------------------------------
@@ -84,10 +88,18 @@ def place_order(request):
             pending_order.payment_status = "pending"
             pending_order.save(update_fields=["payment_status"])
 
-            Payment.objects.filter(order=pending_order, status="created").update(status="failed")
+            Payment.objects.filter(order=pending_order).exclude(status="success").update(status="failed")
 
             # Create new Razorpay order
             razorpay_order = create_razorpay_order(pending_order)
+
+
+            if not razorpay_order:
+
+                return JsonResponse({
+                    "success": False,
+                    "error": "Payment gateway unavailable. Please retry."
+                })
 
             # Create new payment attempt
             Payment.objects.create(
@@ -139,7 +151,6 @@ def place_order(request):
     # 5️⃣ Create Order
     # -------------------------------------------------
 
-
     try:
 
         order, razorpay_order = create_order_from_checkout(
@@ -149,9 +160,15 @@ def place_order(request):
             address_text=address_text,
         )
 
+
     except Exception as e:
+
         print("PLACE ORDER ERROR:", e)
-        raise
+
+        return JsonResponse({
+            "success": False,
+            "error": "Unable to create order. Please try again."
+        })
 
     # -------------------------------------------------
     # 6️⃣ Return Razorpay Data
@@ -163,3 +180,54 @@ def place_order(request):
         "amount": int(order.total_amount * 100),
         "key": settings.RAZORPAY_KEY_ID
     })
+
+
+@login_required(login_url="accounts:login")
+def order_list(request):
+
+    orders = Order.objects.filter(
+        user=request.user
+    ).order_by("-created_at")
+
+    return render(
+        request,
+        "orders/order_list.html",
+        {
+            "orders": orders
+        }
+    )
+
+@login_required(login_url="accounts:login")
+def order_success(request, uuid):
+
+    order = get_object_or_404(
+        Order.objects.prefetch_related("items"),
+        uuid=uuid,
+        user=request.user
+    )
+
+    return render(
+        request,
+        "orders/order_success.html",
+        {
+            "order": order
+        }
+    )
+
+
+@login_required(login_url="accounts:login")
+def order_detail(request, uuid):
+
+    order = get_object_or_404(
+        Order.objects.prefetch_related("items"),
+        uuid=uuid,
+        user=request.user
+    )
+
+    return render(
+        request,
+        "orders/order_detail.html",
+        {
+            "order": order
+        }
+    )

@@ -51,11 +51,14 @@ def verify_payment(request):
     # -------------------------------------------------
     # 3️⃣ Find payment attempt
     # -------------------------------------------------
-    try:
-        payment = Payment.objects.select_related("order").get(
-            razorpay_order_id=razorpay_order_id
-        )
-    except Payment.DoesNotExist:
+    payment = Payment.objects.select_related("order").filter(
+        razorpay_order_id=razorpay_order_id,
+        order__user=request.user
+    ).order_by("-created_at").first()
+
+
+    if not payment:
+
         return JsonResponse(
             {"success": False, "error": "Payment record not found"},
             status=404
@@ -63,27 +66,23 @@ def verify_payment(request):
 
     order = payment.order
 
-    # -------------------------------------------------
-    # 4️⃣ Prevent duplicate verification
-    # -------------------------------------------------
-    if payment.status == "success":
-        return JsonResponse({
-            "success": True,
-            "redirect_url": "/accounts/profile/"
-        })
 
     # -------------------------------------------------
     # 5️⃣ Atomic update
     # -------------------------------------------------
+    # Prevent duplicate processing
+    if payment.status == "success":
+        return JsonResponse({
+            "success": True,
+            "redirect_url": f"/order/success/{order.uuid}/"
+        })
     with transaction.atomic():
 
-        # Update payment record
         payment.razorpay_payment_id = razorpay_payment_id
         payment.razorpay_signature = razorpay_signature
         payment.status = "success"
         payment.save()
 
-        # Update order
         order.status = "paid"
         order.payment_status = "success"
         order.save()
@@ -106,5 +105,5 @@ def verify_payment(request):
     # -------------------------------------------------
     return JsonResponse({
         "success": True,
-        "redirect_url": "/accounts/profile/"
+        "redirect_url": f"/order/success/{order.uuid}/"
     })
