@@ -118,19 +118,27 @@
                         <span class="material-symbols-outlined fs-5">account_circle</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">My Profile</a></li>
-                        <li><a class="dropdown-item" href="#">Orders</a></li>
+                        <li>
+                            <a class="dropdown-item" href="{% url 'accounts:profile' %}">
+                                My Profile
+                            </a>
+                        </li>
+                    
+                        <li>
+                            <a class="dropdown-item" href="{% url 'orders:order_list' %}">
+                                Orders
+                            </a>
+                        </li>
+                    
                         <li>
                             <hr class="dropdown-divider">
-                            </hr>
-                            <li>
-                                <a class="dropdown-item text-danger" href="{% url 'account_logout' %}">
-                                    Logout
-                                </a>
-                            </li>
-                            
-                            
-                    </ul>
+                        </li>
+                    
+                        <li>
+                            <a class="dropdown-item text-danger" href="{% url 'account_logout' %}">
+                                Logout
+                            </a>
+                        </li>               </ul>
                 </li>
                 {% else %}
                 <li class="nav-item">
