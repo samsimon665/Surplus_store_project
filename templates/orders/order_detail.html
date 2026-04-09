@@ -1,28 +1,523 @@
-<h1>Order Details</h1>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
 
-<p><strong>Order ID:</strong> {{ order.uuid }}</p>
-<p><strong>Status:</strong> {{ order.status }}</p>
-<p><strong>Payment:</strong> {{ order.payment_status }}</p>
-<p><strong>Total:</strong> ₹{{ order.total_amount }}</p>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details | Dashboard</title>
 
-<h3>Delivery Window</h3>
-<p>{{ order.delivery_start }} → {{ order.delivery_end }}</p>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<h3>Shipping Address</h3>
-<pre>{{ order.address_text }}</pre>
+    <!-- Google Fonts: Bebas Neue + Montserrat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
 
-<h3>Items</h3>
+    <!-- Material Icons and Bootstrap Icons (kept for the UI elements previously defined) -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
-<ul>
-    {% for item in order.items.all %}
-    <li>
-        {{ item.product_name }}
-        | Size: {{ item.size }}
-        | Color: {{ item.color }}
-        | Qty: {{ item.quantity }}
-        | ₹{{ item.total_price }}
-    </li>
-    {% endfor %}
-</ul>
+    <!-- Navbar CSS -->
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
 
-<a href="/order/">Back to Orders</a>
+    <style>
+        /* Premium Ecommerce Order Detail Styles using Design System */
+        :root {
+            --color-bg: #000000;
+            --color-accent: #F2E700;
+            --color-surface: #111111;
+            --color-text: #EEEEEE;
+            --color-text-muted: #888888;
+
+            --od-border: rgba(255, 255, 255, 0.08);
+            --od-border-hover: rgba(255, 255, 255, 0.15);
+            --od-radius-lg: 16px;
+            --od-radius-md: 12px;
+            --od-radius-sm: 8px;
+        }
+
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            min-height: 100vh;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        .display-6 {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        /* Helper Utilities */
+        .text-accent {
+            color: var(--color-accent) !important;
+        }
+
+        .text-muted-custom {
+            color: var(--color-text-muted) !important;
+        }
+
+        .border-custom {
+            border-color: var(--od-border) !important;
+        }
+
+        .label-small {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--color-text-muted);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* Cards */
+        .od-card {
+            background-color: var(--color-surface);
+            border: 1px solid var(--od-border);
+            border-radius: var(--od-radius-lg);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.3s ease,
+                box-shadow 0.3s ease;
+        }
+
+        .od-card:hover {
+            border-color: var(--od-border-hover);
+            transform: translateY(-2px);
+            background-color: rgba(30, 30, 30, 0.8);
+            /* Slight bump for surface hover */
+            box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(242, 231, 0, 0.03);
+        }
+
+        /* Badges */
+        .od-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.35rem 0.85rem;
+            border-radius: 50rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+
+        .od-badge-paid {
+            background: rgba(46, 204, 113, 0.1);
+            color: #2ECC71;
+            border: 1px solid rgba(46, 204, 113, 0.2);
+        }
+
+        .od-badge-pending {
+            background: rgba(241, 196, 15, 0.1);
+            color: #F1C40F;
+            border: 1px solid rgba(241, 196, 15, 0.2);
+        }
+
+        .od-badge-shipped {
+            background: rgba(52, 152, 219, 0.1);
+            color: #3498DB;
+            border: 1px solid rgba(52, 152, 219, 0.2);
+        }
+
+        /* Order Item Card (Horizontal) */
+        .od-item-card {
+            display: flex;
+            align-items: center;
+            padding: 1.25rem;
+            border: 1px solid var(--od-border);
+            border-radius: var(--od-radius-md);
+            background: transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: visible;
+        }
+
+        .od-item-card:hover {
+            background-color: var(--color-surface);
+            border-color: var(--od-border-hover);
+        }
+
+        .od-item-image {
+            width: 100px;
+            height: 120px;
+            border-radius: var(--od-radius-sm);
+            background-color: #1a1a1a;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .od-item-details {
+            flex-grow: 1;
+            padding-left: 1.5rem;
+        }
+
+        /* Timeline */
+        .od-timeline {
+            border-left: 1px dashed var(--od-border-hover);
+            padding-left: 1.5rem;
+            margin-left: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .od-timeline-step {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .od-timeline-step:last-child {
+            margin-bottom: 0;
+        }
+
+        .od-timeline-step::before {
+            content: '';
+            position: absolute;
+            left: -1.78rem;
+            top: 0.25rem;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background-color: var(--od-border-hover);
+            transition: all 0.3s ease;
+        }
+
+        .od-timeline-step.completed::before {
+            background-color: var(--color-accent);
+            box-shadow: 0 0 10px rgba(242, 231, 0, 0.4);
+        }
+
+        .od-timeline-title {
+            font-weight: 500;
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+            color: var(--color-text);
+        }
+
+        .od-timeline-step:not(.completed) .od-timeline-title {
+            color: var(--color-text-muted);
+        }
+
+        .od-timeline-date {
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+            font-weight: 400;
+        }
+
+        /* Buttons */
+        .od-btn-primary {
+            background-color: var(--color-accent);
+            color: #000;
+            font-weight: 600;
+            padding: 0.75rem 1.75rem;
+            border-radius: var(--od-radius-sm);
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .od-btn-primary:hover {
+            background-color: #ffe81a;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(242, 231, 0, 0.25);
+        }
+
+        .od-btn-outline {
+            background-color: transparent;
+            color: var(--color-text);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-weight: 500;
+            padding: 0.75rem 1.75rem;
+            border-radius: var(--od-radius-sm);
+            transition: all 0.3s ease;
+        }
+
+        .od-btn-outline:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.4);
+            color: #fff;
+        }
+
+        .od-btn-danger-outline {
+            background-color: transparent;
+            color: #E74C3C;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            font-weight: 500;
+            padding: 0.75rem 1.75rem;
+            border-radius: var(--od-radius-sm);
+            transition: all 0.3s ease;
+        }
+
+        .od-btn-danger-outline:hover {
+            background-color: rgba(231, 76, 60, 0.05);
+            border-color: #E74C3C;
+        }
+
+        /* Custom Responsive Borders */
+        @media (min-width: 992px) {
+            .border-lg-end {
+                border-right: 1px solid var(--od-border);
+            }
+        }
+        body {
+            position: relative;
+            z-index: 0;
+        }
+
+            /* Prevent cards from covering navbar */
+        .od-card,
+        .od-item-card {
+            z-index: 1;
+            position: relative;
+        }
+        body {
+            padding-top: 175px;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #aaa;
+            border-radius: 6px;
+            padding: 4px 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            color: #fff;
+            border-color: #F2E700;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 3. ADD NAVBAR (MANDATORY) -->
+    {% include 'catalog/navbar.html' %}
+
+    <div class="order-detail-wrapper pt-4 pb-5 od-page">
+        <div class="container" style="max-width: 1000px;">
+
+            <!-- 1. HEADER SECTION -->
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 mb-md-5">
+                <div class="mb-3 mb-md-0">
+                    <h1 class="display-6 fw-bold mb-2">Order Details</h1>
+                    <p class="text-muted-custom mb-0 fs-6">Track your order and items</p>
+                </div>
+                <div class="text-md-end">
+
+                    <div class="d-flex align-items-center gap-2">
+                    
+                        <span class="fs-5 fw-semibold font-monospace" id="order-id">
+                            ORD{{ order.uuid|slice:":6"|upper }}
+                        </span>
+                    
+                        <button class="copy-btn" onclick="copyOrderId()">
+                            <i class="bi bi-clipboard"></i>
+                        </button>              
+                    
+                    </div>
+
+
+                    <p class="text-muted-custom mb-0 small">
+                        <i class="bi bi-clock me-1"></i> Placed on {{ order.created_at|date:"M d, Y" }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- 2. ORDER SUMMARY CARD -->
+            <div class="od-card p-4 p-md-5 mb-4">
+                <div class="row gy-4">
+                    <div class="col-lg-6 border-lg-end pe-lg-4">
+                        <div class="row gy-4">
+                            <div class="col-6">
+                                <span class="label-small">Order ID</span>
+                                <span class="fw-semibold font-monospace fs-6">ORD-{{ order.uuid|slice:":8"|upper
+                                    }}</span>
+                            </div>
+                            <div class="col-6">
+                                <span class="label-small">Date Placed</span>
+                                <span class="fw-medium">{{ order.created_at|date:"M d, Y" }}</span>
+                            </div>
+                            <div class="col-12 mt-4">
+                                <span class="label-small">Payment Status</span>
+                                <div class="d-flex align-items-center gap-2 mt-1">
+                                    <span class="od-badge od-badge-paid">Paid</span>
+                                    <span class="text-muted-custom small ms-2">via Razorpay</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 ps-lg-5">
+                        <div class="row gy-4">
+                            <div class="col-6">
+                                <span class="label-small">Total Amount</span>
+                                <span class="fw-semibold fs-4 text-accent">₹ {{ order.total_amount }}</span>
+                            </div>
+                            <div class="col-6">
+                                <span class="label-small">Delivery Status</span>
+                                <span class="fw-medium text-white d-block mb-1">{{ order.status|title }}</span>
+                            </div>
+                            <!-- Expected Delivery could be dynamic, putting a placeholder or simple logic for now -->
+                            <div class="col-12 mt-4">
+                                <span class="label-small">Expected Delivery</span>
+                                <span class="fw-semibold fs-5 text-white">within 3-5 days</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <!-- 3. DELIVERY INFORMATION -->
+                <div class="col-lg-6">
+                    <div class="od-card p-4 p-md-4 h-100">
+                        <h5 class="fw-semibold mb-4 border-bottom border-custom pb-3">Delivery Details</h5>
+
+                        <div class="mb-4">
+                            <!-- Could be order.shipping_address fields, using dynamic placeholders if order has user info -->
+                            <p class="fw-medium mb-1 fs-5">{{ order.user.get_full_name|default:"Customer Name" }}</p>
+                            <p class="text-muted-custom mb-1">{{ order.user.profile.phone|default:"+91 98765 43210" }}
+                            </p>
+                            <p class="text-muted-custom lh-base mb-0 mt-3">
+                                A-1402, Platinum Towers,<br>
+                                Link Road, Malad West,<br>
+                                Mumbai, Maharashtra - 400064
+                            </p>
+                        </div>
+
+                        <div class="od-timeline mt-4 pt-2">
+                            <div class="od-timeline-step completed">
+                                <div class="od-timeline-title">Order Confirmed</div>
+                                <div class="od-timeline-date">{{ order.created_at|date:"M d, Y g:i A" }}</div>
+                            </div>
+                            <div
+                                class="od-timeline-step {% if order.status|lower == 'shipped' or order.status|lower == 'delivered' %}completed{% endif %}">
+                                <div class="od-timeline-title">Shipped</div>
+                                <div class="od-timeline-date">Waiting for tracking update</div>
+                            </div>
+                            <div
+                                class="od-timeline-step {% if order.status|lower == 'delivered' %}completed{% endif %}">
+                                <div class="od-timeline-title">Out for Delivery</div>
+                                <div class="od-timeline-date">-</div>
+                            </div>
+                            <div
+                                class="od-timeline-step {% if order.status|lower == 'delivered' %}completed{% endif %}">
+                                <div class="od-timeline-title">Delivered</div>
+                                <div class="od-timeline-date">Pending</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. PAYMENT INFORMATION -->
+                <div class="col-lg-6">
+                    <div class="od-card p-4 p-md-4 h-100 d-flex flex-column">
+                        <h5 class="fw-semibold mb-4 border-bottom border-custom pb-3">Payment Details</h5>
+
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-muted-custom">Payment Method</span>
+                            <span class="fw-medium">Razorpay</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-muted-custom">Transaction ID</span>
+                            <span class="fw-medium font-monospace small">pay_L8x9VQvL9zK3R</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-4">
+                            <span class="text-muted-custom">Status</span>
+                            <span class="text-success fw-medium"><i class="bi bi-check-circle-fill me-1"></i>
+                                Successful</span>
+                        </div>
+
+                        <!-- 6. ORDER TOTAL SUMMARY -->
+                        <div class="mt-auto pt-4 border-top border-custom">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted-custom">Subtotal</span>
+                                <span class="fw-medium">₹ {{ order.total_amount }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted-custom">Shipping</span>
+                                <span class="fw-medium text-success">Free</span>
+                            </div>
+
+                            <div
+                                class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top border-custom">
+                                <span class="fw-semibold fs-5">Final Total</span>
+                                <span class="fw-bold fs-4 text-accent">₹ {{ order.total_amount }}</span>
+                            </div>
+                            <div class="text-end mt-1">
+                                <span class="small text-muted-custom">Inclusive of all taxes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. ORDER ITEMS LIST -->
+            <h5 class="fw-semibold mb-4 mt-5">Items in this order</h5>
+            <div class="d-flex flex-column gap-3 mb-5">
+
+                {% for item in order.items.all %}
+                <!-- Item Card -->
+                <div class="od-item-card">
+                    <!-- Image handling: fallback if item.product.image doesn't exist -->
+                    <img src="{% if item.product.image %}{{ item.product.image.url }}{% else %}https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500&auto=format&fit=crop&q=80{% endif %}"
+                        alt="{{ item.product.name }}" class="od-item-image d-none d-sm-block">
+
+                    <div class="od-item-details d-flex flex-column flex-sm-row justify-content-between w-100">
+                        <div class="mb-3 mb-sm-0 flex-grow-1">
+                            <div class="d-flex align-items-center gap-3 mb-1">
+                                <span class="od-badge od-badge-paid"
+                                    style="padding: 0.2rem 0.5rem; font-size: 0.65rem;">Item</span>
+                            </div>
+                            <h6 class="fw-semibold fs-5 mb-1 mt-2">{{ item.product.name }}</h6>
+                            <p class="text-muted-custom small mb-2">Quantity: {{ item.quantity }}</p>
+
+                            <!-- Mobile Image (shows only on extra small) -->
+                            <img src="{% if item.product.image %}{{ item.product.image.url }}{% else %}https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500&auto=format&fit=crop&q=80{% endif %}"
+                                alt="{{ item.product.name }}" class="od-item-image d-block d-sm-none mb-3 mt-2"
+                                style="height: 80px; width: 60px;">
+                        </div>
+
+                        <div
+                            class="text-sm-end d-flex flex-row flex-sm-column justify-content-between align-items-center align-items-sm-end">
+                            <div class="text-end mb-sm-3">
+                                <span class="d-block text-muted-custom small mb-1">Qty: {{ item.quantity }}</span>
+                                <span class="fw-medium">₹ {{ item.price }} / unit</span>
+                            </div>
+                            <!-- Using standard multiplication to get the total item price if Django doesn't fail, or just render price -->
+                            <div class="fw-bold fs-5">₹ {% widthratio item.price 1 item.quantity %}</div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+            </div>
+
+            <!-- 7. ACTIONS -->
+            <div class="d-flex flex-column flex-sm-row justify-content-end gap-3 mt-5 pt-4 border-top border-custom">
+                <button class="od-btn-danger-outline order-3 order-sm-1 me-sm-auto"><i
+                        class="bi bi-x-circle me-2"></i>Cancel Order</button>
+                <button class="od-btn-outline order-2 order-sm-2"><i class="bi bi-receipt me-2"></i>View
+                    Invoice</button>
+                <button class="od-btn-primary order-1 order-sm-3"><i class="bi bi-geo-alt me-2"></i>Track Order</button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

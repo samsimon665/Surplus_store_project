@@ -90,8 +90,14 @@ def create_order_from_checkout(request, cart, shipping_method, address_text):
         subtotal += line_total
         total_weight += item.weight_kg * item.quantity
 
+        product = item.variant.product
+        
+        image = None
+        if product and product.main_image:
+            image = request.build_absolute_uri(product.main_image.url)
+
         order_items_data.append({
-            "product_name": item.variant.product.name,
+            "product_name": product.name,
             "color": item.color,
             "size": item.size,
             "quantity": item.quantity,
@@ -99,6 +105,7 @@ def create_order_from_checkout(request, cart, shipping_method, address_text):
             "unit_price": recalculated_unit_price,
             "total_price": line_total,
             "variant_id": item.variant.id,
+            "image_url": image,
         })
 
     subtotal = round_money(subtotal)

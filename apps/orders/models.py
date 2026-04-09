@@ -167,6 +167,8 @@ class OrderItem(models.Model):
     variant_id = models.IntegerField(
         help_text="Original variant ID for reference"
     )
+    
+    image_url = models.URLField(max_length=500, blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
