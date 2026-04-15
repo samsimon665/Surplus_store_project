@@ -96,6 +96,7 @@ def create_order_from_checkout(request, cart, shipping_method, address_text):
         if product and product.main_image:
             image = request.build_absolute_uri(product.main_image.url)
 
+
         order_items_data.append({
             "product_name": product.name,
             "color": item.color,
@@ -106,6 +107,8 @@ def create_order_from_checkout(request, cart, shipping_method, address_text):
             "total_price": line_total,
             "variant_id": item.variant.id,
             "image_url": image,
+
+            "product_url": request.build_absolute_uri(product.get_absolute_url()) if product else None,
         })
 
     subtotal = round_money(subtotal)

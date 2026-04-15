@@ -29,11 +29,11 @@
         :root {
             --color-bg: #000000;
             --color-accent: #F2E700;
-            --color-surface: #111111;
+            --color-surface: #000000;
             --color-text: #EEEEEE;
             --color-text-muted: #888888;
 
-            --od-border: rgba(255, 255, 255, 0.08);
+            --od-border: rgb(73, 72, 72);
             --od-border-hover: rgba(255, 255, 255, 0.15);
             --od-radius-lg: 16px;
             --od-radius-md: 12px;
@@ -93,7 +93,7 @@
         .od-card:hover {
             border-color: var(--od-border-hover);
             transform: translateY(-2px);
-            background-color: rgba(30, 30, 30, 0.8);
+            background-color: rgb(24, 0, 0);
             /* Slight bump for surface hover */
             box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.5),
                 0 0 0 1px rgba(242, 231, 0, 0.03);
@@ -295,6 +295,139 @@
             color: #fff;
             border-color: #F2E700;
         }
+
+
+        /* ADDRESS */
+
+        .address-block {
+            margin-top: 8px;
+        }
+
+        .address-line {
+            font-size: 14px;
+            color: #ccc;
+            line-height: 1.6;
+            margin-bottom: 2px;
+        }
+
+        .address-line:last-child {
+            margin-bottom: 0;
+        }
+
+
+        /* PROGRESS BAR */
+
+
+
+        .v-stepper {
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .v-step {
+            display: flex;
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .v-step::before {
+            content: '';
+            position: absolute;
+            left: 18px;
+            top: 40px;
+            height: calc(100% - 10px);
+            width: 2px;
+            background: #2a2a2a;
+        }
+
+        .v-step:last-child::before {
+            display: none;
+        }
+
+        .v-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #1a1a1a;
+            border: 2px solid #444;
+            color: #777;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-weight: 600;
+        }
+
+        .v-step.completed .v-circle {
+            background: #F2E700;
+            border-color: #F2E700;
+            color: #000;
+        }
+
+        .v-step.active .v-circle {
+            border-color: #F2E700;
+            color: #F2E700;
+        }
+
+        .v-step.pending .v-circle {
+            border-color: #444;
+            color: #777;
+        }
+
+        .v-title {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .v-status {
+            display: inline-block;
+            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 12px;
+            margin-top: 5px;
+        }
+
+        .v-status.completed {
+            background: rgba(34,197,94,0.2);
+            color: #22c55e;
+        }
+
+        .v-status.active {
+            background: rgba(59,130,246,0.2);
+            color: #3b82f6;
+        }
+
+        .v-status.pending {
+            background: #1a1a1a;
+            color: #777;
+        }
+
+        .v-time {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .od-item-card {
+            background: #111;
+            padding: 16px;
+            border-radius: 10px;
+            transition: 0.2s;
+        }
+
+        .od-item-card:hover {
+            background: #1a1a1a;
+            transform: translateY(-2px);
+        }
+
+        .od-item-image {
+            width: 70px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        
     </style>
 </head>
 
@@ -305,12 +438,20 @@
     <div class="order-detail-wrapper pt-4 pb-5 od-page">
         <div class="container" style="max-width: 1000px;">
 
+
+
+
             <!-- 1. HEADER SECTION -->
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 mb-md-5">
+
+
                 <div class="mb-3 mb-md-0">
                     <h1 class="display-6 fw-bold mb-2">Order Details</h1>
                     <p class="text-muted-custom mb-0 fs-6">Track your order and items</p>
                 </div>
+
+
+
                 <div class="text-md-end">
 
                     <div class="d-flex align-items-center gap-2">
@@ -326,55 +467,77 @@
                     </div>
 
 
+
                     <p class="text-muted-custom mb-0 small">
                         <i class="bi bi-clock me-1"></i> Placed on {{ order.created_at|date:"M d, Y" }}
                     </p>
+
                 </div>
             </div>
+
+
 
             <!-- 2. ORDER SUMMARY CARD -->
             <div class="od-card p-4 p-md-5 mb-4">
                 <div class="row gy-4">
+            
+                    <!-- LEFT SIDE -->
                     <div class="col-lg-6 border-lg-end pe-lg-4">
-                        <div class="row gy-4">
-                            <div class="col-6">
-                                <span class="label-small">Order ID</span>
-                                <span class="fw-semibold font-monospace fs-6">ORD-{{ order.uuid|slice:":8"|upper
-                                    }}</span>
-                            </div>
-                            <div class="col-6">
+                        <div class="d-flex flex-column gap-4">
+            
+                            <!-- Date -->
+                            <div>
                                 <span class="label-small">Date Placed</span>
-                                <span class="fw-medium">{{ order.created_at|date:"M d, Y" }}</span>
-                            </div>
-                            <div class="col-12 mt-4">
-                                <span class="label-small">Payment Status</span>
-                                <div class="d-flex align-items-center gap-2 mt-1">
-                                    <span class="od-badge od-badge-paid">Paid</span>
-                                    <span class="text-muted-custom small ms-2">via Razorpay</span>
+                                <div class="fs-5 fw-semibold">
+                                    {{ order.created_at|date:"M d, Y" }}
                                 </div>
                             </div>
+            
+                            <!-- Payment Status -->
+                            <div>
+                                <span class="label-small">Payment Status</span>
+                                <div class="mt-2">
+                                    <span class="od-badge od-badge-paid fs-6 px-3 py-2">
+                                        {{ order.payment_status|title }}
+                                    </span>
+                                </div>
+                            </div>
+            
                         </div>
                     </div>
-
+            
+                    <!-- RIGHT SIDE -->
                     <div class="col-lg-6 ps-lg-5">
-                        <div class="row gy-4">
-                            <div class="col-6">
+                        <div class="d-flex flex-column gap-4">
+            
+                            <!-- Total Amount -->
+                            <div>
                                 <span class="label-small">Total Amount</span>
-                                <span class="fw-semibold fs-4 text-accent">₹ {{ order.total_amount }}</span>
+                                <div class="fs-3 fw-bold text-accent">
+                                    ₹ {{ order.total_amount }}
+                                </div>
                             </div>
-                            <div class="col-6">
-                                <span class="label-small">Delivery Status</span>
-                                <span class="fw-medium text-white d-block mb-1">{{ order.status|title }}</span>
-                            </div>
-                            <!-- Expected Delivery could be dynamic, putting a placeholder or simple logic for now -->
-                            <div class="col-12 mt-4">
+            
+                            <!-- Expected Delivery -->
+                            <div>
                                 <span class="label-small">Expected Delivery</span>
-                                <span class="fw-semibold fs-5 text-white">within 3-5 days</span>
+                                <div class="fs-5 fw-semibold text-white">
+                                    {% if order.delivery_start and order.delivery_end %}
+                                    {{ order.delivery_start|date:"M d" }} - {{ order.delivery_end|date:"M d, Y" }}
+                                    {% else %}
+                                    Not available
+                                    {% endif %}
+                                </div>
                             </div>
+            
                         </div>
                     </div>
+            
                 </div>
             </div>
+
+
+            
 
             <div class="row g-4 mb-4">
                 <!-- 3. DELIVERY INFORMATION -->
@@ -383,126 +546,323 @@
                         <h5 class="fw-semibold mb-4 border-bottom border-custom pb-3">Delivery Details</h5>
 
                         <div class="mb-4">
-                            <!-- Could be order.shipping_address fields, using dynamic placeholders if order has user info -->
-                            <p class="fw-medium mb-1 fs-5">{{ order.user.get_full_name|default:"Customer Name" }}</p>
-                            <p class="text-muted-custom mb-1">{{ order.user.profile.phone|default:"+91 98765 43210" }}
+                        
+                            <p class="fw-medium mb-1 fs-5">
+                                {{ order.user.get_full_name|default:"Customer Name" }}
                             </p>
-                            <p class="text-muted-custom lh-base mb-0 mt-3">
-                                A-1402, Platinum Towers,<br>
-                                Link Road, Malad West,<br>
-                                Mumbai, Maharashtra - 400064
+                        
+                            <p class="text-muted-custom mb-1">
+                                {{ order.user.profile.phone|default:"+91 98765 43210" }}
                             </p>
+                        
+                            <div class="fw-semibold fs-6 mt-3 mb-2 text-accent">
+                                ADDRESS                      
+                            </div>
+                        
+                            <div class="address-block">
+                                {% for line in order.address_text.splitlines %}
+                                <div class="address-line">{{ line }}</div>
+                                {% endfor %}                      
+                            </div>                  
                         </div>
 
-                        <div class="od-timeline mt-4 pt-2">
-                            <div class="od-timeline-step completed">
-                                <div class="od-timeline-title">Order Confirmed</div>
-                                <div class="od-timeline-date">{{ order.created_at|date:"M d, Y g:i A" }}</div>
+                        <div class="v-stepper">
+                        
+                            <!-- STEP 1: ORDER PLACED -->
+                            <div class="v-step completed">
+                                <div class="v-circle">✓</div>
+                                <div class="v-content">
+                                    <div class="v-title">Order Placed</div>
+                                    <div class="v-status completed">Completed</div>
+                                    <div class="v-time">
+                                        {{ order.created_at|date:"M d, Y, g:i A" }}
+                                    </div>
+                                </div>
                             </div>
-                            <div
-                                class="od-timeline-step {% if order.status|lower == 'shipped' or order.status|lower == 'delivered' %}completed{% endif %}">
-                                <div class="od-timeline-title">Shipped</div>
-                                <div class="od-timeline-date">Waiting for tracking update</div>
+                        
+                            <!-- STEP 2: PAYMENT -->
+                            <div class="v-step {% if order.payment_status == 'success' %}completed{% else %}active{% endif %}">
+                        
+                                <div class="v-circle">
+                                    {% if order.payment_status == 'success' %}✓{% else %}2{% endif %}
+                                </div>
+                        
+                                <div class="v-content">
+                                    <div class="v-title">Processing</div>
+                                    <div
+                                        class="v-status 
+                                                                {% if order.payment_status == 'success' %}completed{% else %}active{% endif %}">
+                        
+                                        {% if order.payment_status == 'success' %}
+                                        Completed
+                                        {% else %}
+                                        In Progress
+                                        {% endif %}
+                                    </div>
+                                    <div class="v-time">
+                                        {% if order.payment_status == 'success' %}
+                                        Payment successful
+                                        {% else %}
+                                        Waiting for payment
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </div>
-                            <div
-                                class="od-timeline-step {% if order.status|lower == 'delivered' %}completed{% endif %}">
-                                <div class="od-timeline-title">Out for Delivery</div>
-                                <div class="od-timeline-date">-</div>
+                        
+                            <!-- STEP 3: SHIPPING -->
+                            <div class="v-step 
+                                                        {% if order.status == 'shipped' or order.status == 'out_for_delivery' or order.status == 'delivered' %}
+                                                            completed
+                                                        {% else %}
+                                                            pending
+                                                        {% endif %}">
+                        
+                                <div class="v-circle">
+                                    {% if order.status == 'shipped' or order.status == 'out_for_delivery' or order.status == 'delivered' %}
+                                    ✓
+                                    {% else %}
+                                    3
+                                    {% endif %}
+                                </div>
+                        
+                                <div class="v-content">
+                                    <div class="v-title">Shipping</div>
+                                    <div class="v-status 
+                                                                {% if order.status == 'shipped' or order.status == 'out_for_delivery' or order.status == 'delivered' %}
+                                                                    completed
+                                                                {% else %}
+                                                                    pending
+                                                                {% endif %}">
+                        
+                                        {% if order.status == 'shipped' %}
+                                        In Progress
+                                        {% elif order.status == 'out_for_delivery' or order.status == 'delivered' %}
+                                        Completed
+                                        {% else %}
+                                        Pending
+                                        {% endif %}
+                                    </div>
+                        
+                                    <div class="v-time">
+                                        {% if order.delivery_start %}
+                                        Estimated: {{ order.delivery_start|date:"M d" }}
+                                        {% else %}
+                                        Waiting for shipment
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </div>
-                            <div
-                                class="od-timeline-step {% if order.status|lower == 'delivered' %}completed{% endif %}">
-                                <div class="od-timeline-title">Delivered</div>
-                                <div class="od-timeline-date">Pending</div>
-                            </div>
+                        
+                            <!-- STEP 4: DELIVERY -->
+                            <div class="v-step 
+                                                        {% if order.status == 'delivered' %}completed{% else %}pending{% endif %}">
+                        
+                                <div class="v-circle">
+                                    {% if order.status == 'delivered' %}✓{% else %}4{% endif %}
+                                </div>
+                        
+                                <div class="v-content">
+                                    <div class="v-title">Delivered</div>
+                                    <div class="v-status 
+                                                                {% if order.status == 'delivered' %}completed{% else %}pending{% endif %}">
+                        
+                                        {% if order.status == 'delivered' %}
+                                        Completed
+                                        {% else %}
+                                        Pending
+                                        {% endif %}
+                                    </div>
+                        
+                                    <div class="v-time">
+                                        {% if order.delivery_end %}
+                                        Expected by {{ order.delivery_end|date:"M d, Y" }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>                  
                         </div>
+
+                        
                     </div>
                 </div>
+
+
+
 
                 <!-- 4. PAYMENT INFORMATION -->
                 <div class="col-lg-6">
                     <div class="od-card p-4 p-md-4 h-100 d-flex flex-column">
-                        <h5 class="fw-semibold mb-4 border-bottom border-custom pb-3">Payment Details</h5>
-
+                
+                        <!-- HEADING -->
+                        <h5 class="fw-bold fs-5 mb-4 border-bottom border-custom pb-3">
+                            Payment Details
+                        </h5>
+                
+                        <!-- PAYMENT INFO -->
                         <div class="d-flex justify-content-between mb-3">
-                            <span class="text-muted-custom">Payment Method</span>
-                            <span class="fw-medium">Razorpay</span>
+                            <span class="text-muted-custom fs-6">Payment Method</span>
+                            <span class="fw-semibold fs-5">
+                                {% if order.payment_status == 'success' %}
+                                Online
+                                {% elif order.payment_status == 'failed' %}
+                                Failed
+                                {% else %}
+                                Pending
+                                {% endif %}
+                            </span>
                         </div>
-
-                        <div class="d-flex justify-content-between mb-3">
-                            <span class="text-muted-custom">Transaction ID</span>
-                            <span class="fw-medium font-monospace small">pay_L8x9VQvL9zK3R</span>
-                        </div>
-
+                
+                        <!-- STATUS -->
                         <div class="d-flex justify-content-between mb-4">
-                            <span class="text-muted-custom">Status</span>
-                            <span class="text-success fw-medium"><i class="bi bi-check-circle-fill me-1"></i>
-                                Successful</span>
+                            <span class="text-muted-custom fs-6">Status</span>
+                
+                            <span class="
+                                {% if order.payment_status == 'success' %}
+                                    text-success
+                                {% elif order.payment_status == 'failed' %}
+                                    text-danger
+                                {% else %}
+                                    text-warning
+                                {% endif %}
+                                fw-semibold fs-5">
+                
+                                {% if order.payment_status == 'success' %}
+                                <i class="bi bi-check-circle-fill me-1"></i> Successful
+                                {% elif order.payment_status == 'failed' %}
+                                <i class="bi bi-x-circle-fill me-1"></i> Failed
+                                {% else %}
+                                <i class="bi bi-hourglass-split me-1"></i> Pending
+                                {% endif %}
+                
+                            </span>
                         </div>
-
-                        <!-- 6. ORDER TOTAL SUMMARY -->
+                
+                        <!-- PRICE BREAKDOWN -->
                         <div class="mt-auto pt-4 border-top border-custom">
+                
+                            <!-- SUBTOTAL -->
                             <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted-custom">Subtotal</span>
-                                <span class="fw-medium">₹ {{ order.total_amount }}</span>
+                                <span class="text-muted-custom fs-6">Subtotal</span>
+                                <span class="fw-semibold fs-6">
+                                    ₹ {{ order.subtotal }}
+                                </span>
                             </div>
+                
+                            <!-- DISCOUNT -->
+                            {% if order.discount_amount > 0 %}
                             <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted-custom">Shipping</span>
-                                <span class="fw-medium text-success">Free</span>
+                                <span class="text-muted-custom fs-6">Discount</span>
+                                <span class="fw-semibold fs-6 text-success">
+                                    - ₹ {{ order.discount_amount }}
+                                </span>
                             </div>
-
-                            <div
-                                class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top border-custom">
-                                <span class="fw-semibold fs-5">Final Total</span>
-                                <span class="fw-bold fs-4 text-accent">₹ {{ order.total_amount }}</span>
+                            {% endif %}
+                
+                            <!-- TAX -->
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted-custom fs-6">
+                                    Tax ({{ order.tax_rate }}%)
+                                </span>
+                                <span class="fw-semibold fs-6">
+                                    ₹ {{ order.tax_amount }}
+                                </span>
                             </div>
+                
+                            <!-- SHIPPING -->
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted-custom fs-6">Shipping</span>
+                                <span class="fw-semibold fs-6">
+                                    {% if order.shipping_fee > 0 %}
+                                    ₹ {{ order.shipping_fee }}
+                                    {% else %}
+                                    <span class="text-success">Free</span>
+                                    {% endif %}
+                                </span>
+                            </div>
+                
+                            <!-- TOTAL -->
+                            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top border-custom">
+                                <span class="fw-semibold fs-5">Total</span>
+                                <span class="fw-bold fs-4 text-accent">
+                                    ₹ {{ order.total_amount }}
+                                </span>
+                            </div>
+                
+                            <!-- NOTE -->
                             <div class="text-end mt-1">
-                                <span class="small text-muted-custom">Inclusive of all taxes</span>
+                                <span class="small text-muted-custom">
+                                    Inclusive of all taxes
+                                </span>
                             </div>
+                
                         </div>
+                
                     </div>
                 </div>
+
+
             </div>
 
+
+
+            
             <!-- 5. ORDER ITEMS LIST -->
             <h5 class="fw-semibold mb-4 mt-5">Items in this order</h5>
+            
             <div class="d-flex flex-column gap-3 mb-5">
-
+            
                 {% for item in order.items.all %}
-                <!-- Item Card -->
-                <div class="od-item-card">
-                    <!-- Image handling: fallback if item.product.image doesn't exist -->
-                    <img src="{% if item.product.image %}{{ item.product.image.url }}{% else %}https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500&auto=format&fit=crop&q=80{% endif %}"
-                        alt="{{ item.product.name }}" class="od-item-image d-none d-sm-block">
-
-                    <div class="od-item-details d-flex flex-column flex-sm-row justify-content-between w-100">
-                        <div class="mb-3 mb-sm-0 flex-grow-1">
-                            <div class="d-flex align-items-center gap-3 mb-1">
-                                <span class="od-badge od-badge-paid"
-                                    style="padding: 0.2rem 0.5rem; font-size: 0.65rem;">Item</span>
-                            </div>
-                            <h6 class="fw-semibold fs-5 mb-1 mt-2">{{ item.product.name }}</h6>
-                            <p class="text-muted-custom small mb-2">Quantity: {{ item.quantity }}</p>
-
-                            <!-- Mobile Image (shows only on extra small) -->
-                            <img src="{% if item.product.image %}{{ item.product.image.url }}{% else %}https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500&auto=format&fit=crop&q=80{% endif %}"
-                                alt="{{ item.product.name }}" class="od-item-image d-block d-sm-none mb-3 mt-2"
-                                style="height: 80px; width: 60px;">
+            
+                <!-- CLICKABLE CARD -->
+                <a href="{{ item.product_url|default:'#' }}" class="text-decoration-none text-white">
+            
+                    <div class="od-item-card d-flex gap-3 align-items-center">
+            
+                        <!-- IMAGE -->
+                        <img src="{{ item.image_url|default:'https://via.placeholder.com/100' }}" alt="{{ item.product_name }}"
+                            class="od-item-image">
+            
+                        <!-- DETAILS -->
+                        <div class="flex-grow-1">
+            
+                            <h6 class="fw-semibold fs-5 mb-1">
+                                {{ item.product_name }}
+                            </h6>
+            
+                            <p class="text-muted-custom small mb-1">
+                                Size: {{ item.size }} | Color: {{ item.color }}
+                            </p>
+            
+                            <p class="text-muted-custom small mb-0">
+                                Quantity: {{ item.quantity }}
+                            </p>
+            
                         </div>
-
-                        <div
-                            class="text-sm-end d-flex flex-row flex-sm-column justify-content-between align-items-center align-items-sm-end">
-                            <div class="text-end mb-sm-3">
-                                <span class="d-block text-muted-custom small mb-1">Qty: {{ item.quantity }}</span>
-                                <span class="fw-medium">₹ {{ item.price }} / unit</span>
+            
+                        <!-- PRICE -->
+                        <div class="text-end">
+            
+                            <div class="text-muted-custom small">
+                                ₹ {{ item.unit_price }} / unit
                             </div>
-                            <!-- Using standard multiplication to get the total item price if Django doesn't fail, or just render price -->
-                            <div class="fw-bold fs-5">₹ {% widthratio item.price 1 item.quantity %}</div>
+            
+                            <div class="fw-bold fs-5">
+                                ₹ {{ item.total_price }}
+                            </div>
+            
                         </div>
+            
                     </div>
-                </div>
+            
+                </a>
+            
                 {% endfor %}
-
+            
             </div>
+
+
+
+
 
             <!-- 7. ACTIONS -->
             <div class="d-flex flex-column flex-sm-row justify-content-end gap-3 mt-5 pt-4 border-top border-custom">
@@ -518,6 +878,20 @@
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+    <!-- Copy Button -->
+
+    <script>
+        function copyOrderId() {
+            const text = document.getElementById("order-id").innerText;
+
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Order ID copied!");
+            });
+        }
+    </script>
 </body>
 
 </html>
