@@ -13,5 +13,7 @@ urlpatterns = [
     path("", order_list, name="order_list"),
     path("success/<uuid:uuid>/", order_success, name="order_success"),
     path("<uuid:uuid>/", order_detail, name="order_detail"),
+
+    path("order/<uuid:uuid>/cancel/", views.cancel_order, name="cancel_order"),
     
 ]

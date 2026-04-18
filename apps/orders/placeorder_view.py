@@ -48,7 +48,8 @@ def place_order(request):
         .select_for_update()
         .filter(
             user=request.user,
-            status="pending_payment"
+            status="pending",
+            payment_status="pending"
         )
         .first()
     )
@@ -186,7 +187,8 @@ def place_order(request):
 def order_list(request):
 
     orders = Order.objects.filter(
-        user=request.user
+        user=request.user,
+        payment_status="paid"
     ).order_by("-created_at")
 
     return render(

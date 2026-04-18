@@ -11,16 +11,37 @@ User = settings.AUTH_USER_MODEL
 class Order(models.Model):
 
     ORDER_STATUS_CHOICES = (
-        ("pending_payment", "Pending Payment"),
-        ("paid", "Paid"),
+        ("pending", "Pending"),
+        ("processing", "Processing"),
+        ("shipped", "Shipped"),
+        ("out_for_delivery", "Out for Delivery"),
+        ("delivered", "Delivered"),
         ("cancelled", "Cancelled"),
-        ("refunded", "Refunded"),
     )
 
     PAYMENT_STATUS_CHOICES = (
         ("pending", "Pending"),
-        ("success", "Success"),
+        ("paid", "Paid"),
         ("failed", "Failed"),
+    )
+
+
+    # 🔹 Razorpay
+    razorpay_payment_id = models.CharField(max_length=255, null=True, blank=True)
+    razorpay_refund_id = models.CharField(max_length=255, null=True, blank=True)
+
+    # 🔹 Refund tracking
+    REFUND_STATUS_CHOICES = (
+        ("none", "None"),
+        ("initiated", "Initiated"),
+        ("processed", "Processed"),
+        ("failed", "Failed"),
+    )
+
+    refund_status = models.CharField(
+        max_length=20,
+        choices=REFUND_STATUS_CHOICES,
+        default="none"
     )
 
     uuid = models.UUIDField(
@@ -44,7 +65,7 @@ class Order(models.Model):
     status = models.CharField(
         max_length=20,
         choices=ORDER_STATUS_CHOICES,
-        default="pending_payment"
+        default="pending"
     )
 
     payment_status = models.CharField(

@@ -82,9 +82,11 @@ def verify_payment(request):
         payment.razorpay_signature = razorpay_signature
         payment.status = "success"
         payment.save()
+        
 
-        order.status = "paid"
-        order.payment_status = "success"
+        order.status = "processing"
+        order.payment_status = "paid"
+        order.razorpay_payment_id = razorpay_payment_id
         order.save()
 
         # -------------------------------------------------

@@ -625,7 +625,7 @@
 
     <div class="checkout-container">
 
-    
+
         <!-- HEADER -->
 
         <header class="checkout-header">
@@ -851,7 +851,8 @@
                                 </div>
 
                                 <div class="shipping-subtitle">
-                                    Delivery in {{ standard_shipping.min_days }}–{{ standard_shipping.max_days }} business
+                                    Delivery in {{ standard_shipping.min_days }}–{{ standard_shipping.max_days }}
+                                    business
                                     days
                                 </div>
 
@@ -909,7 +910,8 @@
                         {% comment %} <!-- SUCCESS -->
                         {% if applied_promo %}
                         <div class="promo-status mt-3">
-                            <span class="material-symbols-outlined" style="color:var(--color-success); font-size:1.1rem;">
+                            <span class="material-symbols-outlined"
+                                style="color:var(--color-success); font-size:1.1rem;">
                                 check_circle
                             </span>
 
@@ -1077,44 +1079,43 @@
 
                             </div>
 
-                            <button id="checkout-btn" type="submit" class="btn btn-checkout mt-4" {% if checkout_blocked %}disabled{% endif %}>
+                            <button id="checkout-btn" type="button" class="btn btn-checkout mt-4" {% if checkout_blocked %}disabled{% endif %}>
                                 Continue to Payment
                             </button>
-                    
-                    
-                    {% if checkout_blocked %}
-                    
-                    <div class="mt-3 p-3"
-                         style="border:1px solid rgba(255,0,0,0.3); border-radius:8px; background:rgba(255,0,0,0.05);">
-                    
-                        <div style="font-size:0.85rem; color:#ff6b6b; margin-bottom:8px; font-weight:600;">
-                            Checkout blocked. Please fix the following:
-                        </div>
-                    
-                        <ul style="font-size:0.8rem; color:#ff9b9b; padding-left:18px; margin-bottom:12px;">
-                    
-                            {% if not email_verified %}
-                            <li>Email is not verified</li>
+
+
+                            {% if checkout_blocked %}
+
+                            <div class="mt-3 p-3"
+                                style="border:1px solid rgba(255,0,0,0.3); border-radius:8px; background:rgba(255,0,0,0.05);">
+
+                                <div style="font-size:0.85rem; color:#ff6b6b; margin-bottom:8px; font-weight:600;">
+                                    Checkout blocked. Please fix the following:
+                                </div>
+
+                                <ul style="font-size:0.8rem; color:#ff9b9b; padding-left:18px; margin-bottom:12px;">
+
+                                    {% if not email_verified %}
+                                    <li>Email is not verified</li>
+                                    {% endif %}
+
+                                    {% if not phone_present %}
+                                    <li>Phone number is missing</li>
+                                    {% endif %}
+
+                                    {% if not addresses %}
+                                    <li>No delivery address added</li>
+                                    {% endif %}
+
+                                </ul>
+
+                                <a href="{% url 'accounts:profile' %}" class="btn btn-sm btn-outline-warning w-100">
+                                    Fix Issues
+                                </a>
+
+                            </div>
+
                             {% endif %}
-                    
-                            {% if not phone_present %}
-                            <li>Phone number is missing</li>
-                            {% endif %}
-                    
-                            {% if not addresses %}
-                            <li>No delivery address added</li>
-                            {% endif %}
-                    
-                        </ul>
-                    
-                        <a href="{% url 'accounts:profile' %}"
-                           class="btn btn-sm btn-outline-warning w-100">
-                            Fix Issues
-                        </a>
-                    
-                    </div>
-                    
-                    {% endif %}
 
                             <div class="trust-badges">
                                 <span class="material-symbols-outlined" style="font-size:1rem; color:#666">lock</span>
@@ -1124,8 +1125,8 @@
                             </div>
 
                             <div class="text-center mt-2">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Razorpay_logo.svg" height="14"
-                                    style="filter: grayscale(1); opacity: 0.6;" alt="Razorpay">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Razorpay_logo.svg"
+                                    height="14" style="filter: grayscale(1); opacity: 0.6;" alt="Razorpay">
                             </div>
 
                         </div>
@@ -1265,17 +1266,17 @@
         <!-- PROMO AJAX -->
         <script>
             document.addEventListener("DOMContentLoaded", function () {
-            
+
                 const applyBtn = document.getElementById("promo-apply-btn");
                 const input = document.getElementById("promo-input");
                 const messageBox = document.getElementById("promo-message");
-            
+
                 if (!applyBtn || !input || !messageBox) return;
-            
+
                 // ---------- UI HELPERS ----------
-            
+
                 function showSuccess(code, discount) {
-            
+
                     messageBox.style.display = "flex";
                     messageBox.innerHTML = `
                         <span class="material-symbols-outlined"
@@ -1297,12 +1298,12 @@
                             Remove
                         </a>
                     `;
-            
+
                     attachRemoveHandler();
                 }
-            
+
                 function showError(message) {
-            
+
                     messageBox.style.display = "flex";
                     messageBox.innerHTML = `
                         <span class="material-symbols-outlined"
@@ -1315,22 +1316,22 @@
                         </span>
                     `;
                 }
-            
+
                 function clearMessage() {
                     messageBox.style.display = "none";
                     messageBox.innerHTML = "";
                 }
-            
+
                 // ---------- REMOVE HANDLER ----------
-            
+
                 function attachRemoveHandler() {
-            
+
                     const removeBtn = document.getElementById("promo-remove-btn");
                     if (!removeBtn) return;
-            
+
                     removeBtn.addEventListener("click", function (e) {
                         e.preventDefault();
-            
+
                         fetch("{% url 'orders:update_promo_ajax' %}", {
                             method: "POST",
                             headers: {
@@ -1339,32 +1340,32 @@
                             },
                             body: "action=remove"
                         })
-                        .then(res => res.json())
-                        .then(data => {
-            
-                            clearMessage();
-                            input.value = "";
-            
-                            const selectedShipping = document.querySelector(
-                                'input[name="shipping_method"]:checked'
-                            ).value;
-            
-                            updateTotals(selectedShipping);
-            
-                        })
-                        .catch(error => {
-                            console.error("Promo remove failed:", error);
-                        });
+                            .then(res => res.json())
+                            .then(data => {
+
+                                clearMessage();
+                                input.value = "";
+
+                                const selectedShipping = document.querySelector(
+                                    'input[name="shipping_method"]:checked'
+                                ).value;
+
+                                updateTotals(selectedShipping);
+
+                            })
+                            .catch(error => {
+                                console.error("Promo remove failed:", error);
+                            });
                     });
                 }
-            
+
                 // ---------- APPLY PROMO ----------
-            
+
                 applyBtn.addEventListener("click", function () {
-            
+
                     const code = input.value.trim();
                     if (!code) return;
-            
+
                     fetch("{% url 'orders:update_promo_ajax' %}", {
                         method: "POST",
                         headers: {
@@ -1373,246 +1374,270 @@
                         },
                         body: "action=apply&promo_code=" + encodeURIComponent(code)
                     })
-                    .then(res => res.json())
-                    .then(data => {
-            
-                        if (data.success) {
-            
-                            showSuccess(data.code, data.discount);
-            
-                            const selectedShipping = document.querySelector(
-                                'input[name="shipping_method"]:checked'
-                            ).value;
-            
-                            updateTotals(selectedShipping);
-            
-                        } else {
-                            showError(data.error || "Invalid promo code");
-                        }
-            
-                    })
-                    .catch(error => {
-                        console.error("Promo apply failed:", error);
-                    });
-            
+                        .then(res => res.json())
+                        .then(data => {
+
+                            if (data.success) {
+
+                                showSuccess(data.code, data.discount);
+
+                                const selectedShipping = document.querySelector(
+                                    'input[name="shipping_method"]:checked'
+                                ).value;
+
+                                updateTotals(selectedShipping);
+
+                            } else {
+                                showError(data.error || "Invalid promo code");
+                            }
+
+                        })
+                        .catch(error => {
+                            console.error("Promo apply failed:", error);
+                        });
+
                 });
-            
+
             });
         </script>
-        
 
-        <!-- Disabling Checkout-Button --> 
+
+        <!-- Disabling Checkout-Button -->
 
         <script>
 
             document.addEventListener("DOMContentLoaded", function () {
-            
+
                 const checkoutBtn = document.getElementById("checkout-btn");
-            
+
                 function validateCheckout() {
-            
+
                     let valid = true;
-            
+
                     const emailVerified = {{ email_verified|yesno:"true,false" }};
                     const phonePresent = {{ phone_present|yesno:"true,false" }};
-            
-                    if (!emailVerified) valid = false;
-                    if (!phonePresent) valid = false;
-            
-                    const selectedAddress = document.querySelector(
-                        'input[name="selected_address"]:checked'
-                    );
-            
-                    if (!selectedAddress) valid = false;
-            
-                    checkoutBtn.disabled = !valid;
+
+            if (!emailVerified) valid = false;
+            if (!phonePresent) valid = false;
+
+            const selectedAddress = document.querySelector(
+                'input[name="selected_address"]:checked'
+            );
+
+            if (!selectedAddress) valid = false;
+
+            checkoutBtn.disabled = !valid;
                 }
-            
-                validateCheckout();
-            
-                document.querySelectorAll('input[name="selected_address"]').forEach(el => {
-                    el.addEventListener("change", validateCheckout);
-                });
+
+            validateCheckout();
+
+            document.querySelectorAll('input[name="selected_address"]').forEach(el => {
+                el.addEventListener("change", validateCheckout);
+            });
             
             });
         </script>
 
 
 
-    <!-- Razorpay -->
+        <!-- Razorpay -->
 
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    
-    <script>
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-        document.addEventListener("DOMContentLoaded", function () {
-        
-            const checkoutForm = document.querySelector('form[action="{% url "orders:place_order" %}"]');
-            const checkoutBtn = document.getElementById("checkout-btn");
-        
-            if (!checkoutForm || !checkoutBtn) return;
-        
-            checkoutForm.addEventListener("submit", function (e) {
-        
-                e.preventDefault();  // stop normal form submit
-        
-                // Disable button immediately
-                checkoutBtn.disabled = true;
-                checkoutBtn.innerText = "Processing Payment...";
-        
-                const formData = new FormData(checkoutForm);
-        
-                fetch("{% url 'orders:place_order' %}", {
-                    method: "POST",
-                    headers: {
-                        "X-CSRFToken": "{{ csrf_token }}"
-                    },
-                    body: formData
-                })
-                .then(async res => {
-                
-                    const text = await res.text();
-                
-                    try {
-                        return JSON.parse(text);
-                    } catch (err) {
-                
-                        console.error("Server returned invalid JSON:", text);
-                
-                        throw new Error("Invalid server response");
-                    }
-                
-                })
-                .then(data => {
-        
-                    if (!data.success) {
+        <script>
 
-                        console.error("Order creation failed:", data);
-                    
-                        alert("Order creation failed. Please try again.");
-        
-                        checkoutBtn.disabled = false;
-                        checkoutBtn.innerText = "Continue to Payment";
-        
-                        return;
-                    }
-        
-                    const options = {
-        
-                        key: data.key,
-                        amount: data.amount,
-                        currency: "INR",
-        
-                        name: "SurPLUS Store",
-                        description: "Order Payment",
-        
-                        order_id: data.razorpay_order_id,
-        
-                        handler: function (response) {
-        
-                            fetch("/payments/verify/", {
-        
-                                method: "POST",
-        
-                                headers: {
-                                    "Content-Type": "application/x-www-form-urlencoded",
-                                    "X-CSRFToken": "{{ csrf_token }}"
-                                },
-        
-                                body: new URLSearchParams({
-        
-                                    razorpay_payment_id: response.razorpay_payment_id,
-                                    razorpay_order_id: response.razorpay_order_id,
-                                    razorpay_signature: response.razorpay_signature
-        
-                                })
-        
-                            })
-                            .then(res => res.json())
-                            .then(data => {
+            document.addEventListener("DOMContentLoaded", function () {
 
-                                console.log("VERIFY RESPONSE:", data);
+                const checkoutForm = document.querySelector('form[action="{% url "orders:place_order" %}"]');
+                const checkoutBtn = document.getElementById("checkout-btn");
 
-                                if (data.success) {
+                checkoutBtn.addEventListener("click", function () {
 
-                                    console.log("Payment verified, redirecting...");
-                                
-                                    window.location.replace(data.redirect_url);
-                                
-                                    return;
+                    checkoutForm.dispatchEvent(new Event("submit", { cancelable: true }));
 
-                                } else {
+                });
 
-                                    alert("Payment verification failed. Please contact support if amount was deducted.");
+                if (!checkoutForm || !checkoutBtn) return;
 
-                                    checkoutBtn.disabled = false;
-                                    checkoutBtn.innerText = "Continue to Payment";
+                checkoutForm.addEventListener("submit", function (e) {
 
-                                }
+                    e.preventDefault();  // stop normal form submit
 
-                            });
-        
+                    // Disable button immediately
+                    checkoutBtn.disabled = true;
+                    checkoutBtn.innerText = "Processing Payment...";
+
+                    const formData = new FormData(checkoutForm);
+
+                    fetch("{% url 'orders:place_order' %}", {
+                        method: "POST",
+                        headers: {
+                            "X-CSRFToken": "{{ csrf_token }}"
                         },
-        
-                        modal: {
-                            ondismiss: function () {
-        
-                                alert("Payment cancelled.");
-        
+                        body: formData
+                    })
+                        .then(async res => {
+
+                            const text = await res.text();
+
+                            try {
+                                return JSON.parse(text);
+                            } catch (err) {
+
+                                console.error("Server returned invalid JSON:", text);
+
+                                throw new Error("Invalid server response");
+                            }
+
+                        })
+                        .then(data => {
+
+                            console.log("PLACE ORDER RESPONSE:", data);
+
+                            if (!data.success) {
+
+                                console.error("Order creation failed:", data);
+
+                                alert("Order creation failed. Please try again.");
+
                                 checkoutBtn.disabled = false;
                                 checkoutBtn.innerText = "Continue to Payment";
-        
+
+                                return;
                             }
-                        },
-        
-                        theme: {
-                            color: "#000000"
-                        }
-        
-                    };
-        
-                    if (typeof Razorpay === "undefined") {
 
-                        console.error("Razorpay SDK not loaded");
-                    
-                        alert("Payment system unavailable. Please refresh and try again.");
-                    
-                        checkoutBtn.disabled = false;
-                        checkoutBtn.innerText = "Continue to Payment";
-                    
-                        return;
-                    }
-                    
-                    const rzp = new Razorpay(options);
-                    
-                    rzp.on("payment.failed", function () {
-                    
-                        alert("Payment failed. Please try again.");
-                    
-                        checkoutBtn.disabled = false;
-                        checkoutBtn.innerText = "Continue to Payment";
-                    
-                    });
-                    
-                    rzp.open();
-        
-                })
-                .catch(error => {
+                            const options = {
 
-                    console.error("FULL CHECKOUT ERROR:", error);
-                
-                    alert("Checkout error. Check browser console.");
-                
-                    checkoutBtn.disabled = false;
-                    checkoutBtn.innerText = "Continue to Payment";
-                
+                                key: data.key,
+                                amount: data.amount,
+                                currency: "INR",
+                            
+                                name: "SurPLUS Store",
+                                description: "Order Payment",
+                            
+                                order_id: data.razorpay_order_id,
+                            
+                                redirect: true,
+                            
+                                prefill: {
+                                    name: "Test User",
+                                    email: "test@test.com",
+                                    contact: "9999999999"
+                                },
+                            
+                                method: {
+                                    upi: true,
+                                    card: true,
+                                    netbanking: true,
+                                    wallet: true,
+                                    emi: true
+                                },
+
+                                handler: function (response) {
+
+                                    fetch("/payments/verify/", {
+
+                                        method: "POST",
+
+                                        headers: {
+                                            "Content-Type": "application/x-www-form-urlencoded",
+                                            "X-CSRFToken": "{{ csrf_token }}"
+                                        },
+
+                                        body: new URLSearchParams({
+
+                                            razorpay_payment_id: response.razorpay_payment_id,
+                                            razorpay_order_id: response.razorpay_order_id,
+                                            razorpay_signature: response.razorpay_signature
+
+                                        })
+
+                                    })
+                                        .then(res => res.json())
+                                        .then(data => {
+
+                                            console.log("VERIFY RESPONSE:", data);
+
+                                            if (data.success) {
+
+                                                console.log("Payment verified, redirecting...");
+
+                                                window.location.replace(data.redirect_url);
+
+                                                return;
+
+                                            } else {
+
+                                                alert("Payment verification failed. Please contact support if amount was deducted.");
+
+                                                checkoutBtn.disabled = false;
+                                                checkoutBtn.innerText = "Continue to Payment";
+
+                                            }
+
+                                        });
+
+                                },
+
+                                modal: {
+                                    ondismiss: function () {
+
+                                        alert("Payment cancelled.");
+
+                                        checkoutBtn.disabled = false;
+                                        checkoutBtn.innerText = "Continue to Payment";
+
+                                    }
+                                },
+
+                                theme: {
+                                    color: "#000000"
+                                }
+
+                            };
+
+                            if (typeof Razorpay === "undefined") {
+
+                                console.error("Razorpay SDK not loaded");
+
+                                alert("Payment system unavailable. Please refresh and try again.");
+
+                                checkoutBtn.disabled = false;
+                                checkoutBtn.innerText = "Continue to Payment";
+
+                                return;
+                            }
+
+                            const rzp = new Razorpay(options);
+
+                            rzp.on("payment.failed", function () {
+
+                                alert("Payment failed. Please try again.");
+
+                                checkoutBtn.disabled = false;
+                                checkoutBtn.innerText = "Continue to Payment";
+
+                            });
+
+                            rzp.open();
+
+                        })
+                        .catch(error => {
+
+                            console.error("FULL CHECKOUT ERROR:", error);
+
+                            alert("Checkout error. Check browser console.");
+
+                            checkoutBtn.disabled = false;
+                            checkoutBtn.innerText = "Continue to Payment";
+
+                        });
+
                 });
-        
+
             });
-        
-        });
-        
-    </script>
+
+        </script>
 
 </body>
 

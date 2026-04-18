@@ -1,4 +1,3 @@
-
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 
@@ -11,6 +10,8 @@ from apps.cart.services import can_proceed_to_checkout
 from apps.promotions.services import validate_promo_for_cart
 from .services import get_shipping_preview, calculate_checkout_totals
 
+from .models import Order
+
 from allauth.account.models import EmailAddress
 
 from django.utils import timezone
@@ -18,6 +19,10 @@ from django.utils import timezone
 from apps.catalog.models import ProductImage
 
 from decimal import Decimal, ROUND_HALF_UP
+
+from django.db import transaction
+from datetime import timedelta
+
 
 
 @login_required(login_url="accounts:login")
@@ -377,3 +382,46 @@ def update_checkout_summary(request):
     })
 
 
+@login_required(login_url="accounts:login")
+@require_POST
+def cancel_order(request, uuid):
+
+    try:
+        with transaction.atomic():
+
+            order = Order.objects.select_for_update().get(
+                uuid=uuid,
+                user=request.user
+            )
+
+            # ❌ Already cancelled
+            if order.status == "cancelled":
+                messages.error(request, "Order already cancelled")
+                return redirect("order_detail", uuid=uuid)
+
+            # ❌ Only allow pending or processing
+            if order.status not in ["pending", "processing"]:
+                messages.error(request, "Order cannot be cancelled now")
+                return redirect("order_detail", uuid=uuid)
+
+            # ❌ Only paid orders (important)
+            if order.payment_status != "paid":
+                messages.error(request, "Unpaid order cannot be cancelled")
+                return redirect("order_detail", uuid=uuid)
+
+            # ❌ 24-hour rule
+            if timezone.now() > order.created_at + timedelta(hours=24):
+                messages.error(request, "Cancellation window expired")
+                return redirect("order_detail", uuid=uuid)
+
+            # ✅ Cancel
+            order.status = "cancelled"
+            order.refund_status = "initiated"
+            order.save()
+
+        messages.success(request, "Order cancelled successfully")
+
+    except Order.DoesNotExist:
+        messages.error(request, "Order not found")
+
+    return redirect("order_detail", uuid=uuid)

@@ -511,40 +511,35 @@
                         <div class="order-date">
                             Order placed on {{ order.created_at|date:"M d, Y" }}
                         </div>
-                        <div class="order-status-msg">
-                            {% if order.status == 'delivered' %}
-                            Delivered on {{ order.updated_at|date:"M d, Y" }}
-                        
-                            {% elif order.status == 'out_for_delivery' %}
-                            Out for delivery
-                        
-                            {% elif order.status == 'shipped' %}
-                            Shipped • Arriving between {{ order.delivery_start|date:"M d" }} - {{ order.delivery_end|date:"M d" }}
-                        
-                            {% elif order.status == 'paid' %}
-                            Arriving between {{ order.delivery_start|date:"M d" }} - {{ order.delivery_end|date:"M d" }}
-                        
-                            {% elif order.status == 'cancelled' %}
-                            Cancelled on {{ order.updated_at|date:"M d" }}
-                        
-                            {% else %}
-                            {{ order.status|title }}
-                            {% endif %}                  
-                        </div>
-                    </div>
-
+                    
+                        <div class="order-products mt-1 text-muted-custom">
+                            {% for item in order.items.all %}
+                            {{ item.product_name }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </div>              </div>
+                
                     <div class="order-meta">
-                        
-                        {% if order.status|lower == 'paid' %}
-                        <span class="badge paid">Paid</span>
-                        {% elif order.status|lower == 'pending' %}
-                        <span class="badge pending">Pending</span>
-                        {% elif order.status|lower == 'cancelled' %}
-                        <span class="badge cancelled">Cancelled</span>
+                
+                        {% if order.status == 'delivered' %}
+                        <span class="badge paid">DELIVERED</span>
+                
+                        {% elif order.status == 'out_for_delivery' %}
+                        <span class="badge paid">OUT FOR DELIVERY</span>
+                
+                        {% elif order.status == 'shipped' %}
+                        <span class="badge paid">SHIPPED</span>
+                
+                        {% elif order.status == 'processing' %}
+                        <span class="badge paid">ORDER PLACED</span>
+                
+                        {% elif order.status == 'cancelled' %}
+                        <span class="badge cancelled">CANCELLED</span>
+                
                         {% else %}
-                        <span class="badge default">{{ order.status|title }}</span>
+                        <span class="badge paid">ORDER PLACED</span>
                         {% endif %}
-                    </div>
+                
+                    </div>          
                 </div>
 
                 <div class="order-bottom">

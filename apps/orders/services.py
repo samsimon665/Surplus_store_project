@@ -182,7 +182,7 @@ def create_order_from_checkout(request, cart, shipping_method, address_text):
         delivery_start=delivery_start,
         delivery_end=delivery_end,
 
-        status="pending_payment",
+        status="pending",
         payment_status="pending",
     )
 
