@@ -57,6 +57,7 @@ class OrderAdmin(admin.ModelAdmin):
         "user",
         "uuid",
         "status_badge",
+        "razorpay_payment_id",
         "payment_status_badge",
         "shipping_method",
         "subtotal",

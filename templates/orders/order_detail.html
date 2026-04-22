@@ -443,36 +443,108 @@
 
             <!-- 1. HEADER SECTION -->
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 mb-md-5">
-
-
+            
+                <!-- LEFT SIDE -->
                 <div class="mb-3 mb-md-0">
+            
+                    {% if order.status == "cancelled" %}
+            
+                    <h1 class="display-6 fw-bold mb-2 text-danger">
+                        Order Cancelled
+                    </h1>
+            
+                    <p class="text-muted-custom mb-0 fs-6">
+            
+                        {% if order.payment_status == "paid" %}
+            
+                        {% if order.refund_status == "initiated" %}
+                        Refund is being processed
+                        {% elif order.refund_status == "processed" %}
+                        Refund completed successfully
+                        {% elif order.refund_status == "failed" %}
+                        Refund failed. Contact support
+                        {% else %}
+                        Refund will be initiated shortly
+                        {% endif %}
+            
+                        {% else %}
+                        No payment was made
+                        {% endif %}
+            
+                    </p>
+            
+                    {% else %}
+            
                     <h1 class="display-6 fw-bold mb-2">Order Details</h1>
                     <p class="text-muted-custom mb-0 fs-6">Track your order and items</p>
+            
+                    {% endif %}
+            
                 </div>
-
-
-
+            
+            
+                <!-- RIGHT SIDE -->
                 <div class="text-md-end">
-
-                    <div class="d-flex align-items-center gap-2">
-                    
+            
+                    <div class="d-flex align-items-center gap-2 justify-content-md-end">
+            
+                        <!-- ORDER ID -->
                         <span class="fs-5 fw-semibold font-monospace" id="order-id">
                             ORD{{ order.uuid|slice:":6"|upper }}
                         </span>
-                    
+            
+                        <!-- COPY BUTTON -->
                         <button class="copy-btn" onclick="copyOrderId()">
                             <i class="bi bi-clipboard"></i>
-                        </button>              
-                    
+                        </button>
+            
                     </div>
-
-
-
-                    <p class="text-muted-custom mb-0 small">
-                        <i class="bi bi-clock me-1"></i> Placed on {{ order.created_at|date:"M d, Y" }}
+            
+                    <!-- STATUS BADGES -->
+                    <div class="mt-2">
+            
+                        {% if order.status == "cancelled" %}
+            
+                        <!-- CANCELLED BADGE -->
+                        <span class="od-badge" style="background: rgba(231,76,60,0.1); color:#E74C3C;">
+                            Cancelled
+                        </span>
+            
+                        <!-- REFUND STATUS -->
+                        {% if order.payment_status == "paid" %}
+            
+                        {% if order.refund_status == "initiated" %}
+                        <span class="od-badge text-warning">Refund Processing</span>
+            
+                        {% elif order.refund_status == "processed" %}
+                        <span class="od-badge text-success">Refunded</span>
+            
+                        {% elif order.refund_status == "failed" %}
+                        <span class="od-badge text-danger">Refund Failed</span>
+            
+                        {% endif %}
+            
+                        {% endif %}
+            
+                        {% else %}
+            
+                        <!-- NORMAL STATUS -->
+                        <span class="od-badge od-badge-paid">
+                            {{ order.status|title }}
+                        </span>
+            
+                        {% endif %}
+            
+                    </div>
+            
+                    <!-- DATE -->
+                    <p class="text-muted-custom mb-0 small mt-2">
+                        <i class="bi bi-clock me-1"></i>
+                        Placed on {{ order.created_at|date:"M d, Y" }}
                     </p>
-
-                </div>
+            
+                </div>      
+            
             </div>
 
 
@@ -497,9 +569,58 @@
                             <div>
                                 <span class="label-small">Payment Status</span>
                                 <div class="mt-2">
-                                    <span class="od-badge od-badge-paid fs-6 px-3 py-2">
-                                        {{ order.payment_status|title }}
+            
+                                    {% if order.status == "cancelled" %}
+            
+                                    {% if order.payment_status == "paid" %}
+            
+                                    {% if order.refund_status == "initiated" %}
+                                    <span class="od-badge text-warning fs-6 px-3 py-2">
+                                        Refund Processing
                                     </span>
+            
+                                    {% elif order.refund_status == "processed" %}
+                                    <span class="od-badge text-success fs-6 px-3 py-2">
+                                        Refunded
+                                    </span>
+            
+                                    {% elif order.refund_status == "failed" %}
+                                    <span class="od-badge text-danger fs-6 px-3 py-2">
+                                        Refund Failed
+                                    </span>
+            
+                                    {% else %}
+                                    <span class="od-badge text-warning fs-6 px-3 py-2">
+                                        Refund Pending
+                                    </span>
+                                    {% endif %}
+            
+                                    {% else %}
+                                    <span class="od-badge text-muted fs-6 px-3 py-2">
+                                        No Payment
+                                    </span>
+                                    {% endif %}
+            
+                                    {% else %}
+            
+                                    {% if order.payment_status == "paid" %}
+                                    <span class="od-badge od-badge-paid fs-6 px-3 py-2">
+                                        Paid
+                                    </span>
+            
+                                    {% elif order.payment_status == "failed" %}
+                                    <span class="od-badge text-danger fs-6 px-3 py-2">
+                                        Failed
+                                    </span>
+            
+                                    {% else %}
+                                    <span class="od-badge text-warning fs-6 px-3 py-2">
+                                        Pending
+                                    </span>
+                                    {% endif %}
+            
+                                    {% endif %}
+            
                                 </div>
                             </div>
             
@@ -521,12 +642,25 @@
                             <!-- Expected Delivery -->
                             <div>
                                 <span class="label-small">Expected Delivery</span>
+            
                                 <div class="fs-5 fw-semibold text-white">
-                                    {% if order.delivery_start and order.delivery_end %}
+            
+                                    {% if order.status == "cancelled" %}
+            
+                                    <span class="text-danger">
+                                        Order Cancelled
+                                    </span>
+            
+                                    {% elif order.delivery_start and order.delivery_end %}
+            
                                     {{ order.delivery_start|date:"M d" }} - {{ order.delivery_end|date:"M d, Y" }}
+            
                                     {% else %}
+            
                                     Not available
+            
                                     {% endif %}
+            
                                 </div>
                             </div>
             
@@ -544,30 +678,32 @@
                 <div class="col-lg-6">
                     <div class="od-card p-4 p-md-4 h-100">
                         <h5 class="fw-semibold mb-4 border-bottom border-custom pb-3">Delivery Details</h5>
-
+                
                         <div class="mb-4">
-                        
+                
                             <p class="fw-medium mb-1 fs-5">
                                 {{ order.user.get_full_name|default:"Customer Name" }}
                             </p>
-                        
+                
                             <p class="text-muted-custom mb-1">
                                 {{ order.user.profile.phone|default:"+91 98765 43210" }}
                             </p>
-                        
+                
                             <div class="fw-semibold fs-6 mt-3 mb-2 text-accent">
-                                ADDRESS                      
+                                ADDRESS
                             </div>
-                        
+                
                             <div class="address-block">
                                 {% for line in order.address_text.splitlines %}
                                 <div class="address-line">{{ line }}</div>
-                                {% endfor %}                      
-                            </div>                  
+                                {% endfor %}
+                            </div>
                         </div>
-
+                
                         <div class="v-stepper">
-                        
+                
+                            {% if order.status == "cancelled" %}
+                
                             <!-- STEP 1: ORDER PLACED -->
                             <div class="v-step completed">
                                 <div class="v-circle">✓</div>
@@ -579,28 +715,59 @@
                                     </div>
                                 </div>
                             </div>
-                        
-                            <!-- STEP 2: PAYMENT -->
-                            <div class="v-step {% if order.payment_status == 'success' %}completed{% else %}active{% endif %}">
-                        
-                                <div class="v-circle">
-                                    {% if order.payment_status == 'success' %}✓{% else %}2{% endif %}
+                
+                            <!-- STEP 2: CANCELLED -->
+                            <div class="v-step completed">
+                                <div class="v-circle text-danger">✕</div>
+                                <div class="v-content">
+                                    <div class="v-title text-danger">Order Cancelled</div>
+                
+                                    <div class="v-status text-danger">
+                                        {% if order.refund_status == "processed" %}
+                                        Refunded
+                                        {% elif order.refund_status == "failed" %}
+                                        Refund Failed
+                                        {% else %}
+                                        Refund Processing
+                                        {% endif %}
+                                    </div>
+                
+                                    <div class="v-time">
+                                        {{ order.updated_at|date:"M d, Y, g:i A" }}
+                                    </div>
                                 </div>
-                        
+                            </div>
+                
+                            {% else %}
+                
+                            <!-- STEP 1: ORDER PLACED -->
+                            <div class="v-step completed">
+                                <div class="v-circle">✓</div>
+                                <div class="v-content">
+                                    <div class="v-title">Order Placed</div>
+                                    <div class="v-status completed">Completed</div>
+                                    <div class="v-time">
+                                        {{ order.created_at|date:"M d, Y, g:i A" }}
+                                    </div>
+                                </div>
+                            </div>
+                
+                            <!-- STEP 2: PROCESSING -->
+                            <div class="v-step {% if order.payment_status == 'paid' %}completed{% else %}active{% endif %}">
+                                <div class="v-circle">
+                                    {% if order.payment_status == 'paid' %}✓{% else %}2{% endif %}
+                                </div>
                                 <div class="v-content">
                                     <div class="v-title">Processing</div>
-                                    <div
-                                        class="v-status 
-                                                                {% if order.payment_status == 'success' %}completed{% else %}active{% endif %}">
-                        
-                                        {% if order.payment_status == 'success' %}
+                                    <div class="v-status {% if order.payment_status == 'paid' %}completed{% else %}active{% endif %}">
+                                        {% if order.payment_status == 'paid' %}
                                         Completed
                                         {% else %}
                                         In Progress
                                         {% endif %}
                                     </div>
                                     <div class="v-time">
-                                        {% if order.payment_status == 'success' %}
+                                        {% if order.payment_status == 'paid' %}
                                         Payment successful
                                         {% else %}
                                         Waiting for payment
@@ -608,15 +775,15 @@
                                     </div>
                                 </div>
                             </div>
-                        
+                
                             <!-- STEP 3: SHIPPING -->
                             <div class="v-step 
-                                                        {% if order.status == 'shipped' or order.status == 'out_for_delivery' or order.status == 'delivered' %}
-                                                            completed
-                                                        {% else %}
-                                                            pending
-                                                        {% endif %}">
-                        
+                                    {% if order.status == 'shipped' or order.status == 'out_for_delivery' or order.status == 'delivered' %}
+                                        completed
+                                    {% else %}
+                                        pending
+                                    {% endif %}">
+                
                                 <div class="v-circle">
                                     {% if order.status == 'shipped' or order.status == 'out_for_delivery' or order.status == 'delivered' %}
                                     ✓
@@ -624,16 +791,16 @@
                                     3
                                     {% endif %}
                                 </div>
-                        
+                
                                 <div class="v-content">
                                     <div class="v-title">Shipping</div>
                                     <div class="v-status 
-                                                                {% if order.status == 'shipped' or order.status == 'out_for_delivery' or order.status == 'delivered' %}
-                                                                    completed
-                                                                {% else %}
-                                                                    pending
-                                                                {% endif %}">
-                        
+                                            {% if order.status == 'shipped' or order.status == 'out_for_delivery' or order.status == 'delivered' %}
+                                                completed
+                                            {% else %}
+                                                pending
+                                            {% endif %}">
+                
                                         {% if order.status == 'shipped' %}
                                         In Progress
                                         {% elif order.status == 'out_for_delivery' or order.status == 'delivered' %}
@@ -642,7 +809,7 @@
                                         Pending
                                         {% endif %}
                                     </div>
-                        
+                
                                     <div class="v-time">
                                         {% if order.delivery_start %}
                                         Estimated: {{ order.delivery_start|date:"M d" }}
@@ -652,37 +819,33 @@
                                     </div>
                                 </div>
                             </div>
-                        
+                
                             <!-- STEP 4: DELIVERY -->
-                            <div class="v-step 
-                                                        {% if order.status == 'delivered' %}completed{% else %}pending{% endif %}">
-                        
+                            <div class="v-step {% if order.status == 'delivered' %}completed{% else %}pending{% endif %}">
                                 <div class="v-circle">
                                     {% if order.status == 'delivered' %}✓{% else %}4{% endif %}
                                 </div>
-                        
                                 <div class="v-content">
                                     <div class="v-title">Delivered</div>
-                                    <div class="v-status 
-                                                                {% if order.status == 'delivered' %}completed{% else %}pending{% endif %}">
-                        
+                                    <div class="v-status {% if order.status == 'delivered' %}completed{% else %}pending{% endif %}">
                                         {% if order.status == 'delivered' %}
                                         Completed
                                         {% else %}
                                         Pending
                                         {% endif %}
                                     </div>
-                        
                                     <div class="v-time">
                                         {% if order.delivery_end %}
                                         Expected by {{ order.delivery_end|date:"M d, Y" }}
                                         {% endif %}
                                     </div>
                                 </div>
-                            </div>                  
+                            </div>
+                
+                            {% endif %}
+                
                         </div>
-
-                        
+                
                     </div>
                 </div>
 
@@ -698,17 +861,19 @@
                             Payment Details
                         </h5>
                 
-                        <!-- PAYMENT INFO -->
+                        <!-- PAYMENT METHOD -->
                         <div class="d-flex justify-content-between mb-3">
                             <span class="text-muted-custom fs-6">Payment Method</span>
                             <span class="fw-semibold fs-5">
-                                {% if order.payment_status == 'success' %}
+                
+                                {% if order.payment_status == 'paid' %}
                                 Online
                                 {% elif order.payment_status == 'failed' %}
                                 Failed
                                 {% else %}
                                 Pending
                                 {% endif %}
+                
                             </span>
                         </div>
                 
@@ -717,21 +882,45 @@
                             <span class="text-muted-custom fs-6">Status</span>
                 
                             <span class="
-                                {% if order.payment_status == 'success' %}
-                                    text-success
-                                {% elif order.payment_status == 'failed' %}
-                                    text-danger
-                                {% else %}
-                                    text-warning
-                                {% endif %}
-                                fw-semibold fs-5">
+                                                {% if order.status == 'cancelled' and order.payment_status == 'paid' and order.refund_status == 'processed' %}
+                                                    text-success
+                                                {% elif order.status == 'cancelled' and order.payment_status == 'paid' %}
+                                                    text-warning
+                                                {% elif order.payment_status == 'paid' %}
+                                                    text-success
+                                                {% elif order.payment_status == 'failed' %}
+                                                    text-danger
+                                                {% else %}
+                                                    text-warning
+                                                {% endif %}
+                                                fw-semibold fs-5">
                 
-                                {% if order.payment_status == 'success' %}
+                                {% if order.status == 'cancelled' %}
+                
+                                {% if order.payment_status == 'paid' %}
+                
+                                {% if order.refund_status == 'processed' %}
+                                <i class="bi bi-arrow-counterclockwise me-1"></i> Refunded
+                                {% elif order.refund_status == 'failed' %}
+                                <i class="bi bi-x-circle-fill me-1"></i> Refund Failed
+                                {% else %}
+                                <i class="bi bi-hourglass-split me-1"></i> Refund Processing
+                                {% endif %}
+                
+                                {% else %}
+                                <i class="bi bi-dash-circle me-1"></i> No Payment
+                                {% endif %}
+                
+                                {% else %}
+                
+                                {% if order.payment_status == 'paid' %}
                                 <i class="bi bi-check-circle-fill me-1"></i> Successful
                                 {% elif order.payment_status == 'failed' %}
                                 <i class="bi bi-x-circle-fill me-1"></i> Failed
                                 {% else %}
                                 <i class="bi bi-hourglass-split me-1"></i> Pending
+                                {% endif %}
+                
                                 {% endif %}
                 
                             </span>
@@ -797,7 +986,8 @@
                 
                         </div>
                 
-                    </div>
+                    </div>          
+                
                 </div>
 
 
@@ -866,30 +1056,58 @@
 
             <!-- 7. ACTIONS -->
             <div class="d-flex flex-column flex-sm-row justify-content-end gap-3 mt-5 pt-4 border-top border-custom">
-
-
-
+            
+                {% now "U" as now_ts %}
+                {% with order.created_at|date:"U" as created_ts %}
+            
+                <!-- ❌ CANCELLED ORDER -->
+                {% if order.status == "cancelled" %}
+            
+                <!-- ✅ Only Invoice -->
+                <button class="od-btn-outline order-2 order-sm-2">
+                    <i class="bi bi-receipt me-2"></i>View Invoice
+                </button>
+            
+                {% else %}
+            
+                <!-- ✅ CANCEL LOGIC -->
                 {% if order.status == "pending" or order.status == "processing" %}
-                <form method="POST" action="{% url 'orders:cancel_order' order.uuid %}" class="order-3 order-sm-1 me-sm-auto">
+            
+                {% if now_ts|add:"-86400" < created_ts %} <form id="cancelForm" method="POST"
+                    action="{% url 'orders:cancel_order' order.uuid %}" class="order-3 order-sm-1 me-sm-auto">
+            
                     {% csrf_token %}
-                    <button type="submit" class="od-btn-danger-outline">
+            
+                    <button type="button" onclick="openCancelAlert()" class="od-btn-danger-outline">
                         <i class="bi bi-x-circle me-2"></i>Cancel Order
                     </button>
-                </form>
-                {% else %}
-                <button class="od-btn-danger-outline order-3 order-sm-1 me-sm-auto" disabled>
-                    <i class="bi bi-x-circle me-2"></i>Cancel Not Allowed
-                </button>
-                {% endif %}
-
-
-
-
-                <button class="od-btn-outline order-2 order-sm-2"><i class="bi bi-receipt me-2"></i>View
-                    Invoice
-                </button>
-                
-                <button class="od-btn-primary order-1 order-sm-3"><i class="bi bi-geo-alt me-2"></i>Track Order</button>
+            
+                    </form>
+            
+                    {% else %}
+            
+                    <button class="od-btn-danger-outline order-3 order-sm-1 me-sm-auto" disabled>
+                        <i class="bi bi-x-circle me-2"></i>Cancel Not Allowed
+                    </button>
+            
+                    {% endif %}
+            
+                    {% endif %}
+            
+                    <!-- ✅ Always show Invoice -->
+                    <button class="od-btn-outline order-2 order-sm-2">
+                        <i class="bi bi-receipt me-2"></i>View Invoice
+                    </button>
+            
+                    <!-- ✅ Track only for active orders -->
+                    <button class="od-btn-primary order-1 order-sm-3">
+                        <i class="bi bi-geo-alt me-2"></i>Track Order
+                    </button>
+            
+                    {% endif %}
+            
+                    {% endwith %}
+            
             </div>
 
         </div>
@@ -897,11 +1115,9 @@
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-
-
+    
+    
     <!-- Copy Button -->
-
     <script>
         function copyOrderId() {
             const text = document.getElementById("order-id").innerText;
@@ -911,6 +1127,79 @@
             });
         }
     </script>
+    
+    
+    <!-- CANCEL ALERT SYSTEM -->
+    <script>
+
+        // 🔹 Open alert
+        function openCancelAlert() {
+            showUIAlert("Are you sure you want to cancel this order?");
+        }
+
+
+        // 🔹 Show alert
+        function showUIAlert(message) {
+
+            const overlay = document.getElementById("ui-alert-overlay");
+            const msgBox = document.getElementById("ui-alert-message");
+            const confirmBtn = document.getElementById("ui-alert-confirm");
+
+            if (!overlay || !msgBox || !confirmBtn) return;
+
+            // set message
+            msgBox.textContent = message;
+
+            // show popup
+            overlay.style.display = "flex";
+
+            // attach confirm action
+            confirmBtn.onclick = function () {
+                document.getElementById("cancelForm").submit();
+            };
+        }
+
+
+        // 🔹 Close alert
+        function hideUIAlert() {
+            const overlay = document.getElementById("ui-alert-overlay");
+            if (overlay) overlay.style.display = "none";
+        }
+
+    </script>
+
+
+
+    <!-- ALERT -->
+
+
+    <div id="ui-alert-overlay"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:9999;">
+    
+        <div id="ui-alert-box"
+            style="background:#0f0f0f; color:#fff; width:420px; padding:28px; border-radius:16px; border:1px solid #F2E700; text-align:center;">
+    
+            <div id="ui-alert-message" style="margin-bottom:20px;"></div>
+    
+            <div style="display:flex; gap:12px; justify-content:center;">
+    
+                <!-- CANCEL -->
+                <button id="ui-alert-close" onclick="hideUIAlert()"
+                    style="padding:10px 20px; background:transparent; color:#fff; border:1px solid #fff; border-radius:8px;">
+                    CANCEL
+                </button>
+    
+                <!-- CONFIRM -->
+                <button id="ui-alert-confirm"
+                    style="padding:10px 20px; background:#e10600; color:#fff; border:none; border-radius:8px;">
+                    CONFIRM
+                </button>
+    
+            </div>
+    
+        </div>
+    
+        </div>
 </body>
 
 </html>

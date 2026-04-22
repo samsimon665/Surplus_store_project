@@ -382,6 +382,8 @@ def update_checkout_summary(request):
     })
 
 
+
+
 @login_required(login_url="accounts:login")
 @require_POST
 def cancel_order(request, uuid):
@@ -394,34 +396,49 @@ def cancel_order(request, uuid):
                 user=request.user
             )
 
+            # 🔍 DEBUG START
+            print("------ CANCEL DEBUG ------")
+            print("STATUS:", order.status)
+            print("PAYMENT STATUS:", order.payment_status)
+            print("CREATED:", order.created_at)
+            print("NOW:", timezone.now())
+            # 🔍 DEBUG END
+
             # ❌ Already cancelled
             if order.status == "cancelled":
+                print("BLOCKED: Already cancelled")
                 messages.error(request, "Order already cancelled")
-                return redirect("order_detail", uuid=uuid)
+                return redirect("orders:order_detail", uuid=uuid)
 
             # ❌ Only allow pending or processing
             if order.status not in ["pending", "processing"]:
+                print("BLOCKED: Invalid status")
                 messages.error(request, "Order cannot be cancelled now")
-                return redirect("order_detail", uuid=uuid)
+                return redirect("orders:order_detail", uuid=uuid)
 
-            # ❌ Only paid orders (important)
+            # ❌ Only paid orders
             if order.payment_status != "paid":
+                print("BLOCKED: Payment not paid")
                 messages.error(request, "Unpaid order cannot be cancelled")
-                return redirect("order_detail", uuid=uuid)
+                return redirect("orders:order_detail", uuid=uuid)
 
             # ❌ 24-hour rule
             if timezone.now() > order.created_at + timedelta(hours=24):
+                print("BLOCKED: 24-hour expired")
                 messages.error(request, "Cancellation window expired")
-                return redirect("order_detail", uuid=uuid)
+                return redirect("orders:order_detail", uuid=uuid)
 
             # ✅ Cancel
             order.status = "cancelled"
             order.refund_status = "initiated"
             order.save()
 
+            print("SUCCESS: ORDER UPDATED TO:", order.status)
+
         messages.success(request, "Order cancelled successfully")
 
     except Order.DoesNotExist:
+        print("ERROR: Order not found")
         messages.error(request, "Order not found")
 
-    return redirect("order_detail", uuid=uuid)
+    return redirect("orders:order_list")
