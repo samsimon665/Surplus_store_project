@@ -11,7 +11,6 @@ from apps.payments.models import Payment
 from apps.orders.models import Order
 
 from apps.cart.models import Cart
-
 from apps.catalog.models import ProductVariant
 
 
@@ -49,16 +48,21 @@ def razorpay_webhook(request):
     event_type = event.get("event")
     print("Webhook event:", event_type)
 
-    # Razorpay payment data
-    payment_entity = event["payload"]["payment"]["entity"]
-
-    razorpay_payment_id = payment_entity["id"]
-    razorpay_order_id = payment_entity["order_id"]
+    payload_data = event.get("payload", {})
 
     # -------------------------------------------------
     # 3️⃣ Handle payment.captured
     # -------------------------------------------------
     if event_type == "payment.captured":
+
+        payment_entity = payload_data.get("payment", {}).get("entity", {})
+
+        razorpay_payment_id = payment_entity.get("id")
+        razorpay_order_id = payment_entity.get("order_id")
+
+        if not razorpay_order_id:
+            print("Webhook: Missing order_id in payment")
+            return HttpResponse(status=200)
 
         try:
             payment = Payment.objects.select_related("order").get(
@@ -81,49 +85,40 @@ def razorpay_webhook(request):
             payment.status = "success"
             payment.save()
 
-            order.status = "paid"
-            order.payment_status = "success"
+            order.status = "processing"
+            order.payment_status = "paid"
             order.save()
 
-            # -------------------------------------------------
-            # Deduct inventory (safe deduction with DB lock)
-            # -------------------------------------------------
+            # Inventory update
             for item in order.items.all():
-
                 try:
                     variant = ProductVariant.objects.select_for_update().get(
                         id=item.variant_id
                     )
-
                 except ProductVariant.DoesNotExist:
-                    print(f"Webhook: Variant {item.variant_id} not found")
                     continue
 
-                # Prevent negative stock
-                if variant.stock < item.quantity:
-                    print(
-                        f"Webhook: Stock already insufficient for variant {variant.id}"
-                    )
-                    continue
+                if variant.stock >= item.quantity:
+                    variant.stock -= item.quantity
+                    variant.save()
 
-                variant.stock -= item.quantity
-                variant.save()
-
-            # -------------------------------------------------
-            # Clear user's cart
-            # -------------------------------------------------
+            # Clear cart
             cart = Cart.objects.filter(user=order.user).first()
-
             if cart:
                 cart.items.all().delete()
 
-            print(
-                f"Webhook: Order {order.uuid} marked as PAID, inventory updated, and cart cleared")
+            print(f"Webhook: Order {order.uuid} marked as PAID")
 
     # -------------------------------------------------
     # 4️⃣ Handle payment.failed
     # -------------------------------------------------
     elif event_type == "payment.failed":
+
+        payment_entity = payload_data.get("payment", {}).get("entity", {})
+        razorpay_order_id = payment_entity.get("order_id")
+
+        if not razorpay_order_id:
+            return HttpResponse(status=200)
 
         try:
             payment = Payment.objects.get(
@@ -134,13 +129,78 @@ def razorpay_webhook(request):
             return HttpResponse(status=200)
 
         if payment.status != "success":
-
             payment.status = "failed"
             payment.save()
 
             print(f"Webhook: Payment failed for order {payment.order.uuid}")
 
     # -------------------------------------------------
-    # 5️⃣ Return success to Razorpay
+    # 5️⃣ Handle refund.processed
+    # -------------------------------------------------
+    elif event_type == "refund.processed":
+
+        print("Webhook: Refund received from Razorpay")
+
+        refund_entity = payload_data.get("refund", {}).get("entity", {})
+
+        razorpay_payment_id = refund_entity.get("payment_id")
+        razorpay_refund_id = refund_entity.get("id")
+
+        if not razorpay_payment_id:
+            print("Webhook: Missing payment_id in refund")
+            return HttpResponse(status=200)
+
+        # ✅ SAFE lookup via Payment
+        payment = Payment.objects.filter(
+            razorpay_payment_id=razorpay_payment_id
+        ).select_related("order").first()
+
+        if not payment:
+            print("Webhook: Payment not found for refund")
+            return HttpResponse(status=200)
+
+        order = payment.order
+
+        # ✅ Strong duplicate protection
+        if order.razorpay_refund_id:
+            print("Webhook: Refund already recorded")
+            return HttpResponse(status=200)
+
+        order.razorpay_refund_id = razorpay_refund_id
+        order.refund_status = "processed"
+        order.save()
+
+        print(f"Webhook: Refund SUCCESS for order {order.uuid}")
+
+    # -------------------------------------------------
+    # 6️⃣ Handle refund.failed
+    # -------------------------------------------------
+    elif event_type == "refund.failed":
+
+        print("Webhook: Refund FAILED event received")
+
+        refund_entity = payload_data.get("refund", {}).get("entity", {})
+
+        razorpay_payment_id = refund_entity.get("payment_id")
+
+        if not razorpay_payment_id:
+            return HttpResponse(status=200)
+
+        payment = Payment.objects.filter(
+            razorpay_payment_id=razorpay_payment_id
+        ).select_related("order").first()
+
+        if not payment:
+            return HttpResponse(status=200)
+
+        order = payment.order
+
+        order.refund_status = "failed"
+        order.save()
+
+        print(f"Webhook: Refund FAILED for order {order.uuid}")
+
+    # -------------------------------------------------
+    # FINAL RESPONSE
     # -------------------------------------------------
     return HttpResponse(status=200)

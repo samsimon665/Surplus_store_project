@@ -226,10 +226,21 @@ def order_detail(request, uuid):
         user=request.user
     )
 
+    # ✅ CAN CANCEL LOGIC (move from template → backend)
+    can_cancel = False
+
+    if (
+        order.status in ["pending", "processing"]
+        and order.payment_status in ["paid", "success"]
+        and timezone.now() <= order.created_at + timedelta(hours=24)
+    ):
+        can_cancel = True
+
     return render(
         request,
         "orders/order_detail.html",
         {
-            "order": order
+            "order": order,
+            "can_cancel": can_cancel,   # 🔥 important
         }
     )

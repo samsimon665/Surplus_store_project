@@ -57,8 +57,10 @@ class OrderAdmin(admin.ModelAdmin):
         "user",
         "uuid",
         "status_badge",
-        "razorpay_payment_id",
         "payment_status_badge",
+        "refund_status",            # ✅ ADD
+        "razorpay_payment_id",
+        "razorpay_refund_id",       # ✅ ADD
         "shipping_method",
         "subtotal",
         "discount_amount",
@@ -102,6 +104,9 @@ class OrderAdmin(admin.ModelAdmin):
         "total_amount",
         "tax_amount",
         "total_weight_kg",
+
+        "razorpay_payment_id",     # ✅ ADD
+        "razorpay_refund_id",      # ✅ ADD
     )
 
     fieldsets = (
@@ -112,6 +117,9 @@ class OrderAdmin(admin.ModelAdmin):
                 "user",
                 "status",
                 "payment_status",
+                "refund_status",            # ✅ ADD
+                "razorpay_payment_id",
+                "razorpay_refund_id",       # ✅ ADD
                 "created_at",
                 "updated_at",
             )

@@ -24,6 +24,11 @@ from django.db import transaction
 from datetime import timedelta
 
 
+# REFUND - CELERY
+
+from .tasks import process_refund
+
+
 
 @login_required(login_url="accounts:login")
 def start_checkout(request):
@@ -416,10 +421,10 @@ def cancel_order(request, uuid):
                 messages.error(request, "Order cannot be cancelled now")
                 return redirect("orders:order_detail", uuid=uuid)
 
-            # ❌ Only paid orders
-            if order.payment_status != "paid":
-                print("BLOCKED: Payment not paid")
-                messages.error(request, "Unpaid order cannot be cancelled")
+            # ❌ Only paid orders + must have Razorpay payment ID
+            if order.payment_status not in ["paid", "success"] or not order.razorpay_payment_id:
+                print("BLOCKED: Invalid payment state")
+                messages.error(request, "Order cannot be cancelled (invalid payment)")
                 return redirect("orders:order_detail", uuid=uuid)
 
             # ❌ 24-hour rule
@@ -432,6 +437,10 @@ def cancel_order(request, uuid):
             order.status = "cancelled"
             order.refund_status = "initiated"
             order.save()
+
+            # CELERY
+
+            process_refund.delay(order.id)
 
             print("SUCCESS: ORDER UPDATED TO:", order.status)
 

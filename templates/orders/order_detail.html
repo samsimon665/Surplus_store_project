@@ -1057,9 +1057,6 @@
             <!-- 7. ACTIONS -->
             <div class="d-flex flex-column flex-sm-row justify-content-end gap-3 mt-5 pt-4 border-top border-custom">
             
-                {% now "U" as now_ts %}
-                {% with order.created_at|date:"U" as created_ts %}
-            
                 <!-- ❌ CANCELLED ORDER -->
                 {% if order.status == "cancelled" %}
             
@@ -1070,11 +1067,11 @@
             
                 {% else %}
             
-                <!-- ✅ CANCEL LOGIC -->
-                {% if order.status == "pending" or order.status == "processing" %}
+                <!-- ✅ CANCEL (USES BACKEND FLAG) -->
+                {% if can_cancel %}
             
-                {% if now_ts|add:"-86400" < created_ts %} <form id="cancelForm" method="POST"
-                    action="{% url 'orders:cancel_order' order.uuid %}" class="order-3 order-sm-1 me-sm-auto">
+                <form id="cancelForm" method="POST" action="{% url 'orders:cancel_order' order.uuid %}"
+                    class="order-3 order-sm-1 me-sm-auto">
             
                     {% csrf_token %}
             
@@ -1082,34 +1079,29 @@
                         <i class="bi bi-x-circle me-2"></i>Cancel Order
                     </button>
             
-                    </form>
+                </form>
             
-                    {% else %}
+                {% else %}
             
-                    <button class="od-btn-danger-outline order-3 order-sm-1 me-sm-auto" disabled>
-                        <i class="bi bi-x-circle me-2"></i>Cancel Not Allowed
-                    </button>
+                <button class="od-btn-danger-outline order-3 order-sm-1 me-sm-auto" disabled>
+                    <i class="bi bi-x-circle me-2"></i>Cancel Not Allowed
+                </button>
             
-                    {% endif %}
+                {% endif %}
             
-                    {% endif %}
+                <!-- ✅ Always show Invoice -->
+                <button class="od-btn-outline order-2 order-sm-2">
+                    <i class="bi bi-receipt me-2"></i>View Invoice
+                </button>
             
-                    <!-- ✅ Always show Invoice -->
-                    <button class="od-btn-outline order-2 order-sm-2">
-                        <i class="bi bi-receipt me-2"></i>View Invoice
-                    </button>
+                <!-- ✅ Track only for active orders -->
+                <button class="od-btn-primary order-1 order-sm-3">
+                    <i class="bi bi-geo-alt me-2"></i>Track Order
+                </button>
             
-                    <!-- ✅ Track only for active orders -->
-                    <button class="od-btn-primary order-1 order-sm-3">
-                        <i class="bi bi-geo-alt me-2"></i>Track Order
-                    </button>
-            
-                    {% endif %}
-            
-                    {% endwith %}
+                {% endif %}
             
             </div>
-
         </div>
     </div>
 
