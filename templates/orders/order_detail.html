@@ -1057,51 +1057,33 @@
             <!-- 7. ACTIONS -->
             <div class="d-flex flex-column flex-sm-row justify-content-end gap-3 mt-5 pt-4 border-top border-custom">
             
-                <!-- ❌ CANCELLED ORDER -->
-                {% if order.status == "cancelled" %}
+                {% if order.status != "cancelled" %}
             
-                <!-- ✅ Only Invoice -->
-                <button class="od-btn-outline order-2 order-sm-2">
-                    <i class="bi bi-receipt me-2"></i>View Invoice
-                </button>
-            
-                {% else %}
-            
-                <!-- ✅ CANCEL (USES BACKEND FLAG) -->
                 {% if can_cancel %}
-            
                 <form id="cancelForm" method="POST" action="{% url 'orders:cancel_order' order.uuid %}"
                     class="order-3 order-sm-1 me-sm-auto">
-            
                     {% csrf_token %}
-            
                     <button type="button" onclick="openCancelAlert()" class="od-btn-danger-outline">
                         <i class="bi bi-x-circle me-2"></i>Cancel Order
                     </button>
-            
                 </form>
-            
                 {% else %}
-            
                 <button class="od-btn-danger-outline order-3 order-sm-1 me-sm-auto" disabled>
                     <i class="bi bi-x-circle me-2"></i>Cancel Not Allowed
                 </button>
-            
                 {% endif %}
             
-                <!-- ✅ Always show Invoice -->
-                <a href="{% url 'orders:invoice_preview' order.uuid %}" class="od-btn-outline order-2 order-sm-2 text-decoration-none">
-                
-                    <i class="bi bi-receipt me-2"></i>View Invoice
-                </a>
-                
-            
-                <!-- ✅ Track only for active orders -->
                 <button class="od-btn-primary order-1 order-sm-3">
                     <i class="bi bi-geo-alt me-2"></i>Track Order
                 </button>
             
                 {% endif %}
+            
+                <!-- ✅ ALWAYS SHOW INVOICE -->
+
+                <a href="{% url 'orders:invoice_preview' order.uuid %}" class="od-btn-outline order-2 order-sm-2 text-decoration-none">
+                    <i class="bi bi-receipt me-2"></i>View Invoice
+                </a>
             
             </div>
         </div>

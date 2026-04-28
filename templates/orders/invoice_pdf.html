@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            color: #2c2c2c;
+        }
+
+        .container {
+            padding: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #1a1a1a;
+            color: #fff;
+            padding: 10px;
+            text-align: left;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- 🔥 WATERMARK (SAFE VERSION) -->
+        {% if order.status == "cancelled" %}
+        <div style="
+            text-align:center;
+            font-size:80px;
+            color:#c62828;
+            opacity:0.08;
+            font-weight:bold;
+            margin-bottom:-70px;
+        ">
+            REFUNDED
+        </div>
+
+        {% elif order.payment_status == "paid" %}
+        <div style="
+            text-align:center;
+            font-size:80px;
+            color:#2e7d32;
+            opacity:0.08;
+            font-weight:bold;
+            margin-bottom:-70px;
+        ">
+            PAID
+        </div>
+        {% endif %}
+
+        <!-- 🔥 BRAND STRIP -->
+        <div style="
+        height:8px;
+        background:#111;
+        margin:-30px -30px 25px -30px;
+    "></div>
+
+        <!-- 🔥 HEADER -->
+        <table style="margin-bottom:30px;">
+            <tr>
+
+                <!-- LEFT -->
+                <td>
+                    <img src="/static/images/logo.png" width="120"><br><br>
+
+                    <div style="font-size:14px; font-weight:bold;">
+                        SURPLUS STORE
+                    </div>
+
+                    <div style="font-size:11px; color:#666;">
+                        India<br>
+                        support@surplusstore.com
+                    </div>
+                </td>
+
+                <!-- RIGHT -->
+                <td style="text-align:right;">
+                    <div style="font-size:26px; font-weight:700; letter-spacing:1px;">
+                        INVOICE
+                    </div>
+
+                    <div style="margin-top:10px; font-size:12px;">
+                        <strong>Invoice #:</strong> INV-{{ order.id|stringformat:"05d" }}<br>
+                        <strong>Date:</strong> {{ order.created_at|date:"d M Y" }}
+                    </div>
+                </td>
+
+            </tr>
+        </table>
+
+        <!-- 🔹 BILL / SHIP / STATUS -->
+        <table style="border:1px solid #eee; margin-bottom:30px;">
+            <tr>
+
+                <td style="padding:15px;">
+                    <strong>Bill To</strong><br><br>
+                    {{ order.user.username }}<br>
+                    {{ order.address_text|linebreaksbr }}
+                </td>
+
+                <td style="padding:15px;">
+                    <strong>Ship To</strong><br><br>
+                    {{ order.user.username }}<br>
+                    {{ order.address_text|linebreaksbr }}
+                </td>
+
+                <td style="padding:15px;">
+                    <strong>Status</strong><br><br>
+
+                    {% if order.status == "cancelled" %}
+                    <span style="background:#c62828; color:#fff; padding:6px 12px; font-size:11px;">
+                        REFUNDED
+                    </span><br><br>
+                    Refund ID: {{ order.razorpay_refund_id }}
+                    {% else %}
+                    <span style="background:#2e7d32; color:#fff; padding:6px 12px; font-size:11px;">
+                        PAID
+                    </span>
+                    {% endif %}
+                </td>
+
+            </tr>
+        </table>
+
+        <!-- 🔹 ITEMS -->
+        <table style="margin-bottom:20px;">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Qty</th>
+                    <th>Rate</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in order.items.all %}
+                <tr>
+                    <td>{{ item.product_name }}</td>
+                    <td style="text-align:center;">{{ item.quantity }}</td>
+                    <td style="text-align:center;">₹ {{ item.unit_price }}</td>
+                    <td style="text-align:center;">₹ {{ item.total_price }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- 🔹 TOTAL -->
+        <div style="text-align:right; margin-top:20px;">
+            Subtotal: ₹ {{ order.subtotal }}<br>
+            Tax: ₹ {{ order.tax_amount }}<br>
+            Shipping: ₹ {{ order.shipping_fee }}<br><br>
+
+            <div style="font-size:20px; font-weight:bold;">
+                Total: ₹ {{ order.total_amount }}
+            </div>
+        </div>
+
+        <!-- 🔹 FOOTER -->
+        <div style="
+        margin-top:40px;
+        font-size:11px;
+        color:#777;
+        border-top:1px solid #ddd;
+        padding-top:10px;
+    ">
+            Thank you for shopping with Surplus Store.<br>
+            This is a system-generated invoice.
+        </div>
+
+    </div>
+
+</body>
+
+</html>
