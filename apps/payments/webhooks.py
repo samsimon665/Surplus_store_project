@@ -13,6 +13,9 @@ from apps.orders.models import Order
 from apps.cart.models import Cart
 from apps.catalog.models import ProductVariant
 
+# For CELERY REFUND-EMAIL
+from apps.orders.tasks import send_refund_email
+
 
 @csrf_exempt
 def razorpay_webhook(request):
@@ -87,6 +90,9 @@ def razorpay_webhook(request):
 
             order.status = "processing"
             order.payment_status = "paid"
+
+            order.razorpay_payment_id = razorpay_payment_id
+
             order.save()
 
             # Inventory update
@@ -162,7 +168,7 @@ def razorpay_webhook(request):
         order = payment.order
 
         # ✅ Strong duplicate protection
-        if order.razorpay_refund_id:
+        if order.razorpay_refund_id == razorpay_refund_id:
             print("Webhook: Refund already recorded")
             return HttpResponse(status=200)
 
@@ -171,6 +177,9 @@ def razorpay_webhook(request):
         order.save()
 
         print(f"Webhook: Refund SUCCESS for order {order.uuid}")
+
+        # CELERY REFUND EMAIL
+        send_refund_email.delay(order.id)
 
     # -------------------------------------------------
     # 6️⃣ Handle refund.failed

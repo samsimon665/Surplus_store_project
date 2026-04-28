@@ -1090,9 +1090,11 @@
                 {% endif %}
             
                 <!-- ✅ Always show Invoice -->
-                <button class="od-btn-outline order-2 order-sm-2">
+                <a href="{% url 'orders:invoice_preview' order.uuid %}" class="od-btn-outline order-2 order-sm-2 text-decoration-none">
+                
                     <i class="bi bi-receipt me-2"></i>View Invoice
-                </button>
+                </a>
+                
             
                 <!-- ✅ Track only for active orders -->
                 <button class="od-btn-primary order-1 order-sm-3">

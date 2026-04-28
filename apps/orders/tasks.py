@@ -3,6 +3,10 @@ import razorpay
 from django.conf import settings
 from .models import Order
 
+from django.core.mail import send_mail
+
+
+
 
 @shared_task(bind=True, max_retries=3)
 def process_refund(self, order_id):
@@ -70,3 +74,38 @@ def process_refund(self, order_id):
             order.save()
 
         raise self.retry(exc=e, countdown=10)
+
+
+@shared_task
+def send_refund_email(order_id):
+
+    try:
+        order = Order.objects.select_related("user").get(id=order_id)
+
+        subject = "Refund Processed Successfully"
+
+        message = f"""
+                        Hi {order.user.username},
+
+                        Your refund has been successfully processed.
+
+                        Order ID: {order.uuid}
+                        Amount: ₹{order.total_amount}
+
+                        The amount will reflect in your account within 5–7 business days.
+
+                        Thank you for shopping with us.
+                                """
+
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=None,
+            recipient_list=[order.user.email],
+            fail_silently=False,
+        )
+
+        print(f"EMAIL SENT for order {order.id}")
+
+    except Exception as e:
+        print("Email error:", str(e))
