@@ -1,14 +1,17 @@
 from celery import shared_task
 import razorpay
 from django.conf import settings
+from django.core.mail import EmailMessage
+from django.db import transaction
+
 from .models import Order
-
-from django.core.mail import send_mail
-
+from .invoice_view import generate_invoice_pdf
 
 
-
-@shared_task(bind=True, max_retries=3)
+# -------------------------------------------------
+# 🔹 REFUND PROCESS TASK
+# -------------------------------------------------
+@shared_task(bind=True, max_retries=0)  # ❌ no retry for bad requests
 def process_refund(self, order_id):
 
     order = None
@@ -32,18 +35,21 @@ def process_refund(self, order_id):
             print("BLOCKED: Already refunded")
             return
 
-        # ✅ Only process initiated/failed
+        # ✅ Only valid states
         if order.refund_status not in ["initiated", "failed"]:
             print("BLOCKED: Invalid refund status")
             return
 
-        # ❌ No payment id → cannot refund
+        # ❌ Missing payment id
         if not order.razorpay_payment_id:
             print("ERROR: Missing Razorpay payment ID")
             order.refund_status = "failed"
             order.save()
             return
 
+        amount = int(order.total_amount * 100)
+
+        print("Refund amount:", amount)
         print("Calling Razorpay refund API...")
 
         client = razorpay.Client(
@@ -53,59 +59,80 @@ def process_refund(self, order_id):
         refund = client.payment.refund(
             order.razorpay_payment_id,
             {
-                "amount": int(order.total_amount * 100)
+                "amount": amount
             }
         )
 
         print("Refund response:", refund)
 
         # ❌ DO NOT update DB here
-        # Webhook will handle:
-        # - razorpay_refund_id
+        # webhook will update:
         # - refund_status
+        # - razorpay_refund_id
 
         print("REFUND INITIATED (waiting for webhook)")
 
     except Exception as e:
-        print("Refund error:", str(e))
+        print("❌ REFUND ERROR FULL:", repr(e))
 
         if order:
             order.refund_status = "failed"
             order.save()
 
-        raise self.retry(exc=e, countdown=10)
+        print("❌ FINAL FAILURE — NOT RETRYING")
 
 
-@shared_task
-def send_refund_email(order_id):
-
+# -------------------------------------------------
+# 🔹 REFUND EMAIL TASK (WITH PDF)
+# -------------------------------------------------
+@shared_task(bind=True, max_retries=3)
+def send_refund_email(self, order_id):
     try:
         order = Order.objects.select_related("user").get(id=order_id)
+
+        pdf_bytes = generate_invoice_pdf(order)
 
         subject = "Refund Processed Successfully"
 
         message = f"""
-                        Hi {order.user.username},
+Hi {order.user.username},
 
-                        Your refund has been successfully processed.
+Your refund has been successfully processed.
 
-                        Order ID: {order.uuid}
-                        Amount: ₹{order.total_amount}
+Order ID: {order.uuid}
+Amount: ₹{order.total_amount}
 
-                        The amount will reflect in your account within 5–7 business days.
+The amount will reflect in your account within 5–7 business days.
 
-                        Thank you for shopping with us.
-                                """
+Please find your invoice attached.
 
-        send_mail(
-            subject=subject,
-            message=message,
-            from_email=None,
-            recipient_list=[order.user.email],
-            fail_silently=False,
+Thank you,
+Surplus Store
+"""
+
+        email = EmailMessage(
+            subject,
+            message,
+            settings.EMAIL_HOST_USER,
+            [order.user.email],
         )
 
-        print(f"EMAIL SENT for order {order.id}")
+        # ✅ Attach PDF
+        if pdf_bytes:
+            email.attach(
+                f"invoice_{order.id}.pdf",
+                pdf_bytes,
+                "application/pdf"
+            )
+        else:
+            print(
+                f"[EMAIL WARNING] PDF generation failed for order {order.id}")
+
+        email.send()
+
+        print(f"[EMAIL SUCCESS] Refund email sent for order {order.id}")
 
     except Exception as e:
-        print("Email error:", str(e))
+        print(f"[EMAIL ERROR] Order {order_id}: {repr(e)}")
+
+        raise self.retry(exc=e, countdown=10)
