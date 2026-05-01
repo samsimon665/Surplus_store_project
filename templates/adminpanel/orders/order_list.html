@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Order List</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1173d4",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display">
+    <div class="relative flex min-h-screen w-full">
+        <!-- SideNavBar -->
+
+        {% include "adminpanel/includes/sidebar.html" %}
+
+        <!-- Main Content -->
+        <main class="flex-1 ml-64 p-6 lg:p-10">
+            <div class="mx-auto max-w-7xl">
+                <!-- Breadcrumbs -->
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <a class="text-gray-500 dark:text-gray-400 text-sm font-medium leading-normal hover:text-primary"
+                        href="#">Dashboard</a>
+                    <span class="text-gray-500 dark:text-gray-400 text-sm font-medium leading-normal">/</span>
+                    <span class="text-gray-800 dark:text-gray-200 text-sm font-medium leading-normal">Orders</span>
+                </div>
+                <!-- Page Heading -->
+                <div class="flex flex-col sm:flex-row flex-wrap justify-between items-start gap-4 mb-6">
+                    <p class="text-gray-900 dark:text-white text-3xl font-bold leading-tight tracking-tight">Order List
+                    </p>
+                </div>
+                <!-- Filters -->
+                <div class="mb-6 p-4 bg-white dark:bg-gray-900/50 rounded-xl shadow-sm">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- SearchBar -->
+                        <div class="md:col-span-2">
+                            <label class="flex flex-col w-full">
+                                <div class="flex w-full flex-1 items-stretch rounded-lg h-10">
+                                    <div
+                                        class="text-gray-500 dark:text-gray-400 flex bg-gray-100 dark:bg-gray-800 items-center justify-center pl-3 rounded-l-lg">
+                                        <span class="material-symbols-outlined">search</span>
+                                    </div>
+                                    <input
+                                        class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-lg text-gray-900 dark:text-gray-100 focus:outline-0 focus:ring-2 focus:ring-primary/50 border-none bg-gray-100 dark:bg-gray-800 h-full placeholder:text-gray-500 dark:placeholder:text-gray-400 px-4 text-sm font-normal"
+                                        placeholder="Search by Order ID or User..." value="" />
+                                </div>
+                            </label>
+                        </div>
+                        <!-- Chips / Dropdown -->
+                        <div>
+                            <div class="relative w-full">
+                            
+                                <!-- Button -->
+                                <button id="statusFilterBtn"
+                                    class="flex h-10 w-full items-center justify-between gap-x-2 rounded-lg bg-gray-100 dark:bg-gray-800 px-4 text-sm font-medium text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700">
+                            
+                                    <span>
+                                        Filter by Status:
+                                        {% if current_status %}
+                                        {{ current_status|title }}
+                                        {% else %}
+                                        All
+                                        {% endif %}
+                                    </span>
+                            
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                            
+                                <!-- Dropdown -->
+                                <div id="statusDropdown"
+                                    class="hidden absolute right-0 mt-2 w-full rounded-lg bg-white dark:bg-gray-800 shadow-lg border dark:border-gray-700 z-10">
+                            
+                                    <a href="?" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        All
+                                    </a>
+                            
+                                    <a href="?status=pending" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        Pending
+                                    </a>
+                            
+                                    <a href="?status=processing" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        Processing
+                                    </a>
+                            
+                                    <a href="?status=shipped" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        Shipped
+                                    </a>
+                            
+                                    <a href="?status=delivered" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        Delivered
+                                    </a>
+                            
+                                    <a href="?status=cancelled" class="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        Cancelled
+                                    </a>
+                            
+                                </div>                      
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Order Table -->
+                <div class="bg-white dark:bg-gray-900/50 rounded-xl shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full min-w-[800px] text-sm text-left text-gray-500 dark:text-gray-400">
+                            <thead
+                                class="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-800">
+                                <tr>
+                                    <th class="px-6 py-3 font-semibold" scope="col">Order ID</th>
+                                    <th class="px-6 py-3 font-semibold" scope="col">User</th>
+                                    <th class="px-6 py-3 font-semibold" scope="col">Status</th>
+                                    <th class="px-6 py-3 font-semibold" scope="col">Payment</th>
+                                    <th class="px-6 py-3 font-semibold" scope="col">Total</th>
+                                    <th class="px-6 py-3 font-semibold" scope="col">Date</th>
+                                    <th class="px-6 py-3 font-semibold text-right" scope="col">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% if orders %}
+                                {% for order in orders %}
+                                <tr
+                                    class="bg-white dark:bg-gray-900/50 border-b dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50">
+
+                                    <!-- ORDER ID -->
+                                    <td class="px-6 py-4 font-mono text-gray-600 dark:text-gray-400">
+                                        #ORD-{{ order.uuid|slice:":8" }}
+                                    </td>
+
+                                    <!-- USER -->
+                                    <td class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                                        {{ order.user.username|default:"-" }}
+                                    </td>
+
+                                    <!-- STATUS -->
+                                    <td class="px-6 py-4">
+                                        {% if order.status == 'pending' %}
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+                                            {{ order.get_status_display }}
+                                        </span>
+                                        {% elif order.status == 'processing' %}
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+                                            {{ order.get_status_display }}
+                                        </span>
+                                        {% elif order.status == 'shipped' %}
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300">
+                                            {{ order.get_status_display }}
+                                        </span>
+                                        {% elif order.status == 'out_for_delivery' %}
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300">
+                                            {{ order.get_status_display }}
+                                        </span>
+                                        {% elif order.status == 'delivered' %}
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                                            {{ order.get_status_display }}
+                                        </span>
+                                        {% elif order.status == 'cancelled' %}
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
+                                            {{ order.get_status_display }}
+                                        </span>
+                                        {% else %}
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300">
+                                            {{ order.get_status_display }}
+                                        </span>
+                                        {% endif %}
+                                    </td>
+
+                                    <!-- PAYMENT -->
+                                    <td class="px-6 py-4">
+                                    
+                                        {% if order.refund_status == "processed" %}
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                                            Refunded
+                                        </span>
+                                    
+                                        {% elif order.refund_status == "initiated" %}
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+                                            Refund Processing
+                                        </span>
+                                    
+                                        {% elif order.refund_status == "failed" %}
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
+                                            Refund Failed
+                                        </span>
+                                    
+                                        {% else %}
+                                    
+                                        {% if order.payment_status == 'paid' %}
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                                            Paid
+                                        </span>
+                                    
+                                        {% elif order.payment_status == 'pending' %}
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+                                            Pending
+                                        </span>
+                                    
+                                        {% elif order.payment_status == 'failed' %}
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
+                                            Failed
+                                        </span>
+                                    
+                                        {% endif %}
+                                    
+                                        {% endif %}                               </td>
+
+                                    <!-- TOTAL -->
+                                    <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                                        ₹{{ order.total_amount|floatformat:2 }}
+                                    </td>
+
+                                    <!-- DATE -->
+                                    <td class="px-6 py-4 text-gray-500 dark:text-gray-400">
+                                        {{ order.created_at|date:"M d, Y" }}
+                                    </td>
+
+                                    <!-- ACTIONS -->
+                                    <td class="px-6 py-4 text-right space-x-2">
+                                        <!-- VIEW BUTTON -->
+                                        
+                                        <a href="#"
+                                            class="px-3 py-1 text-xs font-medium text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                                            View
+                                        </a>
+
+                                        <!-- UPDATE STATUS BUTTON -->
+                                       
+                                        <a href="#"
+                                            class="px-3 py-1 text-xs font-medium text-primary border border-primary/30 rounded-md hover:bg-primary/10 dark:hover:bg-primary/20">
+                                            Update Status
+                                        </a>
+                                    </td>
+
+                                </tr>
+                                {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center py-6 text-gray-500">
+                                        No orders found
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                    
+                </div>
+
+
+
+                <!-- Footer / Pagination -->
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4
+                                    px-6 py-4
+                                    border border-[#e7e9f3] dark:border-[#2a2d3d]
+                                    bg-white dark:bg-[#1a1d2d]
+                                    rounded-full mt-5">
+                
+                    <p class="text-sm text-[#4c599a]">
+                        Showing
+                        <span class="font-medium text-[#0d101b] dark:text-white">
+                            {{ page_obj.start_index }} – {{ page_obj.end_index }}
+                        </span>
+                        of
+                        <span class="font-medium text-[#0d101b] dark:text-white">
+                            {{ paginator.count }}
+                        </span>
+                        Orders
+                    </p>
+                
+                    <div class="flex items-center gap-2">
+                        {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}"
+                            class="px-3 py-1.5 text-sm font-medium text-[#4c599a] bg-white dark:bg-[#1a1d2d] border border-[#e7e9f3] dark:border-[#2a2d3d] rounded-lg hover:bg-slate-50 dark:hover:bg-[#23263a] transition-colors">
+                            Previous
+                        </a>
+                        {% else %}
+                        <button
+                            class="px-3 py-1.5 text-sm font-medium text-[#4c599a] bg-white dark:bg-[#1a1d2d] border border-[#e7e9f3] dark:border-[#2a2d3d] rounded-lg opacity-50 cursor-not-allowed">
+                            Previous
+                        </button>
+                        {% endif %}
+                
+                        {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}"
+                            class="px-3 py-1.5 text-sm font-medium text-[#4c599a] bg-white dark:bg-[#1a1d2d] border border-[#e7e9f3] dark:border-[#2a2d3d] rounded-lg hover:bg-slate-50 dark:hover(bg-[#23263a]) transition-colors">
+                            Next
+                        </a>
+                        {% else %}
+                        <button
+                            class="px-3 py-1.5 text-sm font-medium text-[#4c599a] bg-white dark:bg-[#1a1d2d] border border-[#e7e9f3] dark:border-[#2a2d3d] rounded-lg opacity-50 cursor-not-allowed">
+                            Next
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+
+
+
+    <script>
+        const btn = document.getElementById("statusFilterBtn");
+        const dropdown = document.getElementById("statusDropdown");
+
+        btn.addEventListener("click", () => {
+            dropdown.classList.toggle("hidden");
+        });
+
+        document.addEventListener("click", (e) => {
+            if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.add("hidden");
+            }
+        });
+    </script>
+</body>
+
+</html>
