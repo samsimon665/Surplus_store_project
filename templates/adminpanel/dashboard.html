@@ -81,167 +81,185 @@
                             glance at your business's health.</p>
                     </div>
                 </div>
+
+
+
                 <!-- Stats -->
+
+
                 <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+
+
                     <div
                         class="flex flex-col gap-2 rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-                        <p class="text-base font-medium leading-normal text-slate-600 dark:text-slate-400">Total Orders
+                    
+                        <p class="text-base font-medium leading-normal text-slate-600 dark:text-slate-400">
+                            Total Orders
                         </p>
-                        <p class="text-3xl font-bold leading-tight tracking-tight text-slate-900 dark:text-white">1,204
-                        </p>
-                        <p class="text-sm font-medium leading-normal text-green-600 dark:text-green-500">+2.5%</p>
-                    </div>
-                    <div
-                        class="flex flex-col gap-2 rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-                        <p class="text-base font-medium leading-normal text-slate-600 dark:text-slate-400">Total Revenue
-                        </p>
+                    
                         <p class="text-3xl font-bold leading-tight tracking-tight text-slate-900 dark:text-white">
-                            $45,890.50</p>
-                        <p class="text-sm font-medium leading-normal text-green-600 dark:text-green-500">+5.2%</p>
+                            {{ total_orders }}
+                        </p>
+                    
+                        <p class="text-sm font-medium leading-normal text-green-600 dark:text-green-500">
+                            <!-- we will replace this later with real % -->
+                            -
+                        </p>
+                    
                     </div>
+
+
                     <div
                         class="flex flex-col gap-2 rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-                        <p class="text-base font-medium leading-normal text-slate-600 dark:text-slate-400">Active Users
+                    
+                        <p class="text-base font-medium leading-normal text-slate-600 dark:text-slate-400">
+                            Total Revenue
                         </p>
+                    
+                        <p class="text-3xl font-bold leading-tight tracking-tight text-slate-900 dark:text-white">
+                            ₹{{ total_revenue|floatformat:2 }}
+                        </p>
+                    
+                        <p class="text-sm font-medium leading-normal text-green-600 dark:text-green-500">
+                            -
+                        </p>
+                    
+                    </div>
+
+
+
+                    <div
+                        class="flex flex-col gap-2 rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+                    
+                        <p class="text-base font-medium leading-normal text-slate-600 dark:text-slate-400">
+                            Active Users
+                        </p>
+                    
                         <p class="text-3xl font-bold leading-tight tracking-tight text-slate-900 dark:text-white">
                             {{ active_users }}
                         </p>
-
-                        <p class="text-sm font-medium leading-normal text-green-600 dark:text-green-500">+1.8%</p>
+                    
+                        <p class="text-sm font-medium leading-normal text-green-600 dark:text-green-500">
+                            -
+                        </p>
+                    
                     </div>
+
+
+
+
                     <div
                         class="flex flex-col gap-2 rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-                        <p class="text-base font-medium leading-normal text-slate-600 dark:text-slate-400">Returns
-                            Pending</p>
-                        <p class="text-3xl font-bold leading-tight tracking-tight text-slate-900 dark:text-white">15</p>
-                        <p class="text-sm font-medium leading-normal text-yellow-600 dark:text-yellow-500">+0.5%</p>
+                    
+                        <p class="text-base font-medium leading-normal text-slate-600 dark:text-slate-400">
+                            Pending Orders
+                        </p>
+                    
+                        <p class="text-3xl font-bold leading-tight tracking-tight text-slate-900 dark:text-white">
+                            {{ pending_orders }}
+                        </p>
+                    
+                        <p class="text-sm font-medium leading-normal text-yellow-600 dark:text-yellow-500">
+                            -
+                        </p>          </div>
+
+
+
                     </div>
-                </div>
-                <!-- Recent Orders Table -->
-                <div class="mt-8">
-                    <!-- SectionHeader & Button -->
-                    <div class="mb-4 flex flex-wrap items-center justify-between gap-4">
-                        <h2
-                            class="text-[22px] font-bold leading-tight tracking-[-0.015em] text-slate-900 dark:text-white">
-                            Recent Orders</h2>
-                        <button
-                            class="flex h-10 min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-primary px-4 text-sm font-bold leading-normal tracking-[0.015em] text-white">
-                            <span class="truncate">Manage Products</span>
-                        </button>
-                    </div>
-                    <!-- Table -->
-                    <div
-                        class="overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
-                                <thead class="bg-slate-50 dark:bg-slate-800">
-                                    <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400"
-                                            scope="col">Order ID</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400"
-                                            scope="col">Customer</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400"
-                                            scope="col">Date</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400"
-                                            scope="col">Status</th>
-                                        <th class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400"
-                                            scope="col">Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
-                                    <tr>
-                                        <td
-                                            class="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">
-                                            #12594</td>
-                                        <td
-                                            class="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-300">
-                                            Liam Johnson</td>
-                                        <td
-                                            class="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-300">
-                                            2023-10-26</td>
-                                        <td class="whitespace-nowrap px-6 py-4 text-sm"><span
-                                                class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-300">Completed</span>
-                                        </td>
-                                        <td
-                                            class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium text-slate-700 dark:text-slate-200">
-                                            $250.00</td>
-                                    </tr>
-                                    <tr>
-                                        <td
-                                            class="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">
-                                            #12593</td>
-                                        <td
-                                            class="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-300">
-                                            Olivia Smith</td>
-                                        <td
-                                            class="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-300">
-                                            2023-10-25</td>
-                                        <td class="whitespace-nowrap px-6 py-4 text-sm"><span
-                                                class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-300">Shipped</span>
-                                        </td>
-                                        <td
-                                            class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium text-slate-700 dark:text-slate-200">
-                                            $150.75</td>
-                                    </tr>
-                                    <tr>
-                                        <td
-                                            class="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">
-                                            #12592</td>
-                                        <td
-                                            class="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-300">
-                                            Noah Brown</td>
-                                        <td
-                                            class="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-300">
-                                            2023-10-25</td>
-                                        <td class="whitespace-nowrap px-6 py-4 text-sm"><span
-                                                class="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">Pending</span>
-                                        </td>
-                                        <td
-                                            class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium text-slate-700 dark:text-slate-200">
-                                            $80.50</td>
-                                    </tr>
-                                    <tr>
-                                        <td
-                                            class="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">
-                                            #12591</td>
-                                        <td
-                                            class="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-300">
-                                            Emma Davis</td>
-                                        <td
-                                            class="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-300">
-                                            2023-10-24</td>
-                                        <td class="whitespace-nowrap px-6 py-4 text-sm"><span
-                                                class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-300">Completed</span>
-                                        </td>
-                                        <td
-                                            class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium text-slate-700 dark:text-slate-200">
-                                            $320.00</td>
-                                    </tr>
-                                    <tr>
-                                        <td
-                                            class="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">
-                                            #12590</td>
-                                        <td
-                                            class="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-300">
-                                            Ava Wilson</td>
-                                        <td
-                                            class="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-300">
-                                            2023-10-23</td>
-                                        <td class="whitespace-nowrap px-6 py-4 text-sm"><span
-                                                class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900 dark:text-red-300">Returned</span>
-                                        </td>
-                                        <td
-                                            class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium text-slate-700 dark:text-slate-200">
-                                            $99.99</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+
+
+
+
+
+                    <!-- Recent Orders Table -->
+                    <div class="mt-8">
+                    
+                        <!-- Section Header -->
+                        <div class="mb-4 flex flex-wrap items-center justify-between gap-4">
+                            <h2 class="text-[22px] font-bold text-slate-900 dark:text-white">
+                                Recent Orders
+                            </h2>
+                    
+                            <a href="{% url 'adminpanel:admin_orders' %}"
+                                class="flex h-10 items-center justify-center rounded-lg bg-primary px-4 text-sm font-bold text-white">
+                                View All Orders
+                            </a>
                         </div>
-                        <div class="border-t border-slate-200 px-6 py-3 dark:border-slate-800">
-                            <a class="text-sm font-medium text-primary hover:underline" href="#">View All Orders</a>
-                        </div>
+                    
+                        <!-- Table -->
+                        <div class="overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
+                    
+                                    <!-- Table Head -->
+                                    <thead class="bg-slate-50 dark:bg-slate-800">
+                                        <tr>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-slate-500">Order ID</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-slate-500">Customer</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-slate-500">Date</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-slate-500">Status</th>
+                                            <th class="px-6 py-3 text-right text-xs font-medium text-slate-500">Amount</th>
+                                            <th class="px-6 py-3 text-right text-xs font-medium text-slate-500">Action</th>
+                                        </tr>
+                                    </thead>
+                    
+                                    <!-- Table Body -->
+                                    <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                    
+                                        {% for order in recent_orders %}
+                                        <tr>
+                    
+                                            <td class="px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">
+                                                #ORD-{{ order.uuid }}
+                                            </td>
+                    
+                                            <td class="px-6 py-4 text-sm text-slate-500 dark:text-slate-300">
+                                                {{ order.user.username }}
+                                            </td>
+                    
+                                            <td class="px-6 py-4 text-sm text-slate-500 dark:text-slate-300">
+                                                {{ order.created_at|date:"Y-m-d" }}
+                                            </td>
+                    
+                                            <td class="px-6 py-4 text-sm">
+                                                <span class="inline-flex px-2 py-1 text-xs rounded-full
+                                                                    {% if order.status == 'delivered' %} bg-green-100 text-green-800
+                                                                    {% elif order.status == 'pending' %} bg-yellow-100 text-yellow-800
+                                                                    {% elif order.status == 'cancelled' %} bg-red-100 text-red-800
+                                                                    {% else %} bg-gray-100 text-gray-700
+                                                                    {% endif %}">
+                                                    {{ order.status|title }}
+                                                </span>
+                                            </td>
+                    
+                                            <td class="px-6 py-4 text-right text-sm font-medium text-slate-700 dark:text-slate-200">
+                                                ₹{{ order.total_amount|floatformat:2 }}
+                                            </td>
+                    
+                                            <td class="px-6 py-4 text-right">
+                                                <a href="{% url 'adminpanel:admin_order_detail' order.id %}"
+                                                    class="px-3 py-1 text-sm bg-blue-600 text-white rounded">
+                                                    View
+                                                </a>
+                                            </td>
+                    
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="6" class="text-center py-6 text-gray-500">
+                                                No orders found
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                    
+                                    </tbody>
+                    
+                                </table>
+                            </div>
+                        </div>              
                     </div>
-                </div>
+
+
             </div>
         </main>
     </div>

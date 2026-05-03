@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Order Details</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1173d4",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display">
+    <div class="relative flex min-h-screen w-full">
+        <!-- SideNavBar -->
+        {% include "adminpanel/includes/sidebar.html" %}
+
+        <!-- Main Content -->
+        <main class="flex-1 ml-64 p-6 lg:p-10">
+            <div class="mx-auto max-w-7xl">
+                <!-- Breadcrumbs -->
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <a class="text-gray-500 dark:text-gray-400 text-sm font-medium leading-normal hover:text-primary"
+                        href="{% url 'adminpanel:dashboard' %}">Dashboard</a>
+                    <span class="text-gray-500 dark:text-gray-400 text-sm font-medium leading-normal">/</span>
+                    <a class="text-gray-500 dark:text-gray-400 text-sm font-medium leading-normal hover:text-primary"
+                        href="{% url 'adminpanel:admin_orders' %}">Orders</a>
+                    <span class="text-gray-500 dark:text-gray-400 text-sm font-medium leading-normal">/</span>
+                    <span class="text-gray-800 dark:text-gray-200 text-sm font-medium leading-normal">Order
+                        Details</span>
+                </div>
+
+                <!-- Page Heading -->
+                <div class="flex flex-col sm:flex-row flex-wrap justify-between items-start gap-4 mb-6">
+                    <p class="text-gray-900 dark:text-white text-3xl font-bold leading-tight tracking-tight">Order
+                        Details</p>
+                </div>
+
+
+
+
+                <!-- 2. ORDER SUMMARY CARD (TOP) -->
+                <div class="bg-white dark:bg-gray-900/50 rounded-xl shadow-sm p-6 mb-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                
+                        <!-- LEFT SIDE -->
+                        <div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-gray-700 dark:text-gray-300 font-medium">Order</span>
+                
+                                <span
+                                    class="px-3 py-1 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white text-sm font-semibold">
+                                    #ORD-{{ order.uuid|slice:":8" }}
+                                </span>
+                            </div>
+                
+                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                Placed on {{ order.created_at|date:"M d, Y H:i" }}
+                            </p>
+                
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                Delivery Window:
+                                {% if order.delivery_start and order.delivery_end %}
+                                {{ order.delivery_start }} → {{ order.delivery_end }}
+                                {% else %}
+                                -
+                                {% endif %}
+                            </p>
+                        </div>
+                
+                        <!-- RIGHT SIDE -->
+                        <div class="flex flex-col items-end gap-3">
+                
+                            <!-- STATUS -->
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Status:</span>
+                
+                                {% if order.status == "pending" %}
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+                                    {{ order.get_status_display|default:order.status }}
+                                </span>
+                
+                                {% elif order.status == "processing" %}
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+                                    {{ order.get_status_display|default:order.status }}
+                                </span>
+                
+                                {% elif order.status == "shipped" %}
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300">
+                                    {{ order.get_status_display|default:order.status }}
+                                </span>
+                
+                                {% elif order.status == "out_for_delivery" %}
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300">
+                                    {{ order.get_status_display|default:order.status }}
+                                </span>
+                
+                                {% elif order.status == "delivered" %}
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                                    {{ order.get_status_display|default:order.status }}
+                                </span>
+                
+                                {% elif order.status == "cancelled" %}
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
+                                    {{ order.get_status_display|default:order.status }}
+                                </span>
+                
+                                {% else %}
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300">
+                                    {{ order.get_status_display|default:order.status }}
+                                </span>
+                                {% endif %}
+                            </div>
+                
+                            <!-- PAYMENT -->
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Payment:</span>
+                
+                                {% if order.refund_status == "processed" %}
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                                    Refunded
+                                </span>
+                
+                                {% elif order.refund_status == "initiated" %}
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+                                    Refund Processing
+                                </span>
+                
+                                {% elif order.refund_status == "failed" %}
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300">
+                                    Refund Failed
+                                </span>
+                
+                                {% else %}
+                
+                                {% if order.payment_status == "paid" %}
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                                    Paid
+                                </span>
+                
+                                {% elif order.payment_status == "pending" %}
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+                                    Pending
+                                </span>
+                
+                                {% elif order.payment_status == "failed" %}
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
+                                    Failed
+                                </span>
+                
+                                {% else %}
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300">
+                                    {{ order.payment_status }}
+                                </span>
+                                {% endif %}
+                
+                                {% endif %}
+                            </div>
+                
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+
+
+                    <!-- 3. USER DETAILS CARD -->
+                    <div class="bg-white dark:bg-gray-900/50 rounded-xl shadow-sm p-6">
+                    
+                        <!-- HEADER -->
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-5 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-gray-500 dark:text-gray-400">person</span>
+                            User Details
+                        </h3>
+                    
+                        <!-- CONTENT -->
+                        <div class="space-y-5">
+                    
+                            <!-- USERNAME -->
+                            <div>
+                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                                    Username
+                                </p>
+                    
+                                <div class="inline-flex items-center px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800">
+                                    <span class="text-base font-semibold text-gray-900 dark:text-white">
+                                        {{ order.user.username|default:"-" }}
+                                    </span>
+                                </div>
+                            </div>
+                    
+                            <!-- EMAIL -->
+                            <div>
+                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                                    Email
+                                </p>
+                    
+                                <div class="inline-flex items-center px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800">
+                                    <span class="text-base font-semibold text-gray-900 dark:text-white">
+                                        {{ order.user.email|default:"-" }}
+                                    </span>
+                                </div>
+                            </div>
+                    
+                        </div>
+                    </div>
+
+
+
+                    <!-- 4. ADDRESS CARD -->
+                    <div class="bg-white dark:bg-gray-900/50 rounded-xl shadow-sm p-6">
+                    
+                        <!-- HEADER -->
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-5 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-gray-500 dark:text-gray-400">location_on</span>
+                            Shipping Address
+                        </h3>
+                    
+                        <!-- CONTENT -->
+                        {% if order.address_text %}
+                    
+                        {% with lines=order.address_text.splitlines %}
+                    
+                        <div class="space-y-4">
+                    
+                            <!-- NAME -->
+                            {% if lines|length > 0 %}
+                            <div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Recipient</p>
+                                <div class="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 font-semibold text-gray-900 dark:text-white">
+                                    {{ lines.0 }}
+                                </div>
+                            </div>
+                            {% endif %}
+                    
+                            <!-- FULL ADDRESS (CLEAN BLOCK) -->
+                            <div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Full Address</p>
+                    
+                                <div
+                                    class="px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 leading-relaxed">
+                    
+                                    {% for line in lines %}
+                                    {% if not forloop.first %}
+                                    <div>{{ line }}</div>
+                                    {% endif %}
+                                    {% endfor %}
+                    
+                                </div>
+                            </div>
+                    
+                        </div>
+                    
+                        {% endwith %}
+                    
+                        {% else %}
+                    
+                        <div class="px-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-500">
+                            No address provided
+                        </div>
+                    
+                        {% endif %}
+                    
+                    </div>
+
+
+
+                </div>
+
+
+
+
+                <!-- 5. ORDER ITEMS TABLE -->
+                <div class="bg-white dark:bg-gray-900/50 rounded-xl shadow-sm overflow-hidden mb-6">
+                
+                    <div class="p-6 border-b border-gray-100 dark:border-gray-800">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                            Order Items
+                        </h3>
+                    </div>
+                
+                    <div class="overflow-x-auto">
+                        <table class="w-full min-w-[800px] text-sm text-left text-gray-500 dark:text-gray-400">
+                
+                            <thead class="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-800">
+                                <tr>
+                                    <th class="px-6 py-3">Product</th>
+                                    <th class="px-6 py-3">Variant</th>
+                                    <th class="px-6 py-3 text-center">Qty</th>
+                                    <th class="px-6 py-3 text-center">Weight</th>
+                                    <th class="px-6 py-3 text-right">Unit Price</th>
+                                    <th class="px-6 py-3 text-right">Total</th>
+                                </tr>
+                            </thead>
+                
+                            <tbody>
+                
+                                {% for item in items %}
+                
+                                <tr class="border-b dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                
+                                    <!-- PRODUCT -->
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-4">
+                
+                                            <!-- IMAGE -->
+                                            {% if item.display_image %}
+                                            <img src="{{ item.display_image.image.url }}"
+                                                class="h-12 w-12 rounded object-cover bg-gray-100">
+                                            {% else %}
+                                            <div class="h-12 w-12 rounded bg-gray-100 flex items-center justify-center">
+                                                <span class="material-symbols-outlined text-gray-400">image</span>
+                                            </div>
+                                            {% endif %}
+                
+                                            <!-- 🔥 CLICKABLE PRODUCT -->
+                                            {% if item.product_id %}
+                                            <a href="{% url 'adminpanel:variant_list' item.product_id %}"
+                                                class="font-medium text-gray-900 dark:text-white hover:text-primary transition-colors">
+                                                {{ item.product_name }}
+                                            </a>
+                                            {% else %}
+                                            <span class="text-gray-500">
+                                                {{ item.product_name }}
+                                            </span>
+                                            {% endif %}
+                
+                                        </div>
+                                    </td>
+                
+                                    <!-- VARIANT -->
+                                    <td class="px-6 py-4">
+                                        <div class="flex gap-2">
+                                            <span class="px-3 py-1 text-xs rounded-full bg-gray-100 dark:bg-gray-800">
+                                                {{ item.color|default:"-" }}
+                                            </span>
+                                            <span class="px-3 py-1 text-xs rounded-full bg-gray-100 dark:bg-gray-800">
+                                                {{ item.size|default:"-" }}
+                                            </span>
+                                        </div>
+                                    </td>
+                
+                                    <!-- QTY -->
+                                    <td class="px-6 py-4 text-center font-medium text-gray-900 dark:text-white">
+                                        {{ item.quantity }}
+                                    </td>
+                
+                                    <!-- WEIGHT -->
+                                    <td class="px-6 py-4 text-center text-gray-700 dark:text-gray-300">
+                                        {{ item.weight_kg }} kg
+                                    </td>
+                
+                                    <!-- PRICE -->
+                                    <td class="px-6 py-4 text-right">
+                                        ₹{{ item.unit_price|floatformat:2 }}
+                                    </td>
+                
+                                    <!-- TOTAL -->
+                                    <td class="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">
+                                        ₹{{ item.total_price|floatformat:2 }}
+                                    </td>
+                
+                                </tr>
+                
+                                {% empty %}
+                
+                                <tr>
+                                    <td colspan="6" class="text-center py-6 text-gray-500">
+                                        No items found
+                                    </td>
+                                </tr>
+                
+                                {% endfor %}
+                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+
+
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    
+                    
+                    
+                    
+                    
+                    <!-- 7. STATUS UPDATE SECTION -->
+                    <div class="bg-white dark:bg-gray-900/50 rounded-xl shadow-sm p-6">
+                    
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                            Update Order Status
+                        </h3>
+                    
+                        {% if order.status == "cancelled" or order.status == "delivered" %}
+                    
+                        <!-- 🔒 LOCKED STATE -->
+                        <div class="p-4 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm">
+                    
+                            {% if order.status == "cancelled" %}
+                            This order is cancelled and can no longer be modified.
+                            {% elif order.status == "delivered" %}
+                            This order has been delivered and is now locked.
+                            {% endif %}
+                    
+                        </div>
+                    
+                        {% else %}
+                    
+                        <!-- ✅ ACTIVE STATE -->
+                        <form method="POST" class="space-y-4">
+                            {% csrf_token %}
+                    
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Select Status
+                                </label>
+                    
+                                <select name="status"
+                                    class="w-full h-11 px-3 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-primary focus:border-primary block">
+                    
+                                    <option value="pending" {% if order.status == "pending" %}selected{% endif %}>Pending</option>
+                                    <option value="processing" {% if order.status == "processing" %}selected{% endif %}>Processing</option>
+                                    <option value="shipped" {% if order.status == "shipped" %}selected{% endif %}>Shipped</option>
+                                    <option value="out_for_delivery" {% if order.status == "out_for_delivery" %}selected{% endif %}>Out for
+                                        Delivery</option>
+                                    <option value="delivered" {% if order.status == "delivered" %}selected{% endif %}>Delivered</option>
+                                    <option value="cancelled" {% if order.status == "cancelled" %}selected{% endif %}>Cancelled</option>
+                    
+                                </select>
+                            </div>
+                    
+                            <button type="submit"
+                                class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:focus:ring-offset-gray-900 transition-colors">
+                                Update Status
+                            </button>
+                    
+                        </form>
+                    
+                        {% endif %}
+                    
+                    </div>
+
+
+
+
+                    <!-- 8. PAYMENT INFORMATION -->
+                    <div class="bg-white dark:bg-gray-900/50 rounded-xl shadow-sm p-6">
+                    
+                        <!-- HEADER -->
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-5 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-gray-500 dark:text-gray-400">payments</span>
+                            Payment Information
+                        </h3>
+                    
+                        <!-- CONTENT -->
+                        <div class="space-y-5">
+                    
+                            <!-- PAYMENT STATUS -->
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-500 dark:text-gray-400">Payment Status</span>
+                    
+                                {% if order.payment_status == "paid" %}
+                                <span
+                                    class="px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">
+                                    Paid
+                                </span>
+                                {% elif order.payment_status == "pending" %}
+                                <span
+                                    class="px-3 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300">
+                                    Pending
+                                </span>
+                                {% else %}
+                                <span
+                                    class="px-3 py-1 text-xs font-medium rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300">
+                                    Failed
+                                </span>
+                                {% endif %}
+                            </div>
+                    
+                            <!-- PAYMENT ID -->
+                            <div>
+                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                                    Razorpay Payment ID
+                                </p>
+                    
+                                <div class="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800">
+                                    <span class="text-sm font-mono text-gray-900 dark:text-white break-all">
+                                        {{ order.razorpay_payment_id|default:"Not Available" }}
+                                    </span>
+                                </div>
+                            </div>
+                    
+                            <!-- REFUND STATUS -->
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-500 dark:text-gray-400">Refund Status</span>
+                    
+                                {% if order.refund_status == "processed" %}
+                                <span
+                                    class="px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">
+                                    Refunded
+                                </span>
+                                {% elif order.refund_status == "initiated" %}
+                                <span
+                                    class="px-3 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300">
+                                    Initiated
+                                </span>
+                                {% elif order.refund_status == "failed" %}
+                                <span
+                                    class="px-3 py-1 text-xs font-medium rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300">
+                                    Failed
+                                </span>
+                                {% else %}
+                                <span
+                                    class="px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                                    Not Applicable
+                                </span>
+                                {% endif %}
+                            </div>
+                    
+                            <!-- REFUND ID -->
+                            <div>
+                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                                    Refund ID
+                                </p>
+                    
+                                <div class="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800">
+                                    <span class="text-sm font-mono text-gray-900 dark:text-white break-all">
+                                        {{ order.razorpay_refund_id|default:"Not Available" }}
+                                    </span>
+                                </div>
+                            </div>
+                    
+                        </div>
+                    
+                    </div>
+
+                        
+                    </div>
+
+
+                    
+
+                    <!-- 6. PRICE SUMMARY CARD -->
+                    <div class="bg-white dark:bg-gray-900/50 rounded-xl shadow-sm p-6 flex flex-col h-full">
+                    
+                        <!-- HEADER -->
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-gray-500 dark:text-gray-400">receipt_long</span>
+                            Price Summary
+                        </h3>
+                    
+                        <!-- BODY -->
+                        <div class="space-y-4 flex-grow">
+                    
+                            <!-- SUBTOTAL -->
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-500 dark:text-gray-400">Subtotal</span>
+                                <div class="px-3 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 font-medium text-gray-900 dark:text-white">
+                                    ₹{{ order.subtotal|floatformat:2|default:"0.00" }}
+                                </div>
+                            </div>
+                    
+                            <!-- DISCOUNT -->
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-500 dark:text-gray-400">Discount</span>
+                                <div
+                                    class="px-3 py-1 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 font-medium">
+                                    -₹{{ order.discount_amount|floatformat:2|default:"0.00" }}
+                                </div>
+                            </div>
+                    
+                            <!-- TAX -->
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-500 dark:text-gray-400">Tax</span>
+                                <div class="px-3 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 font-medium text-gray-900 dark:text-white">
+                                    ₹{{ order.tax_amount|floatformat:2|default:"0.00" }}
+                                </div>
+                            </div>
+                    
+                            <!-- SHIPPING -->
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-500 dark:text-gray-400">Shipping</span>
+                                <div class="px-3 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 font-medium text-gray-900 dark:text-white">
+                                    ₹{{ order.shipping_fee|floatformat:2|default:"0.00" }}
+                                </div>
+                            </div>
+                    
+                        </div>
+                    
+                        <!-- TOTAL -->
+                        <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-800">
+                    
+                            <div class="flex justify-between items-center">
+                    
+                                <span class="text-base font-semibold text-gray-900 dark:text-white">
+                                    Total Amount
+                                </span>
+                    
+                                <div class="px-4 py-2 rounded-lg bg-primary/10 text-primary font-bold text-lg">
+                                    ₹{{ order.total_amount|floatformat:2|default:"0.00" }}
+                                </div>
+                    
+                            </div>
+                    
+                        </div>
+                    
+                    </div>
+
+
+
+                </div>
+
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

@@ -15,7 +15,9 @@ from apps.adminpanel.views.products import product_list, product_create, product
 
 from apps.adminpanel.views.variants import variant_list, variant_create, variant_edit
 
-from apps.adminpanel.views.orders import orders
+from apps.adminpanel.views.orders import orders, order_detail, update_order_status_ajax
+
+from apps.adminpanel.views.analytics import admin_analytics
 
 from apps.adminpanel.views.faq import faq_list, faq_create
 
@@ -60,6 +62,11 @@ urlpatterns = [
 
 
     path("orders/", orders, name="admin_orders"),
+    path("orders/<int:order_id>/", order_detail, name="admin_order_detail"),
+    path("orders/update-status/", update_order_status_ajax, name="update_order_status_ajax"),
+
+
+    path("analytics/", admin_analytics, name="admin_analytics"),
     
 
     path("faqs/", faq_list, name="faq_list"),

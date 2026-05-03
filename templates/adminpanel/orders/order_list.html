@@ -265,17 +265,17 @@
                                     <td class="px-6 py-4 text-right space-x-2">
                                         <!-- VIEW BUTTON -->
                                         
-                                        <a href="#"
+                                        <a href="{% url 'adminpanel:admin_order_detail' order.id %}"
                                             class="px-3 py-1 text-xs font-medium text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
                                             View
                                         </a>
 
                                         <!-- UPDATE STATUS BUTTON -->
                                        
-                                        <a href="#"
-                                            class="px-3 py-1 text-xs font-medium text-primary border border-primary/30 rounded-md hover:bg-primary/10 dark:hover:bg-primary/20">
+                                        <button onclick="updateStatus('{{ order.id }}', '{{ order.status }}')"
+                                            class="px-3 py-1 text-sm border rounded-lg text-primary border-primary hover:bg-primary hover:text-white transition">
                                             Update Status
-                                        </a>
+                                        </button>
                                     </td>
 
                                 </tr>
@@ -349,6 +349,7 @@
 
 
 
+    <!-- Filtering  -->
 
     <script>
         const btn = document.getElementById("statusFilterBtn");
@@ -363,6 +364,46 @@
                 dropdown.classList.add("hidden");
             }
         });
+    </script>
+
+
+    <!-- Status Update  -->
+    <script>
+        function updateStatus(orderId, currentStatus) {
+
+            // 🚫 Block final states (UI safety)
+            if (currentStatus === "cancelled" || currentStatus === "delivered") {
+                alert("This order cannot be modified.");
+                return;
+            }
+
+            const newStatus = prompt(
+                "Enter new status:\n\nprocessing, shipped, out_for_delivery, delivered, cancelled"
+            );
+
+            if (!newStatus) return;
+
+            fetch("{% url 'adminpanel:update_order_status_ajax' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: `order_id=${orderId}&status=${newStatus}`
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Status updated successfully!");
+                        location.reload(); // 🔁 refresh list
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(() => {
+                    alert("Something went wrong");
+                });
+        }
     </script>
 </body>
 
