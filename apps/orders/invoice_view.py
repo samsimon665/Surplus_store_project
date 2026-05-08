@@ -64,7 +64,8 @@ def download_invoice(request, uuid):
 
     # ✅ STEP 1: Get absolute logo path
     logo_path = os.path.join(settings.BASE_DIR, "static/images/logo.png")
-    logo_path = f"file:///{logo_path.replace('\\', '/')}"
+    logo_path = logo_path.replace("\\", "/")
+    logo_path = f"file:///{logo_path}"
 
     # ✅ STEP 2: Pass to template
     template = get_template("orders/invoice_pdf.html")
