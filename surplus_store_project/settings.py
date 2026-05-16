@@ -73,6 +73,10 @@ INSTALLED_APPS = [
     'apps.orders.apps.OrdersConfig',
     'apps.payments.apps.PaymentsConfig',
 
+    # For SEO (AFTER HOSTING)
+
+    'django.contrib.sitemaps',
+
 
 ]
 

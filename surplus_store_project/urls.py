@@ -21,7 +21,22 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 
+# SEO - SITEMAP
+
+from django.contrib.sitemaps.views import sitemap
+from apps.catalog.sitemaps import (StaticViewSitemap, CategorySitemap, ProductSitemap)
+
+
+sitemaps = {
+    "static": StaticViewSitemap,
+    "categories": CategorySitemap,
+    "products": ProductSitemap,
+}
+
+
 urlpatterns = [
+
+    path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="django.contrib.sitemaps.views.sitemap"),
 
     
     path('admin/', admin.site.urls),
