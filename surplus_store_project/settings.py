@@ -167,8 +167,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
 
+STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
@@ -199,9 +199,11 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 
 X_FRAME_OPTIONS = "DENY"
 
+SESSION_COOKIE_SECURE = True
 
+CSRF_COOKIE_SECURE = True
 
-
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 
